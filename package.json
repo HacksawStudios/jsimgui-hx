@@ -37,6 +37,7 @@
     "build": "bun ./tools/build-jsimgui-and-bindings.sh",
     "pack:dry": "npm pack --dry-run",
     "version": "node ./scripts/sync-haxelib-metadata.cjs",
-    "reset": "rm -rf ./build ./node_modules && bun install"
+    "clean": "rm -rf ./build ./node_modules",
+    "reset": "bun clean && bun install"
   }
 }
