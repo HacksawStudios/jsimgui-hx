@@ -1,6 +1,6 @@
 {
   "name": "jsimgui-hx",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "JS-only Dear ImGui bindings for Haxe backed by the assarbergh-hacksaw jsimgui fork",
   "license": "MIT",
   "keywords": [
