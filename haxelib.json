@@ -8,7 +8,7 @@
         "wasm"
     ],
     "description": "JS-only Dear ImGui bindings for Haxe backed by the assarbergh-hacksaw jsimgui fork",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "releasenote": "JS-only bindings powered by jsimgui with bundled runtime assets",
     "contributors": [
         "miguelblix99"
