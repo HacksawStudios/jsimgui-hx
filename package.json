@@ -35,9 +35,10 @@
     "postinstall": "node ./scripts/install-haxelib.cjs",
     "pack:haxelib": "node ./scripts/package-haxelib.cjs",
     "build": "bun ./tools/build-jsimgui-and-bindings.sh",
+    "build:clean": "bun ./tools/build-jsimgui-and-bindings.sh && bun clean",
     "pack:dry": "npm pack --dry-run",
     "version": "node ./scripts/sync-haxelib-metadata.cjs",
-    "clean": "rm -rf ./build ./node_modules",
+    "clean": "bash ./tools/clean.sh",
     "reset": "bun clean && bun install"
   }
 }
