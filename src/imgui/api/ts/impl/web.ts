@@ -265,16 +265,16 @@ const setupMouseIO = (canvas: HTMLCanvasElement) => {
     const io = ImGui.GetIO();
     const scrollSpeed = 0.01;
 
-    canvas.addEventListener("pointermove", (e) => {
+    window.addEventListener("pointermove", (e) => {
         const rect = canvas.getBoundingClientRect();
         io.AddMousePosEvent(e.clientX - rect.left, e.clientY - rect.top);
 
         canvas.style.cursor = MOUSE_CURSOR_MAP[ImGui.GetMouseCursor()];
     });
 
-    canvas.addEventListener("pointerdown", (e) => handleMouseButtonEvent(e, true, io));
-    canvas.addEventListener("pointerup", (e) => handleMouseButtonEvent(e, false, io));
-    canvas.addEventListener("wheel", (e) =>
+    window.addEventListener("pointerdown", (e) => handleMouseButtonEvent(e, true, io));
+    window.addEventListener("pointerup", (e) => handleMouseButtonEvent(e, false, io));
+    window.addEventListener("wheel", (e) =>
         io.AddMouseWheelEvent(-e.deltaX * scrollSpeed, -e.deltaY * scrollSpeed),
     );
 };
@@ -726,12 +726,12 @@ export const ImGuiImplWeb = {
         return State.backend === "webgpu"
             ? loadTextureWebGPU(State.device as GPUDevice, data, options)
             : loadTextureWebGL(
-                  State.canvas?.getContext(State.backend as "webgl" | "webgl2") as
-                      | WebGLRenderingContext
-                      | WebGL2RenderingContext,
-                  data,
-                  options,
-              );
+                State.canvas?.getContext(State.backend as "webgl" | "webgl2") as
+                | WebGLRenderingContext
+                | WebGL2RenderingContext,
+                data,
+                options,
+            );
     },
 
     /**
