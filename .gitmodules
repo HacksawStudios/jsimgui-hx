@@ -4,3 +4,6 @@
 [submodule "third_party/dear_bindings"]
 	path = third_party/dear_bindings
 	url = https://github.com/dearimgui/dear_bindings.git
+[submodule "third_party/cimplot"]
+	path = third_party/cimplot
+	url = https://github.com/cimgui/cimplot

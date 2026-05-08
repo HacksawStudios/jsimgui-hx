@@ -6,7 +6,9 @@
 
 #include <array>
 #include <cstddef>
+#include <stdexcept>
 #include <ranges>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -105,6 +107,41 @@ inline auto get_vector_param(js_val const& v) -> vector_param<T> {
 }
 
 template <typename T>
+inline auto get_vector_param(
+    js_val const& v,
+    size_t expected,
+    const char* name,
+    bool required = true
+) -> vector_param<T> {
+    vector_param<T> out{};
+
+    if (v.isNull() || v.isUndefined()) {
+        if (required) {
+            throw std::invalid_argument(std::string(name) + " must be an array");
+        }
+
+        return out;
+    }
+
+    if (!v.isArray()) {
+        throw std::invalid_argument(std::string(name) + " must be an array");
+    }
+
+    auto const len = v["length"].as<size_t>();
+    if (len < expected) {
+        throw std::invalid_argument(std::string(name) + " length is smaller than its count");
+    }
+
+    out.vec.reserve(len);
+    for (auto const i : std::views::iota(0uz, len)) {
+        out.vec.emplace_back(v[i].as<T>());
+    }
+
+    out.ptr = out.vec.data();
+    return out;
+}
+
+template <typename T>
 inline auto write_back_vector_param(vector_param<T> const& out, js_val& v) -> void {
     if (!out.ptr)
         return;
@@ -112,4 +149,46 @@ inline auto write_back_vector_param(vector_param<T> const& out, js_val& v) -> vo
     for (auto const i : std::views::iota(0uz, out.vec.size())) {
         v.set(i, out.vec[i]);
     }
+}
+
+struct string_array_param {
+    std::vector<std::string> strings = {};
+    std::vector<const char*> ptrs = {};
+    const char* const* ptr = nullptr;
+};
+
+inline auto get_string_array_param(
+    js_val const& v,
+    size_t expected,
+    const char* name,
+    bool required = true
+) -> string_array_param {
+    string_array_param out{};
+
+    if (v.isNull() || v.isUndefined()) {
+        if (required) {
+            throw std::invalid_argument(std::string(name) + " must be an array");
+        }
+
+        return out;
+    }
+
+    if (!v.isArray()) {
+        throw std::invalid_argument(std::string(name) + " must be an array");
+    }
+
+    auto const len = v["length"].as<size_t>();
+    if (len < expected) {
+        throw std::invalid_argument(std::string(name) + " length is smaller than its count");
+    }
+
+    out.strings.reserve(len);
+    out.ptrs.reserve(len);
+    for (auto const i : std::views::iota(0uz, len)) {
+        out.strings.emplace_back(v[i].as<std::string>());
+        out.ptrs.emplace_back(out.strings.back().c_str());
+    }
+
+    out.ptr = out.ptrs.data();
+    return out;
 }

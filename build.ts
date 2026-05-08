@@ -74,10 +74,12 @@ const buildData = () => {
                     "./src/imgui/api/cpp/web.cpp",
 
                     "-I./src/imgui/api/cpp/",
+                    "-I./src/implot/api/cpp/",
                     "-I./third_party/imgui/",
                     "-I./third_party/imgui/backends",
                     "-I./third_party/dear_bindings",
-                    // "-I./third_party/imnodes",
+                    "-I./third_party/cimplot",
+                    "-I./third_party/cimplot/implot",
 
                     "-DJSIMGUI_BACKEND_WEBGL",
                     "-DJSIMGUI_BACKEND_WEBGPU",
@@ -150,8 +152,8 @@ const buildData = () => {
  * - .cpp file used by emscripten for the .wasm file.
  * - .ts file with the final bindings which are then transpiled to a .js and .d.ts file.
  */
-const buildBindgen = () => {
-    generateImGuiBindings();
+const buildBindgen = (cfg: BuildConfig) => {
+    generateImGuiBindings({ extensions: cfg.extensions });
 };
 
 /**
@@ -169,12 +171,23 @@ const buildWasm = (cfg: BuildConfig) => {
         },
     } as const;
 
+    const extensionSourceFiles = cfg.extensions
+        ? [
+              "./bindgen/cpp/implot.cpp",
+              "./third_party/cimplot/cimplot.cpp",
+              "./third_party/cimplot/implot/implot.cpp",
+              "./third_party/cimplot/implot/implot_demo.cpp",
+              "./third_party/cimplot/implot/implot_items.cpp",
+          ]
+        : [];
+
     const sourceFiles = [
         "./src/imgui/api/cpp/web.cpp",
         "./src/imgui/api/cpp/webgl.cpp",
         "./src/imgui/api/cpp/webgpu.cpp",
 
         "./bindgen/cpp/imgui.cpp",
+        ...extensionSourceFiles,
 
         "./third_party/imgui/imgui.cpp",
         "./third_party/imgui/imgui_demo.cpp",
@@ -196,11 +209,13 @@ const buildWasm = (cfg: BuildConfig) => {
 
     const includeDirs = [
         "-I./src/imgui/api/cpp/",
+        "-I./src/implot/api/cpp/",
 
         "-I./third_party/imgui/",
         "-I./third_party/imgui/backends",
         "-I./third_party/dear_bindings",
-        // "-I./third_party/imnodes",
+        "-I./third_party/cimplot",
+        "-I./third_party/cimplot/implot",
     ] as const;
 
     const compilerFlags = [
@@ -253,7 +268,7 @@ const buildWasm = (cfg: BuildConfig) => {
         stdout.write("\n");
     }
 
-    rmSync("build", { recursive: true, force: true })
+    rmSync("build", { recursive: true, force: true });
     mkdirSync("build", { recursive: true });
     mkdirSync("build/wasm", { recursive: true });
     runCommand(cmd.join(" "));
@@ -347,7 +362,7 @@ const getBuildConfig = (): BuildConfig => {
  * Note that these are currently soft checks, e.g someone could have empty directories in the
  * third_party folder.
  */
-const checkPrerequisites = () => {
+const checkPrerequisites = (cfg: BuildConfig) => {
     const tools = [
         {
             cmd: "emcc --version",
@@ -363,7 +378,9 @@ const checkPrerequisites = () => {
         },
     ] as const;
 
-    const submodules = ["imgui", "dear_bindings"];
+    const submodules = cfg.extensions
+        ? ["imgui", "dear_bindings", "cimplot", "cimplot/implot"]
+        : ["imgui", "dear_bindings"];
 
     for (const tool of tools) {
         runCommand(tool.cmd, () => stdout.write(styleText("red", tool.msg)));
@@ -442,6 +459,9 @@ const checkHelp = () => {
     stdout.write(styleText(["bold", "cyan"], "  --font-loader=[truetype|freetype]"));
     stdout.write("  Choose the font loader for ImGui. Default is truetype (stb_truetype).\n");
 
+    stdout.write(styleText(["bold", "cyan"], "  --extensions                      "));
+    stdout.write("  Include extension bindings such as ImPlot.\n");
+
     stdout.write(styleText(["bold", "cyan"], "  --skip=data,bindgen,wasm,ts,fmt  "));
     stdout.write("  Skip certain build steps. Default is none.\n");
 
@@ -458,7 +478,7 @@ const main = () => {
     const buildConfig = getBuildConfig();
     const stepSkips = getStepSkips();
 
-    checkPrerequisites();
+    checkPrerequisites(buildConfig);
 
     const buildSteps = [
         {

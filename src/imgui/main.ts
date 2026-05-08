@@ -1,8 +1,8 @@
-import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import type { GeneratorConfig, GeneratorContext } from "../generator/config.ts";
 import { getEnumCodeTs } from "../generator/enum.ts";
-import { getFunctionCodeCpp } from "../generator/function-cpp.ts";
 import { getFunctionCodeTs } from "../generator/function.ts";
+import { getFunctionCodeCpp } from "../generator/function-cpp.ts";
 import {
     type DearBindingsData,
     mapEnums,
@@ -10,10 +10,15 @@ import {
     mapStructs,
     mapTypedefs,
 } from "../generator/provider/dear-bindings.ts";
-import { getStructCodeCpp } from "../generator/struct-cpp.ts";
 import { getStructCodeTs } from "../generator/struct.ts";
+import { getStructCodeCpp } from "../generator/struct-cpp.ts";
 import { getTypedefCodeTs } from "../generator/typedef.ts";
+import { generateImPlotBindings } from "../implot/main.ts";
 import { filterData } from "./filter.ts";
+
+export interface GenerateImGuiBindingsOptions {
+    extensions?: boolean;
+}
 
 function getFreeTypeEnumTs(): string {
     return (
@@ -98,7 +103,7 @@ function getValueStructsCpp(): string {
     ].join("\n");
 }
 
-export function generateImGuiBindings(): void {
+export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}): void {
     const configFile = readFileSync("./src/imgui/config.json", "utf-8");
     const dataFile = readFileSync("./third_party/dear_bindings/dcimgui.json", "utf-8");
 
@@ -157,10 +162,17 @@ export function generateImGuiBindings(): void {
         "\n",
     ].join("");
 
+    rmSync("./bindgen", { recursive: true, force: true });
     cpSync("./src/imgui/api/ts", "./bindgen/ts", { recursive: true });
-    // cpSync("./src/imnodes/imnodes.ts", "./bindgen/ts/imnodes.ts");
     mkdirSync("./bindgen/ts", { recursive: true });
     mkdirSync("./bindgen/cpp", { recursive: true });
     writeFileSync("./bindgen/ts/imgui.ts", ts);
     writeFileSync("./bindgen/cpp/imgui.cpp", cpp);
+
+    if (options.extensions) {
+        generateImPlotBindings();
+        const modPath = "./bindgen/ts/mod.ts";
+        const modTs = readFileSync(modPath, "utf-8");
+        writeFileSync(modPath, `${modTs}export * from "./implot.js";\n`);
+    }
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="icon" href="data:," />
+        <style>
+            body {
+                margin: 0;
+            }
+
+            canvas {
+                display: block;
+                width: 100vw;
+                height: 100vh;
+            }
+        </style>
+        <script type="importmap">
+            {
+                "imports": {
+                    "@mori2003/jsimgui": "../../../build/mod.js"
+                }
+            }
+        </script>
+        <script type="module">
+            import { ImGui, ImGuiImplWeb, ImPlot, ImVec2 } from "@mori2003/jsimgui";
+
+            const canvas = document.querySelector("#render-canvas");
+
+            await ImGuiImplWeb.Init({
+                canvas,
+                backend: "webgl2",
+                extensions: true,
+            });
+
+            ImPlot.CreateContext();
+
+            function render() {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+
+                ImGuiImplWeb.BeginRender();
+
+                ImGui.Begin("ImPlot");
+                if (ImPlot.BeginPlot("Line", new ImVec2(280, 180))) {
+                    ImPlot.PlotLine_FloatPtrInt("values", [0, 1, 0.5, 1.25], 4);
+                    ImPlot.EndPlot();
+                }
+                ImGui.End();
+
+                ImGuiImplWeb.EndRender();
+
+                console.log("implot render complete");
+
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        </script>
+    </head>
+    <body>
+        <canvas id="render-canvas"></canvas>
+    </body>
+</html>

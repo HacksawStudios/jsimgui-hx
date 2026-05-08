@@ -726,12 +726,12 @@ export const ImGuiImplWeb = {
         return State.backend === "webgpu"
             ? loadTextureWebGPU(State.device as GPUDevice, data, options)
             : loadTextureWebGL(
-                State.canvas?.getContext(State.backend as "webgl" | "webgl2") as
-                | WebGLRenderingContext
-                | WebGL2RenderingContext,
-                data,
-                options,
-            );
+                  State.canvas?.getContext(State.backend as "webgl" | "webgl2") as
+                      | WebGLRenderingContext
+                      | WebGL2RenderingContext,
+                  data,
+                  options,
+              );
     },
 
     /**
