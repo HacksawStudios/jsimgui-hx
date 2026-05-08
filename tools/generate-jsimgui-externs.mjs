@@ -440,6 +440,9 @@ function renderAbstract(group) {
 }
 
 function renderTypeAlias(name, declaration, context) {
+	if (name == 'ImU32') {
+		return `typedef ImU32 = ImU32CompatLayer;`;
+	}
 	return `typedef ${name} = ${mapType(declaration.type, context)};`
 }
 

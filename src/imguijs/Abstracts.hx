@@ -94,4 +94,25 @@ abstract ImVec4(ImVec4Backing) from ImVec4Backing to ImVec4Backing {
 		return new ImVec4(r / 255, g / 255, b / 255, (a <= 0) ? 1.0 : (a / 255));
 	}
 }
+
+@:forward
+abstract ImU32CompatLayer(Float) to Float {
+	public extern inline overload function new(v:Int) {
+		this = v;
+	}
+
+	public extern inline overload function new(v:Float) {
+		this = v;
+	}
+
+	@:from
+	public static function fromInt(v:Int):ImU32CompatLayer {
+		var p:Float = v & 0x7FFFFFFF;
+		if (v & 0x80000000 != 0) {
+			p += 0x7FFFFFFF + 1;
+		}
+
+		return new ImU32CompatLayer(p);
+	}
+}
 #end

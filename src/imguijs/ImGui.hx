@@ -23,7 +23,7 @@ typedef ImU16 = Float;
 
 typedef ImS32 = Float;
 
-typedef ImU32 = Float;
+typedef ImU32 = ImU32CompatLayer;
 
 typedef ImS64 = Dynamic;
 
