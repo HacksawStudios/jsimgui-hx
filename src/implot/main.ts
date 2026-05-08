@@ -68,6 +68,40 @@ const NUMERIC_ARRAY_TYPES = new Map<string, string>([
     ["int", "int"],
 ]);
 
+const CLEAN_METHOD_NAMES = new Map<string, string>([
+    ["ImPlot_PlotBarGroups_doublePtr", "PlotBarGroups"],
+    ["ImPlot_PlotBars_doublePtrInt", "PlotBars"],
+    ["ImPlot_PlotBars_doublePtrdoublePtr", "PlotBarsXY"],
+    ["ImPlot_PlotBubbles_doublePtrdoublePtrInt", "PlotBubbles"],
+    ["ImPlot_PlotBubbles_doublePtrdoublePtrdoublePtr", "PlotBubblesXY"],
+    ["ImPlot_PlotDigital_doublePtr", "PlotDigital"],
+    ["ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrInt", "PlotErrorBars"],
+    ["ImPlot_PlotErrorBars_doublePtrdoublePtrdoublePtrdoublePtr", "PlotErrorBarsRange"],
+    ["ImPlot_PlotHeatmap_doublePtr", "PlotHeatmap"],
+    ["ImPlot_PlotHistogram_doublePtr", "PlotHistogram"],
+    ["ImPlot_PlotHistogram2D_doublePtr", "PlotHistogram2D"],
+    ["ImPlot_PlotInfLines_doublePtr", "PlotInfLines"],
+    ["ImPlot_PlotLine_doublePtrInt", "PlotLine"],
+    ["ImPlot_PlotLine_doublePtrdoublePtr", "PlotLineXY"],
+    ["ImPlot_PlotPieChart_doublePtrStr", "PlotPieChart"],
+    ["ImPlot_PlotPolygon_doublePtr", "PlotPolygon"],
+    ["ImPlot_PixelsToPlot_Float", "PixelsToPlot"],
+    ["ImPlot_PixelsToPlot_Vec2", "PixelsToPlotVec2"],
+    ["ImPlot_PlotScatter_doublePtrInt", "PlotScatter"],
+    ["ImPlot_PlotScatter_doublePtrdoublePtr", "PlotScatterXY"],
+    ["ImPlot_PlotShaded_doublePtrInt", "PlotShaded"],
+    ["ImPlot_PlotShaded_doublePtrdoublePtrInt", "PlotShadedXY"],
+    ["ImPlot_PlotShaded_doublePtrdoublePtrdoublePtr", "PlotShadedBand"],
+    ["ImPlot_PlotStairs_doublePtrInt", "PlotStairs"],
+    ["ImPlot_PlotStairs_doublePtrdoublePtr", "PlotStairsXY"],
+    ["ImPlot_PlotStems_doublePtrInt", "PlotStems"],
+    ["ImPlot_PlotStems_doublePtrdoublePtr", "PlotStemsXY"],
+    ["ImPlot_PlotToPixels_double", "PlotToPixels"],
+    ["ImPlot_PlotToPixels_PlotPoint", "PlotToPixelsPoint"],
+    ["ImPlot_SetupAxisTicks_doublePtr", "SetupAxisTicks"],
+    ["ImPlot_SetupAxisTicks_double", "SetupAxisTicksRange"],
+]);
+
 let enumDefaultValues = new Map<string, number>();
 
 function readJson<T>(path: string): T {
@@ -96,6 +130,31 @@ function pointerBase(type: string): string {
 
 function isNumericPointer(type: string): boolean {
     return isPointer(type) && NUMERIC_ARRAY_TYPES.has(pointerBase(type));
+}
+
+function getNumericPointerTypes(definition: CimPlotDefinition): string[] {
+    return (definition.argsT ?? [])
+        .map((arg) => normalizeType(arg.type))
+        .filter(isNumericPointer)
+        .map(pointerBase);
+}
+
+function isTypedPlotOverload(definition: CimPlotDefinition): boolean {
+    return (
+        definition.ov_cimguiname.startsWith("ImPlot_Plot") &&
+        getNumericPointerTypes(definition).length > 0
+    );
+}
+
+function hasOnlyDoubleNumericPointers(definition: CimPlotDefinition): boolean {
+    const types = getNumericPointerTypes(definition);
+    return types.length > 0 && types.every((type) => type === "double");
+}
+
+function isGeneratedValueStructFunction(definition: CimPlotDefinition): boolean {
+    return [...VALUE_STRUCTS, "ImPlotSpec"].some((name) =>
+        definition.ov_cimguiname.startsWith(`${name}_`),
+    );
 }
 
 function isStringArray(type: string): boolean {
@@ -152,6 +211,11 @@ function collectFunctions(definitions: CimPlotDefinitions): CimPlotDefinition[] 
     return Object.values(definitions)
         .flat()
         .filter((definition) => getUnsupportedReason(definition) === undefined)
+        .filter((definition) => !isGeneratedValueStructFunction(definition))
+        .filter(
+            (definition) =>
+                !isTypedPlotOverload(definition) || hasOnlyDoubleNumericPointers(definition),
+        )
         .sort((left, right) => left.ov_cimguiname.localeCompare(right.ov_cimguiname));
 }
 
@@ -272,7 +336,7 @@ function getValueStructsTs(): string {
         "    return new ImPlotTime(obj.S, obj.Us);",
         "}",
         "}",
-        "export interface ImPlotSpec {",
+        "export class ImPlotSpec extends ValueStruct {",
         "LineColor: ImVec4;",
         "LineWeight: number;",
         "FillColor: ImVec4;",
@@ -285,6 +349,50 @@ function getValueStructsTs(): string {
         "Offset: number;",
         "Stride: number;",
         "Flags: number;",
+        "constructor(",
+        "    LineColor = new ImVec4(0.0, 0.0, 0.0, -1.0),",
+        "    LineWeight = 1.0,",
+        "    FillColor = new ImVec4(0.0, 0.0, 0.0, -1.0),",
+        "    FillAlpha = 1.0,",
+        "    Marker = 0,",
+        "    MarkerSize = 4.0,",
+        "    MarkerLineColor = new ImVec4(0.0, 0.0, 0.0, -1.0),",
+        "    MarkerFillColor = new ImVec4(0.0, 0.0, 0.0, -1.0),",
+        "    Size = 4.0,",
+        "    Offset = 0,",
+        "    Stride = -1,",
+        "    Flags = 0,",
+        ") {",
+        "    super();",
+        "    this.LineColor = LineColor;",
+        "    this.LineWeight = LineWeight;",
+        "    this.FillColor = FillColor;",
+        "    this.FillAlpha = FillAlpha;",
+        "    this.Marker = Marker;",
+        "    this.MarkerSize = MarkerSize;",
+        "    this.MarkerLineColor = MarkerLineColor;",
+        "    this.MarkerFillColor = MarkerFillColor;",
+        "    this.Size = Size;",
+        "    this.Offset = Offset;",
+        "    this.Stride = Stride;",
+        "    this.Flags = Flags;",
+        "}",
+        "static From(obj: ImPlotSpec): ImPlotSpec {",
+        "    return new ImPlotSpec(",
+        "        ImVec4.From(obj.LineColor),",
+        "        obj.LineWeight,",
+        "        ImVec4.From(obj.FillColor),",
+        "        obj.FillAlpha,",
+        "        obj.Marker,",
+        "        obj.MarkerSize,",
+        "        ImVec4.From(obj.MarkerLineColor),",
+        "        ImVec4.From(obj.MarkerFillColor),",
+        "        obj.Size,",
+        "        obj.Offset,",
+        "        obj.Stride,",
+        "        obj.Flags,",
+        "    );",
+        "}",
         "}",
     ].join("\n");
 }
@@ -303,7 +411,7 @@ function mapTsType(type: string): string {
     }
     if (normalized === "const ImVec4*" || normalized === "ImVec4*") return "ImVec4[]";
     if (normalized === "const ImPlotSpec" || normalized === "ImPlotSpec") {
-        return "Partial<ImPlotSpec> | null";
+        return "ImPlotSpec | null";
     }
     if (
         isRawPointer(normalized) ||
@@ -382,6 +490,8 @@ function getDefaultValue(definition: CimPlotDefinition, arg: CimPlotArg): string
 }
 
 function getObjectMethodName(cimguiName: string): string {
+    const cleanName = CLEAN_METHOD_NAMES.get(cimguiName);
+    if (cleanName) return cleanName;
     if (cimguiName.startsWith("ImPlot_")) return cimguiName.slice("ImPlot_".length);
     if (cimguiName.startsWith("ImPlot")) return cimguiName.slice("ImPlot".length);
     return cimguiName;
