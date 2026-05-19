@@ -107,12 +107,26 @@ abstract ImU32CompatLayer(Float) to Float {
 
 	@:from
 	public static function fromInt(v:Int):ImU32CompatLayer {
+		#if !no_reorder_imu32_channels
+		v = (v & 0xFF00FF00) | ((v & 0xFF0000) >> 16) | ((v & 0xFF) << 16);
+		#end
+
 		var p:Float = v & 0x7FFFFFFF;
 		if (v & 0x80000000 != 0) {
 			p += 0x7FFFFFFF + 1;
 		}
 
 		return new ImU32CompatLayer(p);
+	}
+
+	@:from
+	public static function fromImVec4(v:ImVec4):ImU32CompatLayer {
+		final r:Int = Math.floor(Math.max(Math.min(v.x * 255, 255), 0));
+		final g:Int = Math.floor(Math.max(Math.min(v.y * 255, 255), 0));
+		final b:Int = Math.floor(Math.max(Math.min(v.z * 255, 255), 0));
+		final a:Int = Math.floor(Math.max(Math.min(v.w * 255, 255), 0));
+
+		return ImU32CompatLayer.fromInt((a << 24) | (r << 16) | (g << 8) | (b << 0));
 	}
 }
 #end

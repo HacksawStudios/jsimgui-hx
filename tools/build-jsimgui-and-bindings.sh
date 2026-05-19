@@ -10,7 +10,7 @@ docker run -v "$PWD:/workspace" jsimgui bash -c "\
 	node build.ts && \
 	mkdir -p /tmp/jsimgui-default && \
 	cp -r build/. /tmp/jsimgui-default/ && \
-	node build.ts --extensions && \
+	node build.ts --font-loader=freetype --extensions && \
 	cp /tmp/jsimgui-default/wasm/loader.em.js build/wasm/loader.em.js"
 
 echo "Copying output to runtime directory..."
