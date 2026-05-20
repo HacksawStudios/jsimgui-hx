@@ -21,9 +21,10 @@ if (!packageName || !packageVersion || !haxeModuleName) {
 	process.exit(0);
 }
 
-const parentNodeModules = path.resolve(packageRoot, '..', '..');
+const packagePathParts = packageName.split('/');
+const parentNodeModules = path.resolve(packageRoot, ...packagePathParts.map(() => '..'));
 const consumerRoot = path.dirname(parentNodeModules);
-const installedModulePath = path.join(parentNodeModules, packageName);
+const installedModulePath = path.join(parentNodeModules, ...packagePathParts);
 
 if (!fs.existsSync(installedModulePath)) {
 	console.log('[jsimgui-hx] No parent module root found; skipping haxelib install.');
