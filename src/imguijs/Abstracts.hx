@@ -91,7 +91,7 @@ abstract ImVec4(ImVec4Backing) from ImVec4Backing to ImVec4Backing {
 		final g:Int = (hex & 0xFF00) >> 8;
 		final b:Int = (hex & 0xFF);
 
-		return new ImVec4(r / 255, g / 255, b / 255, (a <= 0) ? 1.0 : (a / 255));
+		return new ImVec4(r / 255, g / 255, b / 255, a / 255);
 	}
 }
 
