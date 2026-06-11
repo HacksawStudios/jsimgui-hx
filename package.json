@@ -10,13 +10,13 @@
     "jsimgui",
     "haxelib"
   ],
-  "homepage": "https://github.com/miguelblix99/jsimgui-hx#readme",
+  "homepage": "https://github.com/HacksawStudios/jsimgui-hx#readme",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/miguelblix99/jsimgui-hx.git"
+    "url": "git+ssh://git@github.com/HacksawStudios/jsimgui-hx.git"
   },
   "bugs": {
-    "url": "https://github.com/miguelblix99/jsimgui-hx/issues"
+    "url": "https://github.com/HacksawStudios/jsimgui-hx/issues"
   },
   "main": "index.js",
   "files": [

@@ -44,11 +44,10 @@ Inspect the package contents before publishing:
 bun run pack:dry
 ```
 
-Publish a new version:
+Publish a new version (npm publishing is handled automagically through github action under workflow npm-publish.yml):
 
 ```bash
-npm login
-npm publish
+npm version patch && git push --follow-tags
 ```
 
 ## Haxelib Release
