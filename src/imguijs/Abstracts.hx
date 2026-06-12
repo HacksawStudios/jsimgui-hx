@@ -86,7 +86,7 @@ abstract ImVec4(ImVec4Backing) from ImVec4Backing to ImVec4Backing {
 
 	@:from
 	public static function fromHex(hex:Int):ImVec4 {
-		final a:Int = (hex & 0xFF000000) >> 24;
+		final a:Int = ((hex & 0x7F000000) >> 24) + (hex & 0x80000000 != 0 ? 0x80 : 0);
 		final r:Int = (hex & 0xFF0000) >> 16;
 		final g:Int = (hex & 0xFF00) >> 8;
 		final b:Int = (hex & 0xFF);
