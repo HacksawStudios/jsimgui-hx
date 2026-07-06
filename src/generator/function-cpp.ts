@@ -60,6 +60,9 @@ function getArguments(function_: FunctionBinding): string {
             }
 
             if (arg.type === "const char*") {
+                if (arg.defaultValue === "NULL") {
+                    return `(${arg.name}.empty() ? nullptr : ${arg.name}.c_str())`;
+                }
                 return `${arg.name}.c_str()`;
             }
 
