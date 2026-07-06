@@ -1614,6 +1614,30 @@ export declare class ImDrawCmd extends ReferenceStruct {
     GetTexID(): ImTextureID;
 }
 /**
+ * \/\/ Split\/Merge functions are used to split the draw list into different layers which can be drawn into out of order.
+ * \/\/ This is used by the Columns\/Tables API, so items of each column can be batched together in a same draw call.
+ */
+export declare class ImDrawListSplitter extends ReferenceStruct {
+    /**
+     * \/\/ Current channel number (0)
+     */
+    get _Current(): number;
+    set _Current(v: number);
+    /**
+     * \/\/ Number of active channels (1+)
+     */
+    get _Count(): number;
+    set _Count(v: number);
+    /**
+     * \/\/ Do not clear Channels[] so our allocations are reused next frame
+     */
+    Clear(): void;
+    ClearFreeMemory(): void;
+    Split(draw_list: ImDrawList, count: number): void;
+    Merge(draw_list: ImDrawList): void;
+    SetCurrentChannel(draw_list: ImDrawList, channel_idx: number): void;
+}
+/**
  * \/\/ Draw command list
  * \/\/ This is the low-level list of polygons that ImGui:: functions are filling. At the end of the frame,
  * \/\/ all command lists are passed to your ImGuiIO::RenderDrawListFn function for rendering.

@@ -81,6 +81,19 @@ const reservedNames = new Set([
 	'while',
 ])
 
+const referenceStructConstructableNames = new Set([
+	'ImColor',
+	'ImDrawListSplitter',
+	'ImFontConfig',
+	'ImGuiListClipper',
+	'ImGuiWindowClass',
+])
+
+const skipStructNames = [
+	'ImVec2',
+	'ImVec4',
+]
+
 const domTypeMap = new Map([
 	['HTMLCanvasElement', 'js.html.CanvasElement'],
 	['HTMLImageElement', 'js.html.ImageElement'],
@@ -527,8 +540,24 @@ function renderClass(name, declaration, context) {
 	const lines = []
 	const appendBacking = name == 'ImVec2' || name == 'ImVec4'
 	const possiblyBackingName = appendBacking ? `${name}Backing` : name
+	if (skipStructNames.find(n => n == name) != null) {
+		return '';
+	}
+
 
 	lines.push(`@:keep @:native(${maybeQuoteMetadata(`${runtimeRoot}.${name}`)}) extern class ${possiblyBackingName}${renderHeritage(declaration, context)} {`)
+
+	const heritageClause = declaration.heritageClauses?.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword)
+	const baseTypeName = heritageClause?.types[0] != null && ts.isExpressionWithTypeArguments(heritageClause.types[0])
+		? getNodeText(heritageClause.types[0].expression)
+		: null
+	if (baseTypeName === 'ReferenceStruct') {
+		lines.push(`${createIndent(1)}static function New():${name};`)
+		lines.push(`${createIndent(1)}static function From(ptr:Dynamic):${name};`)
+		if (referenceStructConstructableNames.has(name)) {
+			lines.push(`${createIndent(1)}function new();`)
+		}
+	}
 
 	const fields = collectClassFields(declaration, {
 		...context,

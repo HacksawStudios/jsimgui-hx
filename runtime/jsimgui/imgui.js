@@ -2412,6 +2412,48 @@ export class ImDrawCmd extends ReferenceStruct {
     }
 }
 /**
+ * \/\/ Split\/Merge functions are used to split the draw list into different layers which can be drawn into out of order.
+ * \/\/ This is used by the Columns\/Tables API, so items of each column can be batched together in a same draw call.
+ */
+export class ImDrawListSplitter extends ReferenceStruct {
+    /**
+     * \/\/ Current channel number (0)
+     */
+    get _Current() {
+        return this.ptr.get__Current();
+    }
+    set _Current(v) {
+        this.ptr.set__Current(v);
+    }
+    /**
+     * \/\/ Number of active channels (1+)
+     */
+    get _Count() {
+        return this.ptr.get__Count();
+    }
+    set _Count(v) {
+        this.ptr.set__Count(v);
+    }
+    /**
+     * \/\/ Do not clear Channels[] so our allocations are reused next frame
+     */
+    Clear() {
+        this.ptr.ImDrawListSplitter_Clear();
+    }
+    ClearFreeMemory() {
+        this.ptr.ImDrawListSplitter_ClearFreeMemory();
+    }
+    Split(draw_list, count) {
+        this.ptr.ImDrawListSplitter_Split(draw_list?.ptr ?? null, count);
+    }
+    Merge(draw_list) {
+        this.ptr.ImDrawListSplitter_Merge(draw_list?.ptr ?? null);
+    }
+    SetCurrentChannel(draw_list, channel_idx) {
+        this.ptr.ImDrawListSplitter_SetCurrentChannel(draw_list?.ptr ?? null, channel_idx);
+    }
+}
+/**
  * \/\/ Draw command list
  * \/\/ This is the low-level list of polygons that ImGui:: functions are filling. At the end of the frame,
  * \/\/ all command lists are passed to your ImGuiIO::RenderDrawListFn function for rendering.

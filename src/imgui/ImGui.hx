@@ -11,6 +11,7 @@ typedef ImDrawIdx = imguijs.ImGui.ImDrawIdx;
 typedef ImDrawList = imguijs.ImGui.ImDrawList;
 typedef ImDrawListFlags = imguijs.ImGui.ImDrawListFlags;
 typedef ImDrawListSharedData = imguijs.ImGui.ImDrawListSharedData;
+typedef ImDrawListSplitter = imguijs.ImGui.ImDrawListSplitter;
 typedef ImDrawTextFlags = imguijs.ImGui.ImDrawTextFlags;
 typedef ImFont = imguijs.ImGui.ImFont;
 typedef ImFontAtlas = imguijs.ImGui.ImFontAtlas;

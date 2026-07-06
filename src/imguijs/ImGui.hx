@@ -4465,39 +4465,38 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ReferenceStruct") extern class ReferenceStruct {
 	var ptr:Dynamic;
+	function new();
 	static function New():Dynamic;
 	static function From(ptr:Dynamic):Dynamic;
 	@:native("Drop")
 	function drop():Void;
 }
-@:keep @:native("globalThis.__imguiHxJsImGui.ImVec2") extern class ImVec2Backing extends ValueStruct {
-	var x:Float;
-	var y:Float;
-	function new(x:Float, y:Float);
-	static function From(obj:Dynamic):ImVec2;
-}
-@:keep @:native("globalThis.__imguiHxJsImGui.ImVec4") extern class ImVec4Backing extends ValueStruct {
-	var x:Float;
-	var y:Float;
-	var z:Float;
-	var w:Float;
-	function new(x:Float, y:Float, z:Float, w:Float);
-	static function From(obj:Dynamic):ImVec4;
-}
+
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImTextureRef") extern class ImTextureRef extends ValueStruct {
 	var _TexID:ImTextureID;
 	function new(_TexID:ImTextureID);
 	static function From(obj:Dynamic):ImTextureRef;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImDrawListSharedData") extern class ImDrawListSharedData extends ReferenceStruct {
+	static function New():ImDrawListSharedData;
+	static function From(ptr:Dynamic):ImDrawListSharedData;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFontAtlasBuilder") extern class ImFontAtlasBuilder extends ReferenceStruct {
+	static function New():ImFontAtlasBuilder;
+	static function From(ptr:Dynamic):ImFontAtlasBuilder;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFontLoader") extern class ImFontLoader extends ReferenceStruct {
+	static function New():ImFontLoader;
+	static function From(ptr:Dynamic):ImFontLoader;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiContext") extern class ImGuiContext extends ReferenceStruct {
+	static function New():ImGuiContext;
+	static function From(ptr:Dynamic):ImGuiContext;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiTableSortSpecs") extern class ImGuiTableSortSpecs extends ReferenceStruct {
+	static function New():ImGuiTableSortSpecs;
+	static function From(ptr:Dynamic):ImGuiTableSortSpecs;
 	@:native("Specs")
 	var specs:ImGuiTableColumnSortSpecs;
 	@:native("SpecsCount")
@@ -4506,6 +4505,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var specsDirty:Bool;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiTableColumnSortSpecs") extern class ImGuiTableColumnSortSpecs extends ReferenceStruct {
+	static function New():ImGuiTableColumnSortSpecs;
+	static function From(ptr:Dynamic):ImGuiTableColumnSortSpecs;
 	@:native("ColumnUserID")
 	var columnUserID:ImGuiID;
 	@:native("ColumnIndex")
@@ -4516,6 +4517,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var sortDirection:ImGuiSortDirection;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiStyle") extern class ImGuiStyle extends ReferenceStruct {
+	static function New():ImGuiStyle;
+	static function From(ptr:Dynamic):ImGuiStyle;
 	@:native("FontSizeBase")
 	var fontSizeBase:Float;
 	@:native("FontScaleMain")
@@ -4666,6 +4669,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function scaleAllSizes(scale_factor:Float):Void;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiIO") extern class ImGuiIO extends ReferenceStruct {
+	static function New():ImGuiIO;
+	static function From(ptr:Dynamic):ImGuiIO;
 	@:native("ConfigFlags")
 	var configFlags:ImGuiConfigFlags;
 	@:native("BackendFlags")
@@ -4890,6 +4895,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function clearInputMouse():Void;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiInputTextCallbackData") extern class ImGuiInputTextCallbackData extends ReferenceStruct {
+	static function New():ImGuiInputTextCallbackData;
+	static function From(ptr:Dynamic):ImGuiInputTextCallbackData;
 	@:native("Ctx")
 	var ctx:ImGuiContext;
 	@:native("EventFlag")
@@ -4934,6 +4941,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function hasSelection():Bool;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiSizeCallbackData") extern class ImGuiSizeCallbackData extends ReferenceStruct {
+	static function New():ImGuiSizeCallbackData;
+	static function From(ptr:Dynamic):ImGuiSizeCallbackData;
 	@:native("UserData")
 	var userData:Dynamic;
 	@:native("Pos")
@@ -4944,6 +4953,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var desiredSize:ImVec2;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiWindowClass") extern class ImGuiWindowClass extends ReferenceStruct {
+	static function New():ImGuiWindowClass;
+	static function From(ptr:Dynamic):ImGuiWindowClass;
+	function new();
 	@:native("ClassId")
 	var classId:ImGuiID;
 	@:native("ParentViewportId")
@@ -4964,6 +4976,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var dockingAllowUnclassed:Bool;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiPayload") extern class ImGuiPayload extends ReferenceStruct {
+	static function New():ImGuiPayload;
+	static function From(ptr:Dynamic):ImGuiPayload;
 	@:native("Data")
 	var data:String;
 	@:native("DataSize")
@@ -4978,6 +4992,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function isDelivery():Bool;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiListClipper") extern class ImGuiListClipper extends ReferenceStruct {
+	static function New():ImGuiListClipper;
+	static function From(ptr:Dynamic):ImGuiListClipper;
+	function new();
 	@:native("DisplayStart")
 	var displayStart:Float;
 	@:native("DisplayEnd")
@@ -5012,6 +5029,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function seekCursorForItem(item_index:Float):Void;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImColor") extern class ImColor extends ReferenceStruct {
+	static function New():ImColor;
+	static function From(ptr:Dynamic):ImColor;
+	function new();
 	@:native("Value")
 	var value:ImVec4;
 	@:native("SetHSV")
@@ -5020,8 +5040,12 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function hsv(h:Float, s:Float, v:Float, ?a:Float):ImColor;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiMultiSelectIO") extern class ImGuiMultiSelectIO extends ReferenceStruct {
+	static function New():ImGuiMultiSelectIO;
+	static function From(ptr:Dynamic):ImGuiMultiSelectIO;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImDrawCmd") extern class ImDrawCmd extends ReferenceStruct {
+	static function New():ImDrawCmd;
+	static function From(ptr:Dynamic):ImDrawCmd;
 	@:native("ClipRect")
 	var clipRect:ImVec4;
 	@:native("TexRef")
@@ -5043,7 +5067,26 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetTexID")
 	function getTexID():ImTextureID;
 }
+@:keep @:native("globalThis.__imguiHxJsImGui.ImDrawListSplitter") extern class ImDrawListSplitter extends ReferenceStruct {
+	static function New():ImDrawListSplitter;
+	static function From(ptr:Dynamic):ImDrawListSplitter;
+	function new();
+	var _Current:Float;
+	var _Count:Float;
+	@:native("Clear")
+	function clear():Void;
+	@:native("ClearFreeMemory")
+	function clearFreeMemory():Void;
+	@:native("Split")
+	function split(draw_list:ImDrawList, count:Float):Void;
+	@:native("Merge")
+	function merge(draw_list:ImDrawList):Void;
+	@:native("SetCurrentChannel")
+	function setCurrentChannel(draw_list:ImDrawList, channel_idx:Float):Void;
+}
 @:keep @:native("globalThis.__imguiHxJsImGui.ImDrawList") extern class ImDrawList extends ReferenceStruct {
+	static function New():ImDrawList;
+	static function From(ptr:Dynamic):ImDrawList;
 	@:native("Flags")
 	var flags:ImDrawListFlags;
 	@:native("PushClipRect")
@@ -5174,8 +5217,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function _PathArcToN(center:ImVec2, radius:Float, a_min:Float, a_max:Float, num_segments:Float):Void;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImDrawData") extern class ImDrawData extends ReferenceStruct {
+	static function New():ImDrawData;
+	static function From(ptr:Dynamic):ImDrawData;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFontConfig") extern class ImFontConfig extends ReferenceStruct {
+	static function New():ImFontConfig;
+	static function From(ptr:Dynamic):ImFontConfig;
+	function new();
 	@:native("FontData")
 	var fontData:Dynamic;
 	@:native("FontDataSize")
@@ -5218,6 +5266,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var extraSizeScale:Float;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFontAtlasRect") extern class ImFontAtlasRect extends ReferenceStruct {
+	static function New():ImFontAtlasRect;
+	static function From(ptr:Dynamic):ImFontAtlasRect;
 	var x:Float;
 	var y:Float;
 	var w:Float;
@@ -5226,6 +5276,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var uv1:ImVec2;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFontAtlas") extern class ImFontAtlas extends ReferenceStruct {
+	static function New():ImFontAtlas;
+	static function From(ptr:Dynamic):ImFontAtlas;
 	@:native("Flags")
 	var flags:ImFontAtlasFlags;
 	@:native("TexGlyphPadding")
@@ -5276,10 +5328,16 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function getCustomRect(id:ImFontAtlasRectId, out_r:ImFontAtlasRect):Bool;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFontBaked") extern class ImFontBaked extends ReferenceStruct {
+	static function New():ImFontBaked;
+	static function From(ptr:Dynamic):ImFontBaked;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImFont") extern class ImFont extends ReferenceStruct {
+	static function New():ImFont;
+	static function From(ptr:Dynamic):ImFont;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiViewport") extern class ImGuiViewport extends ReferenceStruct {
+	static function New():ImGuiViewport;
+	static function From(ptr:Dynamic):ImGuiViewport;
 	@:native("ID")
 	var id:ImGuiID;
 	@:native("Flags")
@@ -5326,6 +5384,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function getDebugName():String;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiPlatformIO") extern class ImGuiPlatformIO extends ReferenceStruct {
+	static function New():ImGuiPlatformIO;
+	static function From(ptr:Dynamic):ImGuiPlatformIO;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGui") extern class ImGui {
 	@:native("CreateContext")
