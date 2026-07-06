@@ -42,16 +42,17 @@ export class ReferenceStruct {
     // biome-ignore lint/suspicious/noExplicitAny: _
     ptr: any = null;
 
+    constructor() {
+        this.ptr = new Mod.export[this.constructor.name]();
+    }
+
     /**
      * Construct a new JavaScript class instance and allocate native memory.
      */
     // biome-ignore lint/suspicious/noExplicitAny: _
     static New(): any {
         // biome-ignore lint/complexity/noThisInStatic: ...
-        const obj = new this();
-        // biome-ignore lint/complexity/noThisInStatic: ...
-        obj.ptr = new Mod.export[this.name]();
-        return obj;
+        return new this();
     }
 
     /**
@@ -60,7 +61,7 @@ export class ReferenceStruct {
     // biome-ignore lint/suspicious/noExplicitAny: _
     static From(ptr: any): any {
         // biome-ignore lint/complexity/noThisInStatic: ...
-        const obj = new this();
+        const obj = Object.create(this.prototype);
         obj.ptr = ptr;
         return obj;
     }
