@@ -1,7 +1,6 @@
 package imguijs;
 
 #if js
-import js.Syntax;
 import imguijs.Abstracts;
 
 /**
@@ -16,1577 +15,372 @@ typedef ImPlotInputMap = Float;
 typedef ImPlotStyle = Float;
 
 abstract ImAxis(Int) from Int to Int {
-	public static var X1(get, never):ImAxis;
-
-	static inline function get_X1():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.X1");
-	}
-
-	public static var X2(get, never):ImAxis;
-
-	static inline function get_X2():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.X2");
-	}
-
-	public static var X3(get, never):ImAxis;
-
-	static inline function get_X3():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.X3");
-	}
-
-	public static var Y1(get, never):ImAxis;
-
-	static inline function get_Y1():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.Y1");
-	}
-
-	public static var Y2(get, never):ImAxis;
-
-	static inline function get_Y2():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.Y2");
-	}
-
-	public static var Y3(get, never):ImAxis;
-
-	static inline function get_Y3():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.Y3");
-	}
-
-	public static var COUNT(get, never):ImAxis;
-
-	static inline function get_COUNT():ImAxis {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Axis.COUNT");
-	}
+	public static inline final X1:ImAxis = 0;
+	public static inline final X2:ImAxis = 1;
+	public static inline final X3:ImAxis = 2;
+	public static inline final Y1:ImAxis = 3;
+	public static inline final Y2:ImAxis = 4;
+	public static inline final Y3:ImAxis = 5;
+	public static inline final COUNT:ImAxis = 6;
 }
 
 abstract ImPlotAxisFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotAxisFlags;
-
-	static inline function get_None():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.None");
-	}
-
-	public static var NoLabel(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoLabel():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoLabel");
-	}
-
-	public static var NoGridLines(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoGridLines():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoGridLines");
-	}
-
-	public static var NoTickMarks(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoTickMarks():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoTickMarks");
-	}
-
-	public static var NoTickLabels(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoTickLabels():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoTickLabels");
-	}
-
-	public static var NoInitialFit(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoInitialFit():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoInitialFit");
-	}
-
-	public static var NoMenus(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoMenus():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoMenus");
-	}
-
-	public static var NoSideSwitch(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoSideSwitch():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoSideSwitch");
-	}
-
-	public static var NoHighlight(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoHighlight():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoHighlight");
-	}
-
-	public static var Opposite(get, never):ImPlotAxisFlags;
-
-	static inline function get_Opposite():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.Opposite");
-	}
-
-	public static var Foreground(get, never):ImPlotAxisFlags;
-
-	static inline function get_Foreground():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.Foreground");
-	}
-
-	public static var Invert(get, never):ImPlotAxisFlags;
-
-	static inline function get_Invert():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.Invert");
-	}
-
-	public static var AutoFit(get, never):ImPlotAxisFlags;
-
-	static inline function get_AutoFit():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.AutoFit");
-	}
-
-	public static var RangeFit(get, never):ImPlotAxisFlags;
-
-	static inline function get_RangeFit():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.RangeFit");
-	}
-
-	public static var PanStretch(get, never):ImPlotAxisFlags;
-
-	static inline function get_PanStretch():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.PanStretch");
-	}
-
-	public static var LockMin(get, never):ImPlotAxisFlags;
-
-	static inline function get_LockMin():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.LockMin");
-	}
-
-	public static var LockMax(get, never):ImPlotAxisFlags;
-
-	static inline function get_LockMax():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.LockMax");
-	}
-
-	public static var Lock(get, never):ImPlotAxisFlags;
-
-	static inline function get_Lock():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.Lock");
-	}
-
-	public static var NoDecorations(get, never):ImPlotAxisFlags;
-
-	static inline function get_NoDecorations():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.NoDecorations");
-	}
-
-	public static var AuxDefault(get, never):ImPlotAxisFlags;
-
-	static inline function get_AuxDefault():ImPlotAxisFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.AxisFlags.AuxDefault");
-	}
+	public static inline final None:ImPlotAxisFlags = 0;
+	public static inline final NoLabel:ImPlotAxisFlags = 1;
+	public static inline final NoGridLines:ImPlotAxisFlags = 2;
+	public static inline final NoTickMarks:ImPlotAxisFlags = 4;
+	public static inline final NoTickLabels:ImPlotAxisFlags = 8;
+	public static inline final NoInitialFit:ImPlotAxisFlags = 16;
+	public static inline final NoMenus:ImPlotAxisFlags = 32;
+	public static inline final NoSideSwitch:ImPlotAxisFlags = 64;
+	public static inline final NoHighlight:ImPlotAxisFlags = 128;
+	public static inline final Opposite:ImPlotAxisFlags = 256;
+	public static inline final Foreground:ImPlotAxisFlags = 512;
+	public static inline final Invert:ImPlotAxisFlags = 1024;
+	public static inline final AutoFit:ImPlotAxisFlags = 2048;
+	public static inline final RangeFit:ImPlotAxisFlags = 4096;
+	public static inline final PanStretch:ImPlotAxisFlags = 8192;
+	public static inline final LockMin:ImPlotAxisFlags = 16384;
+	public static inline final LockMax:ImPlotAxisFlags = 32768;
+	public static inline final Lock:ImPlotAxisFlags = 49152;
+	public static inline final NoDecorations:ImPlotAxisFlags = 15;
+	public static inline final AuxDefault:ImPlotAxisFlags = 258;
 }
 
 abstract ImPlotBarGroupsFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotBarGroupsFlags;
-
-	static inline function get_None():ImPlotBarGroupsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.BarGroupsFlags.None");
-	}
-
-	public static var Horizontal(get, never):ImPlotBarGroupsFlags;
-
-	static inline function get_Horizontal():ImPlotBarGroupsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.BarGroupsFlags.Horizontal");
-	}
-
-	public static var Stacked(get, never):ImPlotBarGroupsFlags;
-
-	static inline function get_Stacked():ImPlotBarGroupsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.BarGroupsFlags.Stacked");
-	}
+	public static inline final None:ImPlotBarGroupsFlags = 0;
+	public static inline final Horizontal:ImPlotBarGroupsFlags = 1024;
+	public static inline final Stacked:ImPlotBarGroupsFlags = 2048;
 }
 
 abstract ImPlotBarsFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotBarsFlags;
-
-	static inline function get_None():ImPlotBarsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.BarsFlags.None");
-	}
-
-	public static var Horizontal(get, never):ImPlotBarsFlags;
-
-	static inline function get_Horizontal():ImPlotBarsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.BarsFlags.Horizontal");
-	}
+	public static inline final None:ImPlotBarsFlags = 0;
+	public static inline final Horizontal:ImPlotBarsFlags = 1024;
 }
 
 abstract ImPlotBin(Int) from Int to Int {
-	public static var Sqrt(get, never):ImPlotBin;
-
-	static inline function get_Sqrt():ImPlotBin {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Bin.Sqrt");
-	}
-
-	public static var Sturges(get, never):ImPlotBin;
-
-	static inline function get_Sturges():ImPlotBin {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Bin.Sturges");
-	}
-
-	public static var Rice(get, never):ImPlotBin;
-
-	static inline function get_Rice():ImPlotBin {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Bin.Rice");
-	}
-
-	public static var Scott(get, never):ImPlotBin;
-
-	static inline function get_Scott():ImPlotBin {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Bin.Scott");
-	}
+	public static inline final Sqrt:ImPlotBin = -1;
+	public static inline final Sturges:ImPlotBin = -2;
+	public static inline final Rice:ImPlotBin = -3;
+	public static inline final Scott:ImPlotBin = -4;
 }
 
 abstract ImPlotBubblesFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotBubblesFlags;
-
-	static inline function get_None():ImPlotBubblesFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.BubblesFlags.None");
-	}
+	public static inline final None:ImPlotBubblesFlags = 0;
 }
 
 abstract ImPlotCol(Int) from Int to Int {
-	public static var FrameBg(get, never):ImPlotCol;
-
-	static inline function get_FrameBg():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.FrameBg");
-	}
-
-	public static var PlotBg(get, never):ImPlotCol;
-
-	static inline function get_PlotBg():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.PlotBg");
-	}
-
-	public static var PlotBorder(get, never):ImPlotCol;
-
-	static inline function get_PlotBorder():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.PlotBorder");
-	}
-
-	public static var LegendBg(get, never):ImPlotCol;
-
-	static inline function get_LegendBg():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.LegendBg");
-	}
-
-	public static var LegendBorder(get, never):ImPlotCol;
-
-	static inline function get_LegendBorder():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.LegendBorder");
-	}
-
-	public static var LegendText(get, never):ImPlotCol;
-
-	static inline function get_LegendText():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.LegendText");
-	}
-
-	public static var TitleText(get, never):ImPlotCol;
-
-	static inline function get_TitleText():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.TitleText");
-	}
-
-	public static var InlayText(get, never):ImPlotCol;
-
-	static inline function get_InlayText():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.InlayText");
-	}
-
-	public static var AxisText(get, never):ImPlotCol;
-
-	static inline function get_AxisText():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.AxisText");
-	}
-
-	public static var AxisGrid(get, never):ImPlotCol;
-
-	static inline function get_AxisGrid():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.AxisGrid");
-	}
-
-	public static var AxisTick(get, never):ImPlotCol;
-
-	static inline function get_AxisTick():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.AxisTick");
-	}
-
-	public static var AxisBg(get, never):ImPlotCol;
-
-	static inline function get_AxisBg():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.AxisBg");
-	}
-
-	public static var AxisBgHovered(get, never):ImPlotCol;
-
-	static inline function get_AxisBgHovered():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.AxisBgHovered");
-	}
-
-	public static var AxisBgActive(get, never):ImPlotCol;
-
-	static inline function get_AxisBgActive():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.AxisBgActive");
-	}
-
-	public static var Selection(get, never):ImPlotCol;
-
-	static inline function get_Selection():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.Selection");
-	}
-
-	public static var Crosshairs(get, never):ImPlotCol;
-
-	static inline function get_Crosshairs():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.Crosshairs");
-	}
-
-	public static var COUNT(get, never):ImPlotCol;
-
-	static inline function get_COUNT():ImPlotCol {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Col.COUNT");
-	}
+	public static inline final FrameBg:ImPlotCol = 0;
+	public static inline final PlotBg:ImPlotCol = 1;
+	public static inline final PlotBorder:ImPlotCol = 2;
+	public static inline final LegendBg:ImPlotCol = 3;
+	public static inline final LegendBorder:ImPlotCol = 4;
+	public static inline final LegendText:ImPlotCol = 5;
+	public static inline final TitleText:ImPlotCol = 6;
+	public static inline final InlayText:ImPlotCol = 7;
+	public static inline final AxisText:ImPlotCol = 8;
+	public static inline final AxisGrid:ImPlotCol = 9;
+	public static inline final AxisTick:ImPlotCol = 10;
+	public static inline final AxisBg:ImPlotCol = 11;
+	public static inline final AxisBgHovered:ImPlotCol = 12;
+	public static inline final AxisBgActive:ImPlotCol = 13;
+	public static inline final Selection:ImPlotCol = 14;
+	public static inline final Crosshairs:ImPlotCol = 15;
+	public static inline final COUNT:ImPlotCol = 16;
 }
 
 abstract ImPlotColormapScaleFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotColormapScaleFlags;
-
-	static inline function get_None():ImPlotColormapScaleFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ColormapScaleFlags.None");
-	}
-
-	public static var NoLabel(get, never):ImPlotColormapScaleFlags;
-
-	static inline function get_NoLabel():ImPlotColormapScaleFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ColormapScaleFlags.NoLabel");
-	}
-
-	public static var Opposite(get, never):ImPlotColormapScaleFlags;
-
-	static inline function get_Opposite():ImPlotColormapScaleFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ColormapScaleFlags.Opposite");
-	}
-
-	public static var Invert(get, never):ImPlotColormapScaleFlags;
-
-	static inline function get_Invert():ImPlotColormapScaleFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ColormapScaleFlags.Invert");
-	}
+	public static inline final None:ImPlotColormapScaleFlags = 0;
+	public static inline final NoLabel:ImPlotColormapScaleFlags = 1;
+	public static inline final Opposite:ImPlotColormapScaleFlags = 2;
+	public static inline final Invert:ImPlotColormapScaleFlags = 4;
 }
 
 abstract ImPlotColormap(Int) from Int to Int {
-	public static var Deep(get, never):ImPlotColormap;
-
-	static inline function get_Deep():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Deep");
-	}
-
-	public static var Dark(get, never):ImPlotColormap;
-
-	static inline function get_Dark():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Dark");
-	}
-
-	public static var Pastel(get, never):ImPlotColormap;
-
-	static inline function get_Pastel():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Pastel");
-	}
-
-	public static var Paired(get, never):ImPlotColormap;
-
-	static inline function get_Paired():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Paired");
-	}
-
-	public static var Viridis(get, never):ImPlotColormap;
-
-	static inline function get_Viridis():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Viridis");
-	}
-
-	public static var Plasma(get, never):ImPlotColormap;
-
-	static inline function get_Plasma():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Plasma");
-	}
-
-	public static var Hot(get, never):ImPlotColormap;
-
-	static inline function get_Hot():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Hot");
-	}
-
-	public static var Cool(get, never):ImPlotColormap;
-
-	static inline function get_Cool():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Cool");
-	}
-
-	public static var Pink(get, never):ImPlotColormap;
-
-	static inline function get_Pink():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Pink");
-	}
-
-	public static var Jet(get, never):ImPlotColormap;
-
-	static inline function get_Jet():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Jet");
-	}
-
-	public static var Twilight(get, never):ImPlotColormap;
-
-	static inline function get_Twilight():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Twilight");
-	}
-
-	public static var RdBu(get, never):ImPlotColormap;
-
-	static inline function get_RdBu():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.RdBu");
-	}
-
-	public static var BrBG(get, never):ImPlotColormap;
-
-	static inline function get_BrBG():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.BrBG");
-	}
-
-	public static var PiYG(get, never):ImPlotColormap;
-
-	static inline function get_PiYG():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.PiYG");
-	}
-
-	public static var Spectral(get, never):ImPlotColormap;
-
-	static inline function get_Spectral():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Spectral");
-	}
-
-	public static var Greys(get, never):ImPlotColormap;
-
-	static inline function get_Greys():ImPlotColormap {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Colormap.Greys");
-	}
+	public static inline final Deep:ImPlotColormap = 0;
+	public static inline final Dark:ImPlotColormap = 1;
+	public static inline final Pastel:ImPlotColormap = 2;
+	public static inline final Paired:ImPlotColormap = 3;
+	public static inline final Viridis:ImPlotColormap = 4;
+	public static inline final Plasma:ImPlotColormap = 5;
+	public static inline final Hot:ImPlotColormap = 6;
+	public static inline final Cool:ImPlotColormap = 7;
+	public static inline final Pink:ImPlotColormap = 8;
+	public static inline final Jet:ImPlotColormap = 9;
+	public static inline final Twilight:ImPlotColormap = 10;
+	public static inline final RdBu:ImPlotColormap = 11;
+	public static inline final BrBG:ImPlotColormap = 12;
+	public static inline final PiYG:ImPlotColormap = 13;
+	public static inline final Spectral:ImPlotColormap = 14;
+	public static inline final Greys:ImPlotColormap = 15;
 }
 
 abstract ImPlotCond(Int) from Int to Int {
-	public static var None(get, never):ImPlotCond;
-
-	static inline function get_None():ImPlotCond {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Cond.None");
-	}
-
-	public static var Always(get, never):ImPlotCond;
-
-	static inline function get_Always():ImPlotCond {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Cond.Always");
-	}
-
-	public static var Once(get, never):ImPlotCond;
-
-	static inline function get_Once():ImPlotCond {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Cond.Once");
-	}
+	public static inline final None:ImPlotCond = 0;
+	public static inline final Always:ImPlotCond = 1;
+	public static inline final Once:ImPlotCond = 2;
 }
 
 abstract ImPlotDateFmt(Int) from Int to Int {
-	public static var None(get, never):ImPlotDateFmt;
-
-	static inline function get_None():ImPlotDateFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DateFmt.None");
-	}
-
-	public static var DayMo(get, never):ImPlotDateFmt;
-
-	static inline function get_DayMo():ImPlotDateFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DateFmt.DayMo");
-	}
-
-	public static var DayMoYr(get, never):ImPlotDateFmt;
-
-	static inline function get_DayMoYr():ImPlotDateFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DateFmt.DayMoYr");
-	}
-
-	public static var MoYr(get, never):ImPlotDateFmt;
-
-	static inline function get_MoYr():ImPlotDateFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DateFmt.MoYr");
-	}
-
-	public static var Mo(get, never):ImPlotDateFmt;
-
-	static inline function get_Mo():ImPlotDateFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DateFmt.Mo");
-	}
-
-	public static var Yr(get, never):ImPlotDateFmt;
-
-	static inline function get_Yr():ImPlotDateFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DateFmt.Yr");
-	}
+	public static inline final None:ImPlotDateFmt = 0;
+	public static inline final DayMo:ImPlotDateFmt = 1;
+	public static inline final DayMoYr:ImPlotDateFmt = 2;
+	public static inline final MoYr:ImPlotDateFmt = 3;
+	public static inline final Mo:ImPlotDateFmt = 4;
+	public static inline final Yr:ImPlotDateFmt = 5;
 }
 
 abstract ImPlotDigitalFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotDigitalFlags;
-
-	static inline function get_None():ImPlotDigitalFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DigitalFlags.None");
-	}
+	public static inline final None:ImPlotDigitalFlags = 0;
 }
 
 abstract ImPlotDragToolFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotDragToolFlags;
-
-	static inline function get_None():ImPlotDragToolFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DragToolFlags.None");
-	}
-
-	public static var NoCursors(get, never):ImPlotDragToolFlags;
-
-	static inline function get_NoCursors():ImPlotDragToolFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DragToolFlags.NoCursors");
-	}
-
-	public static var NoFit(get, never):ImPlotDragToolFlags;
-
-	static inline function get_NoFit():ImPlotDragToolFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DragToolFlags.NoFit");
-	}
-
-	public static var NoInputs(get, never):ImPlotDragToolFlags;
-
-	static inline function get_NoInputs():ImPlotDragToolFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DragToolFlags.NoInputs");
-	}
-
-	public static var Delayed(get, never):ImPlotDragToolFlags;
-
-	static inline function get_Delayed():ImPlotDragToolFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DragToolFlags.Delayed");
-	}
+	public static inline final None:ImPlotDragToolFlags = 0;
+	public static inline final NoCursors:ImPlotDragToolFlags = 1;
+	public static inline final NoFit:ImPlotDragToolFlags = 2;
+	public static inline final NoInputs:ImPlotDragToolFlags = 4;
+	public static inline final Delayed:ImPlotDragToolFlags = 8;
 }
 
 abstract ImPlotDummyFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotDummyFlags;
-
-	static inline function get_None():ImPlotDummyFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.DummyFlags.None");
-	}
+	public static inline final None:ImPlotDummyFlags = 0;
 }
 
 abstract ImPlotErrorBarsFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotErrorBarsFlags;
-
-	static inline function get_None():ImPlotErrorBarsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ErrorBarsFlags.None");
-	}
-
-	public static var Horizontal(get, never):ImPlotErrorBarsFlags;
-
-	static inline function get_Horizontal():ImPlotErrorBarsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ErrorBarsFlags.Horizontal");
-	}
+	public static inline final None:ImPlotErrorBarsFlags = 0;
+	public static inline final Horizontal:ImPlotErrorBarsFlags = 1024;
 }
 
 abstract ImPlotFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotFlags;
-
-	static inline function get_None():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.None");
-	}
-
-	public static var NoTitle(get, never):ImPlotFlags;
-
-	static inline function get_NoTitle():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoTitle");
-	}
-
-	public static var NoLegend(get, never):ImPlotFlags;
-
-	static inline function get_NoLegend():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoLegend");
-	}
-
-	public static var NoMouseText(get, never):ImPlotFlags;
-
-	static inline function get_NoMouseText():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoMouseText");
-	}
-
-	public static var NoInputs(get, never):ImPlotFlags;
-
-	static inline function get_NoInputs():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoInputs");
-	}
-
-	public static var NoMenus(get, never):ImPlotFlags;
-
-	static inline function get_NoMenus():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoMenus");
-	}
-
-	public static var NoBoxSelect(get, never):ImPlotFlags;
-
-	static inline function get_NoBoxSelect():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoBoxSelect");
-	}
-
-	public static var NoFrame(get, never):ImPlotFlags;
-
-	static inline function get_NoFrame():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.NoFrame");
-	}
-
-	public static var Equal(get, never):ImPlotFlags;
-
-	static inline function get_Equal():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.Equal");
-	}
-
-	public static var Crosshairs(get, never):ImPlotFlags;
-
-	static inline function get_Crosshairs():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.Crosshairs");
-	}
-
-	public static var CanvasOnly(get, never):ImPlotFlags;
-
-	static inline function get_CanvasOnly():ImPlotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Flags.CanvasOnly");
-	}
+	public static inline final None:ImPlotFlags = 0;
+	public static inline final NoTitle:ImPlotFlags = 1;
+	public static inline final NoLegend:ImPlotFlags = 2;
+	public static inline final NoMouseText:ImPlotFlags = 4;
+	public static inline final NoInputs:ImPlotFlags = 8;
+	public static inline final NoMenus:ImPlotFlags = 16;
+	public static inline final NoBoxSelect:ImPlotFlags = 32;
+	public static inline final NoFrame:ImPlotFlags = 64;
+	public static inline final Equal:ImPlotFlags = 128;
+	public static inline final Crosshairs:ImPlotFlags = 256;
+	public static inline final CanvasOnly:ImPlotFlags = 55;
 }
 
 abstract ImPlotHeatmapFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotHeatmapFlags;
-
-	static inline function get_None():ImPlotHeatmapFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HeatmapFlags.None");
-	}
-
-	public static var ColMajor(get, never):ImPlotHeatmapFlags;
-
-	static inline function get_ColMajor():ImPlotHeatmapFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HeatmapFlags.ColMajor");
-	}
+	public static inline final None:ImPlotHeatmapFlags = 0;
+	public static inline final ColMajor:ImPlotHeatmapFlags = 1024;
 }
 
 abstract ImPlotHistogramFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotHistogramFlags;
-
-	static inline function get_None():ImPlotHistogramFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HistogramFlags.None");
-	}
-
-	public static var Horizontal(get, never):ImPlotHistogramFlags;
-
-	static inline function get_Horizontal():ImPlotHistogramFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HistogramFlags.Horizontal");
-	}
-
-	public static var Cumulative(get, never):ImPlotHistogramFlags;
-
-	static inline function get_Cumulative():ImPlotHistogramFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HistogramFlags.Cumulative");
-	}
-
-	public static var Density(get, never):ImPlotHistogramFlags;
-
-	static inline function get_Density():ImPlotHistogramFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HistogramFlags.Density");
-	}
-
-	public static var NoOutliers(get, never):ImPlotHistogramFlags;
-
-	static inline function get_NoOutliers():ImPlotHistogramFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HistogramFlags.NoOutliers");
-	}
-
-	public static var ColMajor(get, never):ImPlotHistogramFlags;
-
-	static inline function get_ColMajor():ImPlotHistogramFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.HistogramFlags.ColMajor");
-	}
+	public static inline final None:ImPlotHistogramFlags = 0;
+	public static inline final Horizontal:ImPlotHistogramFlags = 1024;
+	public static inline final Cumulative:ImPlotHistogramFlags = 2048;
+	public static inline final Density:ImPlotHistogramFlags = 4096;
+	public static inline final NoOutliers:ImPlotHistogramFlags = 8192;
+	public static inline final ColMajor:ImPlotHistogramFlags = 16384;
 }
 
 abstract ImPlotImageFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotImageFlags;
-
-	static inline function get_None():ImPlotImageFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ImageFlags.None");
-	}
+	public static inline final None:ImPlotImageFlags = 0;
 }
 
 abstract ImPlotInfLinesFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotInfLinesFlags;
-
-	static inline function get_None():ImPlotInfLinesFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.InfLinesFlags.None");
-	}
-
-	public static var Horizontal(get, never):ImPlotInfLinesFlags;
-
-	static inline function get_Horizontal():ImPlotInfLinesFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.InfLinesFlags.Horizontal");
-	}
+	public static inline final None:ImPlotInfLinesFlags = 0;
+	public static inline final Horizontal:ImPlotInfLinesFlags = 1024;
 }
 
 abstract ImPlotItemFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotItemFlags;
-
-	static inline function get_None():ImPlotItemFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ItemFlags.None");
-	}
-
-	public static var NoLegend(get, never):ImPlotItemFlags;
-
-	static inline function get_NoLegend():ImPlotItemFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ItemFlags.NoLegend");
-	}
-
-	public static var NoFit(get, never):ImPlotItemFlags;
-
-	static inline function get_NoFit():ImPlotItemFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ItemFlags.NoFit");
-	}
+	public static inline final None:ImPlotItemFlags = 0;
+	public static inline final NoLegend:ImPlotItemFlags = 1;
+	public static inline final NoFit:ImPlotItemFlags = 2;
 }
 
 abstract ImPlotLegendFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotLegendFlags;
-
-	static inline function get_None():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.None");
-	}
-
-	public static var NoButtons(get, never):ImPlotLegendFlags;
-
-	static inline function get_NoButtons():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.NoButtons");
-	}
-
-	public static var NoHighlightItem(get, never):ImPlotLegendFlags;
-
-	static inline function get_NoHighlightItem():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.NoHighlightItem");
-	}
-
-	public static var NoHighlightAxis(get, never):ImPlotLegendFlags;
-
-	static inline function get_NoHighlightAxis():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.NoHighlightAxis");
-	}
-
-	public static var NoMenus(get, never):ImPlotLegendFlags;
-
-	static inline function get_NoMenus():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.NoMenus");
-	}
-
-	public static var Outside(get, never):ImPlotLegendFlags;
-
-	static inline function get_Outside():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.Outside");
-	}
-
-	public static var Horizontal(get, never):ImPlotLegendFlags;
-
-	static inline function get_Horizontal():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.Horizontal");
-	}
-
-	public static var Sort(get, never):ImPlotLegendFlags;
-
-	static inline function get_Sort():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.Sort");
-	}
-
-	public static var Reverse(get, never):ImPlotLegendFlags;
-
-	static inline function get_Reverse():ImPlotLegendFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LegendFlags.Reverse");
-	}
+	public static inline final None:ImPlotLegendFlags = 0;
+	public static inline final NoButtons:ImPlotLegendFlags = 1;
+	public static inline final NoHighlightItem:ImPlotLegendFlags = 2;
+	public static inline final NoHighlightAxis:ImPlotLegendFlags = 4;
+	public static inline final NoMenus:ImPlotLegendFlags = 8;
+	public static inline final Outside:ImPlotLegendFlags = 16;
+	public static inline final Horizontal:ImPlotLegendFlags = 32;
+	public static inline final Sort:ImPlotLegendFlags = 64;
+	public static inline final Reverse:ImPlotLegendFlags = 128;
 }
 
 abstract ImPlotLineFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotLineFlags;
-
-	static inline function get_None():ImPlotLineFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LineFlags.None");
-	}
-
-	public static var Segments(get, never):ImPlotLineFlags;
-
-	static inline function get_Segments():ImPlotLineFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LineFlags.Segments");
-	}
-
-	public static var Loop(get, never):ImPlotLineFlags;
-
-	static inline function get_Loop():ImPlotLineFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LineFlags.Loop");
-	}
-
-	public static var SkipNaN(get, never):ImPlotLineFlags;
-
-	static inline function get_SkipNaN():ImPlotLineFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LineFlags.SkipNaN");
-	}
-
-	public static var NoClip(get, never):ImPlotLineFlags;
-
-	static inline function get_NoClip():ImPlotLineFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LineFlags.NoClip");
-	}
-
-	public static var Shaded(get, never):ImPlotLineFlags;
-
-	static inline function get_Shaded():ImPlotLineFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.LineFlags.Shaded");
-	}
+	public static inline final None:ImPlotLineFlags = 0;
+	public static inline final Segments:ImPlotLineFlags = 1024;
+	public static inline final Loop:ImPlotLineFlags = 2048;
+	public static inline final SkipNaN:ImPlotLineFlags = 4096;
+	public static inline final NoClip:ImPlotLineFlags = 8192;
+	public static inline final Shaded:ImPlotLineFlags = 16384;
 }
 
 abstract ImPlotLocation(Int) from Int to Int {
-	public static var Center(get, never):ImPlotLocation;
-
-	static inline function get_Center():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.Center");
-	}
-
-	public static var North(get, never):ImPlotLocation;
-
-	static inline function get_North():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.North");
-	}
-
-	public static var South(get, never):ImPlotLocation;
-
-	static inline function get_South():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.South");
-	}
-
-	public static var West(get, never):ImPlotLocation;
-
-	static inline function get_West():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.West");
-	}
-
-	public static var East(get, never):ImPlotLocation;
-
-	static inline function get_East():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.East");
-	}
-
-	public static var NorthWest(get, never):ImPlotLocation;
-
-	static inline function get_NorthWest():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.NorthWest");
-	}
-
-	public static var NorthEast(get, never):ImPlotLocation;
-
-	static inline function get_NorthEast():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.NorthEast");
-	}
-
-	public static var SouthWest(get, never):ImPlotLocation;
-
-	static inline function get_SouthWest():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.SouthWest");
-	}
-
-	public static var SouthEast(get, never):ImPlotLocation;
-
-	static inline function get_SouthEast():ImPlotLocation {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Location.SouthEast");
-	}
+	public static inline final Center:ImPlotLocation = 0;
+	public static inline final North:ImPlotLocation = 1;
+	public static inline final South:ImPlotLocation = 2;
+	public static inline final West:ImPlotLocation = 4;
+	public static inline final East:ImPlotLocation = 8;
+	public static inline final NorthWest:ImPlotLocation = 5;
+	public static inline final NorthEast:ImPlotLocation = 9;
+	public static inline final SouthWest:ImPlotLocation = 6;
+	public static inline final SouthEast:ImPlotLocation = 10;
 }
 
 abstract ImPlotMarkerInternal(Int) from Int to Int {
-	public static var Marker_Invalid(get, never):ImPlotMarkerInternal;
-
-	static inline function get_Marker_Invalid():ImPlotMarkerInternal {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.MarkerInternal.Marker_Invalid");
-	}
+	public static inline final Marker_Invalid:ImPlotMarkerInternal = -3;
 }
 
 abstract ImPlotMarker(Int) from Int to Int {
-	public static var None(get, never):ImPlotMarker;
-
-	static inline function get_None():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.None");
-	}
-
-	public static var Auto(get, never):ImPlotMarker;
-
-	static inline function get_Auto():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Auto");
-	}
-
-	public static var Circle(get, never):ImPlotMarker;
-
-	static inline function get_Circle():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Circle");
-	}
-
-	public static var Square(get, never):ImPlotMarker;
-
-	static inline function get_Square():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Square");
-	}
-
-	public static var Diamond(get, never):ImPlotMarker;
-
-	static inline function get_Diamond():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Diamond");
-	}
-
-	public static var Up(get, never):ImPlotMarker;
-
-	static inline function get_Up():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Up");
-	}
-
-	public static var Down(get, never):ImPlotMarker;
-
-	static inline function get_Down():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Down");
-	}
-
-	public static var Left(get, never):ImPlotMarker;
-
-	static inline function get_Left():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Left");
-	}
-
-	public static var Right(get, never):ImPlotMarker;
-
-	static inline function get_Right():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Right");
-	}
-
-	public static var Cross(get, never):ImPlotMarker;
-
-	static inline function get_Cross():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Cross");
-	}
-
-	public static var Plus(get, never):ImPlotMarker;
-
-	static inline function get_Plus():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Plus");
-	}
-
-	public static var Asterisk(get, never):ImPlotMarker;
-
-	static inline function get_Asterisk():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.Asterisk");
-	}
-
-	public static var COUNT(get, never):ImPlotMarker;
-
-	static inline function get_COUNT():ImPlotMarker {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Marker.COUNT");
-	}
+	public static inline final None:ImPlotMarker = -2;
+	public static inline final Auto:ImPlotMarker = -1;
+	public static inline final Circle:ImPlotMarker = 0;
+	public static inline final Square:ImPlotMarker = 1;
+	public static inline final Diamond:ImPlotMarker = 2;
+	public static inline final Up:ImPlotMarker = 3;
+	public static inline final Down:ImPlotMarker = 4;
+	public static inline final Left:ImPlotMarker = 5;
+	public static inline final Right:ImPlotMarker = 6;
+	public static inline final Cross:ImPlotMarker = 7;
+	public static inline final Plus:ImPlotMarker = 8;
+	public static inline final Asterisk:ImPlotMarker = 9;
+	public static inline final COUNT:ImPlotMarker = 10;
 }
 
 abstract ImPlotMouseTextFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotMouseTextFlags;
-
-	static inline function get_None():ImPlotMouseTextFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.MouseTextFlags.None");
-	}
-
-	public static var NoAuxAxes(get, never):ImPlotMouseTextFlags;
-
-	static inline function get_NoAuxAxes():ImPlotMouseTextFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.MouseTextFlags.NoAuxAxes");
-	}
-
-	public static var NoFormat(get, never):ImPlotMouseTextFlags;
-
-	static inline function get_NoFormat():ImPlotMouseTextFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.MouseTextFlags.NoFormat");
-	}
-
-	public static var ShowAlways(get, never):ImPlotMouseTextFlags;
-
-	static inline function get_ShowAlways():ImPlotMouseTextFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.MouseTextFlags.ShowAlways");
-	}
+	public static inline final None:ImPlotMouseTextFlags = 0;
+	public static inline final NoAuxAxes:ImPlotMouseTextFlags = 1;
+	public static inline final NoFormat:ImPlotMouseTextFlags = 2;
+	public static inline final ShowAlways:ImPlotMouseTextFlags = 4;
 }
 
 abstract ImPlotPieChartFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotPieChartFlags;
-
-	static inline function get_None():ImPlotPieChartFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PieChartFlags.None");
-	}
-
-	public static var Normalize(get, never):ImPlotPieChartFlags;
-
-	static inline function get_Normalize():ImPlotPieChartFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PieChartFlags.Normalize");
-	}
-
-	public static var IgnoreHidden(get, never):ImPlotPieChartFlags;
-
-	static inline function get_IgnoreHidden():ImPlotPieChartFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PieChartFlags.IgnoreHidden");
-	}
-
-	public static var Exploding(get, never):ImPlotPieChartFlags;
-
-	static inline function get_Exploding():ImPlotPieChartFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PieChartFlags.Exploding");
-	}
-
-	public static var NoSliceBorder(get, never):ImPlotPieChartFlags;
-
-	static inline function get_NoSliceBorder():ImPlotPieChartFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PieChartFlags.NoSliceBorder");
-	}
+	public static inline final None:ImPlotPieChartFlags = 0;
+	public static inline final Normalize:ImPlotPieChartFlags = 1024;
+	public static inline final IgnoreHidden:ImPlotPieChartFlags = 2048;
+	public static inline final Exploding:ImPlotPieChartFlags = 4096;
+	public static inline final NoSliceBorder:ImPlotPieChartFlags = 8192;
 }
 
 abstract ImPlotPolygonFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotPolygonFlags;
-
-	static inline function get_None():ImPlotPolygonFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PolygonFlags.None");
-	}
-
-	public static var Concave(get, never):ImPlotPolygonFlags;
-
-	static inline function get_Concave():ImPlotPolygonFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.PolygonFlags.Concave");
-	}
+	public static inline final None:ImPlotPolygonFlags = 0;
+	public static inline final Concave:ImPlotPolygonFlags = 1024;
 }
 
 abstract ImPlotProp(Int) from Int to Int {
-	public static var LineColor(get, never):ImPlotProp;
-
-	static inline function get_LineColor():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.LineColor");
-	}
-
-	public static var LineColors(get, never):ImPlotProp;
-
-	static inline function get_LineColors():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.LineColors");
-	}
-
-	public static var LineWeight(get, never):ImPlotProp;
-
-	static inline function get_LineWeight():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.LineWeight");
-	}
-
-	public static var FillColor(get, never):ImPlotProp;
-
-	static inline function get_FillColor():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.FillColor");
-	}
-
-	public static var FillColors(get, never):ImPlotProp;
-
-	static inline function get_FillColors():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.FillColors");
-	}
-
-	public static var FillAlpha(get, never):ImPlotProp;
-
-	static inline function get_FillAlpha():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.FillAlpha");
-	}
-
-	public static var Marker(get, never):ImPlotProp;
-
-	static inline function get_Marker():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.Marker");
-	}
-
-	public static var MarkerSize(get, never):ImPlotProp;
-
-	static inline function get_MarkerSize():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.MarkerSize");
-	}
-
-	public static var MarkerSizes(get, never):ImPlotProp;
-
-	static inline function get_MarkerSizes():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.MarkerSizes");
-	}
-
-	public static var MarkerLineColor(get, never):ImPlotProp;
-
-	static inline function get_MarkerLineColor():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.MarkerLineColor");
-	}
-
-	public static var MarkerLineColors(get, never):ImPlotProp;
-
-	static inline function get_MarkerLineColors():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.MarkerLineColors");
-	}
-
-	public static var MarkerFillColor(get, never):ImPlotProp;
-
-	static inline function get_MarkerFillColor():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.MarkerFillColor");
-	}
-
-	public static var MarkerFillColors(get, never):ImPlotProp;
-
-	static inline function get_MarkerFillColors():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.MarkerFillColors");
-	}
-
-	public static var Size(get, never):ImPlotProp;
-
-	static inline function get_Size():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.Size");
-	}
-
-	public static var Offset(get, never):ImPlotProp;
-
-	static inline function get_Offset():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.Offset");
-	}
-
-	public static var Stride(get, never):ImPlotProp;
-
-	static inline function get_Stride():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.Stride");
-	}
-
-	public static var Flags(get, never):ImPlotProp;
-
-	static inline function get_Flags():ImPlotProp {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Prop.Flags");
-	}
+	public static inline final LineColor:ImPlotProp = 0;
+	public static inline final LineColors:ImPlotProp = 1;
+	public static inline final LineWeight:ImPlotProp = 2;
+	public static inline final FillColor:ImPlotProp = 3;
+	public static inline final FillColors:ImPlotProp = 4;
+	public static inline final FillAlpha:ImPlotProp = 5;
+	public static inline final Marker:ImPlotProp = 6;
+	public static inline final MarkerSize:ImPlotProp = 7;
+	public static inline final MarkerSizes:ImPlotProp = 8;
+	public static inline final MarkerLineColor:ImPlotProp = 9;
+	public static inline final MarkerLineColors:ImPlotProp = 10;
+	public static inline final MarkerFillColor:ImPlotProp = 11;
+	public static inline final MarkerFillColors:ImPlotProp = 12;
+	public static inline final Size:ImPlotProp = 13;
+	public static inline final Offset:ImPlotProp = 14;
+	public static inline final Stride:ImPlotProp = 15;
+	public static inline final Flags:ImPlotProp = 16;
 }
 
 abstract ImPlotScale(Int) from Int to Int {
-	public static var Linear(get, never):ImPlotScale;
-
-	static inline function get_Linear():ImPlotScale {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Scale.Linear");
-	}
-
-	public static var Time(get, never):ImPlotScale;
-
-	static inline function get_Time():ImPlotScale {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Scale.Time");
-	}
-
-	public static var Log10(get, never):ImPlotScale;
-
-	static inline function get_Log10():ImPlotScale {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Scale.Log10");
-	}
-
-	public static var SymLog(get, never):ImPlotScale;
-
-	static inline function get_SymLog():ImPlotScale {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.Scale.SymLog");
-	}
+	public static inline final Linear:ImPlotScale = 0;
+	public static inline final Time:ImPlotScale = 1;
+	public static inline final Log10:ImPlotScale = 2;
+	public static inline final SymLog:ImPlotScale = 3;
 }
 
 abstract ImPlotScatterFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotScatterFlags;
-
-	static inline function get_None():ImPlotScatterFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ScatterFlags.None");
-	}
-
-	public static var NoClip(get, never):ImPlotScatterFlags;
-
-	static inline function get_NoClip():ImPlotScatterFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ScatterFlags.NoClip");
-	}
+	public static inline final None:ImPlotScatterFlags = 0;
+	public static inline final NoClip:ImPlotScatterFlags = 1024;
 }
 
 abstract ImPlotShadedFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotShadedFlags;
-
-	static inline function get_None():ImPlotShadedFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.ShadedFlags.None");
-	}
+	public static inline final None:ImPlotShadedFlags = 0;
 }
 
 abstract ImPlotStairsFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotStairsFlags;
-
-	static inline function get_None():ImPlotStairsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StairsFlags.None");
-	}
-
-	public static var PreStep(get, never):ImPlotStairsFlags;
-
-	static inline function get_PreStep():ImPlotStairsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StairsFlags.PreStep");
-	}
-
-	public static var Shaded(get, never):ImPlotStairsFlags;
-
-	static inline function get_Shaded():ImPlotStairsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StairsFlags.Shaded");
-	}
+	public static inline final None:ImPlotStairsFlags = 0;
+	public static inline final PreStep:ImPlotStairsFlags = 1024;
+	public static inline final Shaded:ImPlotStairsFlags = 2048;
 }
 
 abstract ImPlotStemsFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotStemsFlags;
-
-	static inline function get_None():ImPlotStemsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StemsFlags.None");
-	}
-
-	public static var Horizontal(get, never):ImPlotStemsFlags;
-
-	static inline function get_Horizontal():ImPlotStemsFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StemsFlags.Horizontal");
-	}
+	public static inline final None:ImPlotStemsFlags = 0;
+	public static inline final Horizontal:ImPlotStemsFlags = 1024;
 }
 
 abstract ImPlotStyleVar(Int) from Int to Int {
-	public static var PlotDefaultSize(get, never):ImPlotStyleVar;
-
-	static inline function get_PlotDefaultSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.PlotDefaultSize");
-	}
-
-	public static var PlotMinSize(get, never):ImPlotStyleVar;
-
-	static inline function get_PlotMinSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.PlotMinSize");
-	}
-
-	public static var PlotBorderSize(get, never):ImPlotStyleVar;
-
-	static inline function get_PlotBorderSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.PlotBorderSize");
-	}
-
-	public static var MinorAlpha(get, never):ImPlotStyleVar;
-
-	static inline function get_MinorAlpha():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MinorAlpha");
-	}
-
-	public static var MajorTickLen(get, never):ImPlotStyleVar;
-
-	static inline function get_MajorTickLen():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MajorTickLen");
-	}
-
-	public static var MinorTickLen(get, never):ImPlotStyleVar;
-
-	static inline function get_MinorTickLen():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MinorTickLen");
-	}
-
-	public static var MajorTickSize(get, never):ImPlotStyleVar;
-
-	static inline function get_MajorTickSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MajorTickSize");
-	}
-
-	public static var MinorTickSize(get, never):ImPlotStyleVar;
-
-	static inline function get_MinorTickSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MinorTickSize");
-	}
-
-	public static var MajorGridSize(get, never):ImPlotStyleVar;
-
-	static inline function get_MajorGridSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MajorGridSize");
-	}
-
-	public static var MinorGridSize(get, never):ImPlotStyleVar;
-
-	static inline function get_MinorGridSize():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MinorGridSize");
-	}
-
-	public static var PlotPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_PlotPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.PlotPadding");
-	}
-
-	public static var LabelPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_LabelPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.LabelPadding");
-	}
-
-	public static var LegendPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_LegendPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.LegendPadding");
-	}
-
-	public static var LegendInnerPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_LegendInnerPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.LegendInnerPadding");
-	}
-
-	public static var LegendSpacing(get, never):ImPlotStyleVar;
-
-	static inline function get_LegendSpacing():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.LegendSpacing");
-	}
-
-	public static var MousePosPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_MousePosPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.MousePosPadding");
-	}
-
-	public static var AnnotationPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_AnnotationPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.AnnotationPadding");
-	}
-
-	public static var FitPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_FitPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.FitPadding");
-	}
-
-	public static var DigitalPadding(get, never):ImPlotStyleVar;
-
-	static inline function get_DigitalPadding():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.DigitalPadding");
-	}
-
-	public static var DigitalSpacing(get, never):ImPlotStyleVar;
-
-	static inline function get_DigitalSpacing():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.DigitalSpacing");
-	}
-
-	public static var COUNT(get, never):ImPlotStyleVar;
-
-	static inline function get_COUNT():ImPlotStyleVar {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.StyleVar.COUNT");
-	}
+	public static inline final PlotDefaultSize:ImPlotStyleVar = 0;
+	public static inline final PlotMinSize:ImPlotStyleVar = 1;
+	public static inline final PlotBorderSize:ImPlotStyleVar = 2;
+	public static inline final MinorAlpha:ImPlotStyleVar = 3;
+	public static inline final MajorTickLen:ImPlotStyleVar = 4;
+	public static inline final MinorTickLen:ImPlotStyleVar = 5;
+	public static inline final MajorTickSize:ImPlotStyleVar = 6;
+	public static inline final MinorTickSize:ImPlotStyleVar = 7;
+	public static inline final MajorGridSize:ImPlotStyleVar = 8;
+	public static inline final MinorGridSize:ImPlotStyleVar = 9;
+	public static inline final PlotPadding:ImPlotStyleVar = 10;
+	public static inline final LabelPadding:ImPlotStyleVar = 11;
+	public static inline final LegendPadding:ImPlotStyleVar = 12;
+	public static inline final LegendInnerPadding:ImPlotStyleVar = 13;
+	public static inline final LegendSpacing:ImPlotStyleVar = 14;
+	public static inline final MousePosPadding:ImPlotStyleVar = 15;
+	public static inline final AnnotationPadding:ImPlotStyleVar = 16;
+	public static inline final FitPadding:ImPlotStyleVar = 17;
+	public static inline final DigitalPadding:ImPlotStyleVar = 18;
+	public static inline final DigitalSpacing:ImPlotStyleVar = 19;
+	public static inline final COUNT:ImPlotStyleVar = 20;
 }
 
 abstract ImPlotSubplotFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotSubplotFlags;
-
-	static inline function get_None():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.None");
-	}
-
-	public static var NoTitle(get, never):ImPlotSubplotFlags;
-
-	static inline function get_NoTitle():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.NoTitle");
-	}
-
-	public static var NoLegend(get, never):ImPlotSubplotFlags;
-
-	static inline function get_NoLegend():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.NoLegend");
-	}
-
-	public static var NoMenus(get, never):ImPlotSubplotFlags;
-
-	static inline function get_NoMenus():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.NoMenus");
-	}
-
-	public static var NoResize(get, never):ImPlotSubplotFlags;
-
-	static inline function get_NoResize():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.NoResize");
-	}
-
-	public static var NoAlign(get, never):ImPlotSubplotFlags;
-
-	static inline function get_NoAlign():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.NoAlign");
-	}
-
-	public static var ShareItems(get, never):ImPlotSubplotFlags;
-
-	static inline function get_ShareItems():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.ShareItems");
-	}
-
-	public static var LinkRows(get, never):ImPlotSubplotFlags;
-
-	static inline function get_LinkRows():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.LinkRows");
-	}
-
-	public static var LinkCols(get, never):ImPlotSubplotFlags;
-
-	static inline function get_LinkCols():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.LinkCols");
-	}
-
-	public static var LinkAllX(get, never):ImPlotSubplotFlags;
-
-	static inline function get_LinkAllX():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.LinkAllX");
-	}
-
-	public static var LinkAllY(get, never):ImPlotSubplotFlags;
-
-	static inline function get_LinkAllY():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.LinkAllY");
-	}
-
-	public static var ColMajor(get, never):ImPlotSubplotFlags;
-
-	static inline function get_ColMajor():ImPlotSubplotFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.SubplotFlags.ColMajor");
-	}
+	public static inline final None:ImPlotSubplotFlags = 0;
+	public static inline final NoTitle:ImPlotSubplotFlags = 1;
+	public static inline final NoLegend:ImPlotSubplotFlags = 2;
+	public static inline final NoMenus:ImPlotSubplotFlags = 4;
+	public static inline final NoResize:ImPlotSubplotFlags = 8;
+	public static inline final NoAlign:ImPlotSubplotFlags = 16;
+	public static inline final ShareItems:ImPlotSubplotFlags = 32;
+	public static inline final LinkRows:ImPlotSubplotFlags = 64;
+	public static inline final LinkCols:ImPlotSubplotFlags = 128;
+	public static inline final LinkAllX:ImPlotSubplotFlags = 256;
+	public static inline final LinkAllY:ImPlotSubplotFlags = 512;
+	public static inline final ColMajor:ImPlotSubplotFlags = 1024;
 }
 
 abstract ImPlotTextFlags(Int) from Int to Int {
-	public static var None(get, never):ImPlotTextFlags;
-
-	static inline function get_None():ImPlotTextFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TextFlags.None");
-	}
-
-	public static var Vertical(get, never):ImPlotTextFlags;
-
-	static inline function get_Vertical():ImPlotTextFlags {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TextFlags.Vertical");
-	}
+	public static inline final None:ImPlotTextFlags = 0;
+	public static inline final Vertical:ImPlotTextFlags = 1024;
 }
 
 abstract ImPlotTimeFmt(Int) from Int to Int {
-	public static var None(get, never):ImPlotTimeFmt;
-
-	static inline function get_None():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.None");
-	}
-
-	public static var Us(get, never):ImPlotTimeFmt;
-
-	static inline function get_Us():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.Us");
-	}
-
-	public static var SUs(get, never):ImPlotTimeFmt;
-
-	static inline function get_SUs():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.SUs");
-	}
-
-	public static var SMs(get, never):ImPlotTimeFmt;
-
-	static inline function get_SMs():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.SMs");
-	}
-
-	public static var S(get, never):ImPlotTimeFmt;
-
-	static inline function get_S():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.S");
-	}
-
-	public static var MinSMs(get, never):ImPlotTimeFmt;
-
-	static inline function get_MinSMs():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.MinSMs");
-	}
-
-	public static var HrMinSMs(get, never):ImPlotTimeFmt;
-
-	static inline function get_HrMinSMs():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.HrMinSMs");
-	}
-
-	public static var HrMinS(get, never):ImPlotTimeFmt;
-
-	static inline function get_HrMinS():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.HrMinS");
-	}
-
-	public static var HrMin(get, never):ImPlotTimeFmt;
-
-	static inline function get_HrMin():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.HrMin");
-	}
-
-	public static var Hr(get, never):ImPlotTimeFmt;
-
-	static inline function get_Hr():ImPlotTimeFmt {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeFmt.Hr");
-	}
+	public static inline final None:ImPlotTimeFmt = 0;
+	public static inline final Us:ImPlotTimeFmt = 1;
+	public static inline final SUs:ImPlotTimeFmt = 2;
+	public static inline final SMs:ImPlotTimeFmt = 3;
+	public static inline final S:ImPlotTimeFmt = 4;
+	public static inline final MinSMs:ImPlotTimeFmt = 5;
+	public static inline final HrMinSMs:ImPlotTimeFmt = 6;
+	public static inline final HrMinS:ImPlotTimeFmt = 7;
+	public static inline final HrMin:ImPlotTimeFmt = 8;
+	public static inline final Hr:ImPlotTimeFmt = 9;
 }
 
 abstract ImPlotTimeUnit(Int) from Int to Int {
-	public static var Us(get, never):ImPlotTimeUnit;
-
-	static inline function get_Us():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Us");
-	}
-
-	public static var Ms(get, never):ImPlotTimeUnit;
-
-	static inline function get_Ms():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Ms");
-	}
-
-	public static var S(get, never):ImPlotTimeUnit;
-
-	static inline function get_S():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.S");
-	}
-
-	public static var Min(get, never):ImPlotTimeUnit;
-
-	static inline function get_Min():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Min");
-	}
-
-	public static var Hr(get, never):ImPlotTimeUnit;
-
-	static inline function get_Hr():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Hr");
-	}
-
-	public static var Day(get, never):ImPlotTimeUnit;
-
-	static inline function get_Day():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Day");
-	}
-
-	public static var Mo(get, never):ImPlotTimeUnit;
-
-	static inline function get_Mo():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Mo");
-	}
-
-	public static var Yr(get, never):ImPlotTimeUnit;
-
-	static inline function get_Yr():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.Yr");
-	}
-
-	public static var COUNT(get, never):ImPlotTimeUnit;
-
-	static inline function get_COUNT():ImPlotTimeUnit {
-		return cast js.Syntax.code("globalThis.__imguiHxJsImGui.ImPlot.TimeUnit.COUNT");
-	}
+	public static inline final Us:ImPlotTimeUnit = 0;
+	public static inline final Ms:ImPlotTimeUnit = 1;
+	public static inline final S:ImPlotTimeUnit = 2;
+	public static inline final Min:ImPlotTimeUnit = 3;
+	public static inline final Hr:ImPlotTimeUnit = 4;
+	public static inline final Day:ImPlotTimeUnit = 5;
+	public static inline final Mo:ImPlotTimeUnit = 6;
+	public static inline final Yr:ImPlotTimeUnit = 7;
+	public static inline final COUNT:ImPlotTimeUnit = 8;
 }
 
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotDateTimeSpec") extern class ImPlotDateTimeSpec extends imguijs.ImGui.ValueStruct {
