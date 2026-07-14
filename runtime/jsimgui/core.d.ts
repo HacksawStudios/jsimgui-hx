@@ -16,6 +16,7 @@ export declare class ReferenceStruct {
      * The native pointer to the struct.
      */
     ptr: any;
+    constructor();
     /**
      * Construct a new JavaScript class instance and allocate native memory.
      */

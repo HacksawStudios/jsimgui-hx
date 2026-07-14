@@ -81,6 +81,19 @@ const reservedNames = new Set([
 	'while',
 ])
 
+const referenceStructConstructableNames = new Set([
+	'ImColor',
+	'ImDrawListSplitter',
+	'ImFontConfig',
+	'ImGuiListClipper',
+	'ImGuiWindowClass',
+])
+
+const skipStructNames = [
+	'ImVec2',
+	'ImVec4',
+]
+
 const domTypeMap = new Map([
 	['HTMLCanvasElement', 'js.html.CanvasElement'],
 	['HTMLImageElement', 'js.html.ImageElement'],
@@ -125,6 +138,22 @@ async function readSourceFiles() {
 	}
 
 	fail('Missing jsimgui declaration files in runtime/jsimgui! run "bun build-jsimgui-and-bindings.sh" to generate them.')
+}
+
+async function readValueSourceFiles(dtsFilePaths) {
+	const files = []
+	for (const dtsFilePath of dtsFilePaths) {
+		const jsFilePath = dtsFilePath.replace(/\.d\.ts$/, '.js')
+		try {
+			files.push({
+				filePath: jsFilePath,
+				sourceText: await fs.readFile(jsFilePath, 'utf8'),
+			})
+		} catch {
+			fail(`Missing sibling runtime module ${path.relative(repoRoot, jsFilePath)} for ${path.relative(repoRoot, dtsFilePath)}; run "bun build-jsimgui-and-bindings.sh" to regenerate runtime/jsimgui.`)
+		}
+	}
+	return files
 }
 
 function isExported(node) {
@@ -425,18 +454,68 @@ function renderAbstract(group) {
 	const lines = []
 	lines.push(`abstract ${group.typeName}(Int) from Int to Int {`)
 	for (const member of group.members) {
-		lines.push(`${createIndent(1)}public static var ${member.name}(get, never):${group.typeName};`)
-		lines.push('')
-		lines.push(`${createIndent(1)}static inline function get_${member.name}():${group.typeName} {`)
-		lines.push(`${createIndent(2)}return cast js.Syntax.code(${maybeQuoteMetadata(`${runtimeRoot}.${group.rootName}.${group.groupName}.${member.name}`)});`)
-		lines.push(`${createIndent(1)}}`)
-		lines.push('')
-	}
-	if (lines[lines.length - 1] === '') {
-		lines.pop()
+		lines.push(`${createIndent(1)}public static inline final ${member.name}:${group.typeName} = ${member.value};`)
 	}
 	lines.push('}')
 	return lines.join('\n')
+}
+
+function isLiteralValueGroupNode(objectLiteral) {
+	return objectLiteral.properties.every(member =>
+		ts.isPropertyAssignment(member) && (
+			ts.isNumericLiteral(member.initializer) ||
+			(ts.isPrefixUnaryExpression(member.initializer) && ts.isNumericLiteral(member.initializer.operand))
+		),
+	)
+}
+
+function collectConstObjectLiteralValues(sourceFiles) {
+	const valuesByRoot = new Map()
+	for (const sourceFile of sourceFiles) {
+		for (const statement of sourceFile.statements) {
+			if (!isExported(statement) || !ts.isVariableStatement(statement)) {
+				continue
+			}
+			for (const declaration of statement.declarationList.declarations) {
+				if (!ts.isIdentifier(declaration.name) || declaration.initializer == null || !ts.isObjectLiteralExpression(declaration.initializer)) {
+					continue
+				}
+				const rootName = declaration.name.text
+				const groups = valuesByRoot.get(rootName) ?? new Map()
+				for (const member of declaration.initializer.properties) {
+					if (!ts.isPropertyAssignment(member) || !ts.isIdentifier(member.name) || !ts.isObjectLiteralExpression(member.initializer)) {
+						continue
+					}
+					if (!isLiteralValueGroupNode(member.initializer)) {
+						continue
+					}
+					const memberValues = new Map()
+					for (const nested of member.initializer.properties) {
+						if (!ts.isPropertyAssignment(nested) || !ts.isIdentifier(nested.name)) {
+							continue
+						}
+						memberValues.set(nested.name.text, getNodeText(nested.initializer))
+					}
+					groups.set(member.name.text, memberValues)
+				}
+				valuesByRoot.set(rootName, groups)
+			}
+		}
+	}
+	return valuesByRoot
+}
+
+function attachLiteralValues(groups, literalValuesByRoot) {
+	for (const group of groups.values()) {
+		const groupValues = literalValuesByRoot.get(group.rootName)?.get(group.groupName)
+		for (const member of group.members) {
+			const value = groupValues?.get(member.name)
+			if (value == null) {
+				fail(`Missing literal value for ${group.rootName}.${group.groupName}.${member.name}; runtime/jsimgui's .d.ts and .js have drifted, regenerate via "bun build-jsimgui-and-bindings.sh".`)
+			}
+			member.value = value
+		}
+	}
 }
 
 function renderTypeAlias(name, declaration, context) {
@@ -527,8 +606,24 @@ function renderClass(name, declaration, context) {
 	const lines = []
 	const appendBacking = name == 'ImVec2' || name == 'ImVec4'
 	const possiblyBackingName = appendBacking ? `${name}Backing` : name
+	if (skipStructNames.find(n => n == name) != null) {
+		return '';
+	}
+
 
 	lines.push(`@:keep @:native(${maybeQuoteMetadata(`${runtimeRoot}.${name}`)}) extern class ${possiblyBackingName}${renderHeritage(declaration, context)} {`)
+
+	const heritageClause = declaration.heritageClauses?.find(clause => clause.token === ts.SyntaxKind.ExtendsKeyword)
+	const baseTypeName = heritageClause?.types[0] != null && ts.isExpressionWithTypeArguments(heritageClause.types[0])
+		? getNodeText(heritageClause.types[0].expression)
+		: null
+	if (baseTypeName === 'ReferenceStruct') {
+		lines.push(`${createIndent(1)}static function New():${name};`)
+		lines.push(`${createIndent(1)}static function From(ptr:Dynamic):${name};`)
+		if (referenceStructConstructableNames.has(name)) {
+			lines.push(`${createIndent(1)}function new();`)
+		}
+	}
 
 	const fields = collectClassFields(declaration, {
 		...context,
@@ -644,7 +739,6 @@ function renderConstObjectFile(data) {
 	lines.push('package imguijs;')
 	lines.push('')
 	lines.push('#if js')
-	lines.push('import js.Syntax;')
 	lines.push('import imguijs.Abstracts;')
 	lines.push('')
 	lines.push('/**')
@@ -754,6 +848,13 @@ async function main() {
 
 	const imguiGroups = collectConstObjectGroups(imguiDeclaration, aliasNames, 'ImGui')
 	const implotGroups = collectConstObjectGroups(implotDeclaration, aliasNames, 'ImPlot')
+
+	const valueSourceFiles = (await readValueSourceFiles(sourceFiles.map(sourceFile => sourceFile.fileName)))
+		.map(({ filePath, sourceText }) => ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS))
+	const literalValues = collectConstObjectLiteralValues(valueSourceFiles)
+	attachLiteralValues(imguiGroups, literalValues)
+	attachLiteralValues(implotGroups, literalValues)
+
 	const imguiGroupTypeNames = new Set(imguiGroups.keys())
 	const implotGroupTypeNames = new Set(implotGroups.keys())
 	const allGroupTypeNames = new Set([...imguiGroups.keys(), ...implotGroups.keys()])

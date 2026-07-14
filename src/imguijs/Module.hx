@@ -12,6 +12,7 @@ extern class Module {
 	static var ImDrawData:Dynamic;
 	static var ImDrawList:Dynamic;
 	static var ImDrawListSharedData:Dynamic;
+	static var ImDrawListSplitter:Dynamic;
 	static var ImFont:Dynamic;
 	static var ImFontAtlas:Dynamic;
 	static var ImFontAtlasBuilder:Dynamic;
