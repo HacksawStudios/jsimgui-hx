@@ -100,6 +100,8 @@ const domTypeMap = new Map([
 	['Uint8Array', 'js.lib.Uint8Array'],
 ])
 
+const integerFunctionPattern = /^(?:CheckboxFlagsIntPtr|RadioButtonIntPtr|PushIDInt|GetIDInt|DragInt(?:[2-4]|Range2)?|SliderInt[2-4]?|VSliderInt|InputInt[2-4]?|PushStyleVar_Int)$/
+
 function fail(message) {
 	console.error(`[jsimgui] ${message}`)
 	process.exit(1)
@@ -326,7 +328,7 @@ function mapType(typeNode, context = {}) {
 			return 'String'
 		}
 		if (ts.isNumericLiteral(typeNode.literal)) {
-			return 'Float'
+			return context.numberType ?? 'Float'
 		}
 		if (typeNode.literal.kind === ts.SyntaxKind.TrueKeyword || typeNode.literal.kind === ts.SyntaxKind.FalseKeyword) {
 			return 'Bool'
@@ -334,10 +336,9 @@ function mapType(typeNode, context = {}) {
 		return 'Dynamic'
 	}
 	if (ts.isTupleTypeNode(typeNode)) {
-		if (typeNode.elements.length === 1) {
-			return `Array<${mapType(typeNode.elements[0], context)}>`
-		}
-		return 'Dynamic'
+		const elementTypes = typeNode.elements.map(element => mapType(element, context))
+		const elementType = new Set(elementTypes).size === 1 ? elementTypes[0] : 'Dynamic'
+		return `Array<${elementType}>`
 	}
 	if (ts.isNamedTupleMember(typeNode)) {
 		return mapType(typeNode.type, context)
@@ -401,7 +402,7 @@ function mapType(typeNode, context = {}) {
 		case ts.SyntaxKind.StringKeyword:
 			return 'String'
 		case ts.SyntaxKind.NumberKeyword:
-			return 'Float'
+			return context.numberType ?? 'Float'
 		case ts.SyntaxKind.BooleanKeyword:
 			return 'Bool'
 		case ts.SyntaxKind.VoidKeyword:
@@ -424,18 +425,38 @@ function mapType(typeNode, context = {}) {
 function renderParameters(parameters, context, forceOptional = false) {
 	const rendered = []
 	let optionalStarted = false
+	if (context.parameterDefaults != null && context.parameterDefaults.length !== parameters.length) {
+		fail(`Parameter count drift for ${context.currentClassName ?? context.currentObjectName}.${context.currentFunctionName}.`)
+	}
 	for (let index = 0; index < parameters.length; index += 1) {
 		const parameter = parameters[index]
 		const rawName = ts.isIdentifier(parameter.name) ? parameter.name.text : `arg${index}`
 		const haxeName = reservedNames.has(rawName) ? `${rawName}Value` : rawName
-		let typeName = mapType(parameter.type, context)
-		const isOptional = forceOptional || parameter.questionToken != null || parameter.initializer != null
+		const defaultParameter = context.parameterDefaults?.[index]
+		if (defaultParameter != null && defaultParameter.name !== rawName) {
+			fail(`Parameter drift for ${context.currentClassName ?? context.currentObjectName}.${context.currentFunctionName}: expected ${defaultParameter.name}, found ${rawName}.`)
+		}
+		// ponytail: TypeScript erases int vs float; extend runtime metadata if integer APIs grow beyond these explicit wrapper families.
+		const numberType = integerFunctionPattern.test(context.currentFunctionName) && rawName !== 'v_speed' ? 'Int' : 'Float'
+		let typeName = mapType(parameter.type, {
+			...context,
+			numberType,
+		})
+		const defaultValue = defaultParameter?.value
+		const isOptional = forceOptional || parameter.questionToken != null || parameter.initializer != null || defaultValue != null
+		const haxeDefault = typeName === 'Float' && /^-?\d+$/.test(defaultValue?.haxeValue) ? `${defaultValue.haxeValue}.0` : defaultValue?.haxeValue
+		// ponytail: Haxe defaults must be constants; preserve constructor/object defaults inline until Haxe can represent them.
+		const defaultSuffix = defaultValue == null
+			? ''
+			: haxeDefault == null
+				? ` /* JS default: ${defaultValue.jsValue.replaceAll('*/', '* /')} */`
+				: ` = ${haxeDefault}`
 		if (isOptional || optionalStarted) {
 			optionalStarted = true
 			typeName = typeName.replace(/^Null<(.+)>$/, '$1')
-			rendered.push(`?${haxeName}:${typeName}`)
+			rendered.push(`?${haxeName}:${typeName}${defaultSuffix}`)
 		} else {
-			rendered.push(`${haxeName}:${typeName}`)
+			rendered.push(`${haxeName}:${typeName}${defaultSuffix}`)
 		}
 	}
 	return rendered.join(', ')
@@ -503,6 +524,85 @@ function collectConstObjectLiteralValues(sourceFiles) {
 		}
 	}
 	return valuesByRoot
+}
+
+function renderConstantDefault(initializer) {
+	if (ts.isStringLiteral(initializer)) {
+		return JSON.stringify(initializer.text)
+	}
+	if (
+		ts.isNumericLiteral(initializer) ||
+		initializer.kind === ts.SyntaxKind.TrueKeyword ||
+		initializer.kind === ts.SyntaxKind.FalseKeyword ||
+		initializer.kind === ts.SyntaxKind.NullKeyword
+	) {
+		return getNodeText(initializer)
+	}
+	if (
+		ts.isPrefixUnaryExpression(initializer) &&
+		(initializer.operator === ts.SyntaxKind.PlusToken || initializer.operator === ts.SyntaxKind.MinusToken) &&
+		ts.isNumericLiteral(initializer.operand)
+	) {
+		return initializer.operator === ts.SyntaxKind.PlusToken ? getNodeText(initializer.operand) : getNodeText(initializer)
+	}
+	if (ts.isPropertyAccessExpression(initializer) && getNodeText(initializer) === 'Number.MAX_VALUE') {
+		return '1.7976931348623157e+308'
+	}
+	return null
+}
+
+function collectParameterDefaults(sourceFiles) {
+	const defaults = new Map()
+
+	for (const sourceFile of sourceFiles) {
+		const collect = (ownerName, functionName, parameters) => {
+			if (!parameters.some(parameter => parameter.initializer != null)) {
+				return
+			}
+			const key = `${ownerName}.${functionName}`
+			if (defaults.has(key)) {
+				fail(`Duplicate runtime function ${key} while collecting parameter defaults.`)
+			}
+			defaults.set(key, parameters.map((parameter, index) => ({
+				name: ts.isIdentifier(parameter.name) ? parameter.name.text : `arg${index}`,
+				value: parameter.initializer == null ? null : {
+					haxeValue: renderConstantDefault(parameter.initializer),
+					jsValue: getNodeText(parameter.initializer),
+				},
+			})))
+		}
+
+		for (const statement of sourceFile.statements) {
+			if (!isExported(statement)) {
+				continue
+			}
+			if (ts.isClassDeclaration(statement) && statement.name != null) {
+				for (const member of statement.members) {
+					if (ts.isConstructorDeclaration(member)) {
+						collect(statement.name.text, 'constructor', member.parameters)
+					} else if (ts.isMethodDeclaration(member) && member.name != null && ts.isIdentifier(member.name)) {
+						collect(statement.name.text, member.name.text, member.parameters)
+					}
+				}
+				continue
+			}
+			if (!ts.isVariableStatement(statement)) {
+				continue
+			}
+			for (const declaration of statement.declarationList.declarations) {
+				if (!ts.isIdentifier(declaration.name) || declaration.initializer == null || !ts.isObjectLiteralExpression(declaration.initializer)) {
+					continue
+				}
+				for (const member of declaration.initializer.properties) {
+					if (ts.isMethodDeclaration(member) && member.name != null && ts.isIdentifier(member.name)) {
+						collect(declaration.name.text, member.name.text, member.parameters)
+					}
+				}
+			}
+		}
+	}
+
+	return defaults
 }
 
 function attachLiteralValues(groups, literalValuesByRoot) {
@@ -592,7 +692,11 @@ function collectClassMethods(classDeclaration, context) {
 			nativeName,
 			haxeName,
 			isStatic: (ts.getCombinedModifierFlags(member) & ts.ModifierFlags.Static) !== 0,
-			params: renderParameters(member.parameters, context),
+			params: renderParameters(member.parameters, {
+				...context,
+				currentFunctionName: nativeName,
+				parameterDefaults: context.defaultsByFunction?.get(`${context.currentClassName}.${nativeName}`),
+			}),
 			returnType: mapType(member.type, context),
 		})
 	}
@@ -644,6 +748,8 @@ function renderClass(name, declaration, context) {
 		const params = renderParameters(constructorDeclaration.parameters, {
 			...context,
 			currentClassName: name,
+			currentFunctionName: 'constructor',
+			parameterDefaults: context.defaultsByFunction?.get(`${name}.constructor`),
 		})
 		lines.push(`${createIndent(1)}function new(${params});`)
 	}
@@ -693,7 +799,12 @@ function renderConstObjectClass(name, declaration, context, groupsToSkip = new S
 		}
 		if (ts.isMethodSignature(member) || ts.isMethodDeclaration(member)) {
 			const haxeName = lowerCamel(nativeName)
-			const params = renderParameters(member.parameters, context)
+			const params = renderParameters(member.parameters, {
+				...context,
+				currentObjectName: name,
+				currentFunctionName: nativeName,
+				parameterDefaults: context.defaultsByFunction?.get(`${name}.${nativeName}`),
+			})
 			const returnType = mapType(member.type, context)
 			const memberLines = renderNativeMember('static function ', nativeName, haxeName, 1)
 			memberLines[memberLines.length - 1] += `(${params}):${returnType};`
@@ -852,6 +963,7 @@ async function main() {
 	const valueSourceFiles = (await readValueSourceFiles(sourceFiles.map(sourceFile => sourceFile.fileName)))
 		.map(({ filePath, sourceText }) => ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS))
 	const literalValues = collectConstObjectLiteralValues(valueSourceFiles)
+	const defaultsByFunction = collectParameterDefaults(valueSourceFiles)
 	attachLiteralValues(imguiGroups, literalValues)
 	attachLiteralValues(implotGroups, literalValues)
 
@@ -876,6 +988,7 @@ async function main() {
 		interfaceNames: declarations.interfaces,
 		knownTypes,
 		manualClassNames,
+		defaultsByFunction,
 	}
 	const implotContext = {
 		...context,
