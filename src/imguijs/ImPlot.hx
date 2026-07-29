@@ -392,13 +392,13 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	var useISO8601:Bool;
 	@:native("Use24HourClock")
 	var use24HourClock:Bool;
-	function new(?Date:Float, ?Time:Float, ?UseISO8601:Bool, ?Use24HourClock:Bool);
+	function new(?Date:Float = 0.0, ?Time:Float = 0.0, ?UseISO8601:Bool = false, ?Use24HourClock:Bool = false);
 	static function From(obj:ImPlotDateTimeSpec):ImPlotDateTimeSpec;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotPoint") extern class ImPlotPoint extends imguijs.ImGui.ValueStruct {
 	var x:Float;
 	var y:Float;
-	function new(?x:Float, ?y:Float);
+	function new(?x:Float = 0.0, ?y:Float = 0.0);
 	static function From(obj:ImPlotPoint):ImPlotPoint;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotRange") extern class ImPlotRange extends imguijs.ImGui.ValueStruct {
@@ -406,7 +406,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	var min:Float;
 	@:native("Max")
 	var max:Float;
-	function new(?Min:Float, ?Max:Float);
+	function new(?Min:Float = 0.0, ?Max:Float = 0.0);
 	static function From(obj:ImPlotRange):ImPlotRange;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotRect") extern class ImPlotRect extends imguijs.ImGui.ValueStruct {
@@ -414,7 +414,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	var x:ImPlotRange;
 	@:native("Y")
 	var y:ImPlotRange;
-	function new(?X:ImPlotRange, ?Y:ImPlotRange);
+	function new(?X:ImPlotRange /* JS default: new ImPlotRange() */, ?Y:ImPlotRange /* JS default: new ImPlotRange() */);
 	static function From(obj:ImPlotRect):ImPlotRect;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotTime") extern class ImPlotTime extends imguijs.ImGui.ValueStruct {
@@ -422,7 +422,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	var s:Float;
 	@:native("Us")
 	var us:Float;
-	function new(?S:Float, ?Us:Float);
+	function new(?S:Float = 0.0, ?Us:Float = 0.0);
 	static function From(obj:ImPlotTime):ImPlotTime;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotSpec") extern class ImPlotSpec extends imguijs.ImGui.ValueStruct {
@@ -450,25 +450,25 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	var stride:Float;
 	@:native("Flags")
 	var flags:Float;
-	function new(?LineColor:imguijs.Abstracts.ImVec4, ?LineWeight:Float, ?FillColor:imguijs.Abstracts.ImVec4, ?FillAlpha:Float, ?Marker:Float, ?MarkerSize:Float, ?MarkerLineColor:imguijs.Abstracts.ImVec4, ?MarkerFillColor:imguijs.Abstracts.ImVec4, ?Size:Float, ?Offset:Float, ?Stride:Float, ?Flags:Float);
+	function new(?LineColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?LineWeight:Float = 1.0, ?FillColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?FillAlpha:Float = 1.0, ?Marker:Float = 0.0, ?MarkerSize:Float = 4.0, ?MarkerLineColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?MarkerFillColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?Size:Float = 4.0, ?Offset:Float = 0.0, ?Stride:Float = -1.0, ?Flags:Float = 0.0);
 	static function From(obj:ImPlotSpec):ImPlotSpec;
 }
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlot") extern class ImPlot {
 	static var Auto:Float;
 	@:native("AddColormap_U32Ptr")
-	static function addColormap_U32Ptr(name:String, cols:Array<Float>, size:Float, ?qual:Bool):Float;
+	static function addColormap_U32Ptr(name:String, cols:Array<Float>, size:Float, ?qual:Bool = true):Float;
 	@:native("AddColormap_Vec4Ptr")
-	static function addColormap_Vec4Ptr(name:String, cols:Array<imguijs.Abstracts.ImVec4>, size:Float, ?qual:Bool):Float;
+	static function addColormap_Vec4Ptr(name:String, cols:Array<imguijs.Abstracts.ImVec4>, size:Float, ?qual:Bool = true):Float;
 	@:native("Annotation_Bool")
-	static function annotation_Bool(x:Float, y:Float, col:imguijs.Abstracts.ImVec4, pix_offset:imguijs.Abstracts.ImVec2, clamp:Bool, ?round:Bool):Void;
+	static function annotation_Bool(x:Float, y:Float, col:imguijs.Abstracts.ImVec4, pix_offset:imguijs.Abstracts.ImVec2, clamp:Bool, ?round:Bool = false):Void;
 	@:native("BeginAlignedPlots")
-	static function beginAlignedPlots(group_id:String, ?vertical:Bool):Bool;
+	static function beginAlignedPlots(group_id:String, ?vertical:Bool = true):Bool;
 	@:native("BeginDragDropSourceAxis")
-	static function beginDragDropSourceAxis(axis:Float, ?flags:Float):Bool;
+	static function beginDragDropSourceAxis(axis:Float, ?flags:Float = 0.0):Bool;
 	@:native("BeginDragDropSourceItem")
-	static function beginDragDropSourceItem(label_id:String, ?flags:Float):Bool;
+	static function beginDragDropSourceItem(label_id:String, ?flags:Float = 0.0):Bool;
 	@:native("BeginDragDropSourcePlot")
-	static function beginDragDropSourcePlot(?flags:Float):Bool;
+	static function beginDragDropSourcePlot(?flags:Float = 0.0):Bool;
 	@:native("BeginDragDropTargetAxis")
 	static function beginDragDropTargetAxis(axis:Float):Bool;
 	@:native("BeginDragDropTargetLegend")
@@ -476,27 +476,27 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("BeginDragDropTargetPlot")
 	static function beginDragDropTargetPlot():Bool;
 	@:native("BeginLegendPopup")
-	static function beginLegendPopup(label_id:String, ?mouse_button:Float):Bool;
+	static function beginLegendPopup(label_id:String, ?mouse_button:Float = 1.0):Bool;
 	@:native("BeginPlot")
-	static function beginPlot(title_id:String, ?size:imguijs.Abstracts.ImVec2, ?flags:Float):Bool;
+	static function beginPlot(title_id:String, ?size:imguijs.Abstracts.ImVec2 /* JS default: new ImVec2(-1, 0) */, ?flags:Float = 0.0):Bool;
 	@:native("BeginSubplots")
-	static function beginSubplots(title_id:String, rows:Float, cols:Float, size:imguijs.Abstracts.ImVec2, ?flags:Float, ?row_ratios:Array<Float>, ?col_ratios:Array<Float>):Bool;
+	static function beginSubplots(title_id:String, rows:Float, cols:Float, size:imguijs.Abstracts.ImVec2, ?flags:Float = 0.0, ?row_ratios:Array<Float> = null, ?col_ratios:Array<Float> = null):Bool;
 	@:native("BustColorCache")
-	static function bustColorCache(?plot_title_id:String):Void;
+	static function bustColorCache(?plot_title_id:String = ""):Void;
 	@:native("CancelPlotSelection")
 	static function cancelPlotSelection():Void;
 	@:native("ColormapButton")
-	static function colormapButton(label:String, ?size:imguijs.Abstracts.ImVec2, ?cmap:Float):Bool;
+	static function colormapButton(label:String, ?size:imguijs.Abstracts.ImVec2 /* JS default: new ImVec2(0, 0) */, ?cmap:Float = -1.0):Bool;
 	@:native("ColormapIcon")
 	static function colormapIcon(cmap:Float):Void;
 	@:native("ColormapScale")
-	static function colormapScale(label:String, scale_min:Float, scale_max:Float, ?size:imguijs.Abstracts.ImVec2, ?format:String, ?flags:Float, ?cmap:Float):Void;
+	static function colormapScale(label:String, scale_min:Float, scale_max:Float, ?size:imguijs.Abstracts.ImVec2 /* JS default: new ImVec2(0, 0) */, ?format:String = "%g", ?flags:Float = 0.0, ?cmap:Float = -1.0):Void;
 	@:native("ColormapSlider")
-	static function colormapSlider(label:String, t:Array<Float>, ?out:Array<imguijs.Abstracts.ImVec4>, ?format:String, ?cmap:Float):Bool;
+	static function colormapSlider(label:String, t:Array<Float>, ?out:Array<imguijs.Abstracts.ImVec4> = null, ?format:String = "", ?cmap:Float = -1.0):Bool;
 	@:native("CreateContext")
 	static function createContext():Float;
 	@:native("DestroyContext")
-	static function destroyContext(?ctx:Float):Void;
+	static function destroyContext(?ctx:Float = 0.0):Void;
 	@:native("EndAlignedPlots")
 	static function endAlignedPlots():Void;
 	@:native("EndDragDropSource")
@@ -510,13 +510,13 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("EndSubplots")
 	static function endSubplots():Void;
 	@:native("GetColormapColor")
-	static function getColormapColor(idx:Float, ?cmap:Float):imguijs.Abstracts.ImVec4;
+	static function getColormapColor(idx:Float, ?cmap:Float = -1.0):imguijs.Abstracts.ImVec4;
 	@:native("GetColormapCount")
 	static function getColormapCount():Float;
 	@:native("GetColormapIndex")
 	static function getColormapIndex(name:String):Float;
 	@:native("GetColormapSize")
-	static function getColormapSize(?cmap:Float):Float;
+	static function getColormapSize(?cmap:Float = -1.0):Float;
 	@:native("GetCurrentContext")
 	static function getCurrentContext():Float;
 	@:native("GetInputMap")
@@ -524,19 +524,19 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("GetLastItemColor")
 	static function getLastItemColor():imguijs.Abstracts.ImVec4;
 	@:native("GetPlotLimits")
-	static function getPlotLimits(?x_axis:Float, ?y_axis:Float):ImPlotRect;
+	static function getPlotLimits(?x_axis:Float = -1.0, ?y_axis:Float = -1.0):ImPlotRect;
 	@:native("GetPlotMousePos")
-	static function getPlotMousePos(?x_axis:Float, ?y_axis:Float):ImPlotPoint;
+	static function getPlotMousePos(?x_axis:Float = -1.0, ?y_axis:Float = -1.0):ImPlotPoint;
 	@:native("GetPlotPos")
 	static function getPlotPos():imguijs.Abstracts.ImVec2;
 	@:native("GetPlotSelection")
-	static function getPlotSelection(?x_axis:Float, ?y_axis:Float):ImPlotRect;
+	static function getPlotSelection(?x_axis:Float = -1.0, ?y_axis:Float = -1.0):ImPlotRect;
 	@:native("GetPlotSize")
 	static function getPlotSize():imguijs.Abstracts.ImVec2;
 	@:native("GetStyle")
 	static function getStyle():Float;
 	@:native("HideNextItem")
-	static function hideNextItem(?hidden:Bool, ?cond:Float):Void;
+	static function hideNextItem(?hidden:Bool = true, ?cond:Float = 2.0):Void;
 	@:native("IsAxisHovered")
 	static function isAxisHovered(axis:Float):Bool;
 	@:native("IsLegendEntryHovered")
@@ -552,89 +552,89 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("ItemIcon_Vec4")
 	static function itemIcon_Vec4(col:imguijs.Abstracts.ImVec4):Void;
 	@:native("MapInputDefault")
-	static function mapInputDefault(?dst:Float):Void;
+	static function mapInputDefault(?dst:Float = 0.0):Void;
 	@:native("MapInputReverse")
-	static function mapInputReverse(?dst:Float):Void;
+	static function mapInputReverse(?dst:Float = 0.0):Void;
 	@:native("NextColormapColor")
 	static function nextColormapColor():imguijs.Abstracts.ImVec4;
 	@:native("NextMarker")
 	static function nextMarker():Float;
 	@:native("PixelsToPlot")
-	static function pixelsToPlot(x:Float, y:Float, ?x_axis:Float, ?y_axis:Float):ImPlotPoint;
+	static function pixelsToPlot(x:Float, y:Float, ?x_axis:Float = -1.0, ?y_axis:Float = -1.0):ImPlotPoint;
 	@:native("PixelsToPlotVec2")
-	static function pixelsToPlotVec2(pix:imguijs.Abstracts.ImVec2, ?x_axis:Float, ?y_axis:Float):ImPlotPoint;
+	static function pixelsToPlotVec2(pix:imguijs.Abstracts.ImVec2, ?x_axis:Float = -1.0, ?y_axis:Float = -1.0):ImPlotPoint;
 	@:native("PlotBarGroups")
-	static function plotBarGroups(label_ids:Null<Array<String>>, values:Array<Float>, item_count:Float, group_count:Float, ?group_size:Float, ?shift:Float, ?spec:ImPlotSpec):Void;
+	static function plotBarGroups(label_ids:Null<Array<String>>, values:Array<Float>, item_count:Float, group_count:Float, ?group_size:Float = 0.67, ?shift:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotBarsXY")
-	static function plotBarsXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, bar_size:Float, ?spec:ImPlotSpec):Void;
+	static function plotBarsXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, bar_size:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotBars")
-	static function plotBars(label_id:String, values:Array<Float>, count:Float, ?bar_size:Float, ?shift:Float, ?spec:ImPlotSpec):Void;
+	static function plotBars(label_id:String, values:Array<Float>, count:Float, ?bar_size:Float = 0.67, ?shift:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotBubblesXY")
-	static function plotBubblesXY(label_id:String, xs:Array<Float>, ys:Array<Float>, szs:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotBubblesXY(label_id:String, xs:Array<Float>, ys:Array<Float>, szs:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotBubbles")
-	static function plotBubbles(label_id:String, values:Array<Float>, szs:Array<Float>, count:Float, ?xscale:Float, ?xstart:Float, ?spec:ImPlotSpec):Void;
+	static function plotBubbles(label_id:String, values:Array<Float>, szs:Array<Float>, count:Float, ?xscale:Float = 1.0, ?xstart:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotDigital")
-	static function plotDigital(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotDigital(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotDummy")
-	static function plotDummy(label_id:String, ?spec:ImPlotSpec):Void;
+	static function plotDummy(label_id:String, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotErrorBarsRange")
-	static function plotErrorBarsRange(label_id:String, xs:Array<Float>, ys:Array<Float>, neg:Array<Float>, pos:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotErrorBarsRange(label_id:String, xs:Array<Float>, ys:Array<Float>, neg:Array<Float>, pos:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotErrorBars")
-	static function plotErrorBars(label_id:String, xs:Array<Float>, ys:Array<Float>, err:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotErrorBars(label_id:String, xs:Array<Float>, ys:Array<Float>, err:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotHeatmap")
-	static function plotHeatmap(label_id:String, values:Array<Float>, rows:Float, cols:Float, ?scale_min:Float, ?scale_max:Float, ?label_fmt:String, ?bounds_min:ImPlotPoint, ?bounds_max:ImPlotPoint, ?spec:ImPlotSpec):Void;
+	static function plotHeatmap(label_id:String, values:Array<Float>, rows:Float, cols:Float, ?scale_min:Float = 0.0, ?scale_max:Float = 0.0, ?label_fmt:String = "%.1f", ?bounds_min:ImPlotPoint /* JS default: new ImPlotPoint(0, 0) */, ?bounds_max:ImPlotPoint /* JS default: new ImPlotPoint(1, 1) */, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotHistogram")
-	static function plotHistogram(label_id:String, values:Array<Float>, count:Float, ?bins:Float, ?bar_scale:Float, ?range:ImPlotRange, ?spec:ImPlotSpec):Float;
+	static function plotHistogram(label_id:String, values:Array<Float>, count:Float, ?bins:Float = -2.0, ?bar_scale:Float = 1.0, ?range:ImPlotRange /* JS default: new ImPlotRange() */, ?spec:ImPlotSpec = null):Float;
 	@:native("PlotHistogram2D")
-	static function plotHistogram2D(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?x_bins:Float, ?y_bins:Float, ?range:ImPlotRect, ?spec:ImPlotSpec):Float;
+	static function plotHistogram2D(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?x_bins:Float = -2.0, ?y_bins:Float = -2.0, ?range:ImPlotRect /* JS default: new ImPlotRect() */, ?spec:ImPlotSpec = null):Float;
 	@:native("PlotInfLines")
-	static function plotInfLines(label_id:String, values:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotInfLines(label_id:String, values:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotLineXY")
-	static function plotLineXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotLineXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotLine")
-	static function plotLine(label_id:String, values:Array<Float>, count:Float, ?xscale:Float, ?xstart:Float, ?spec:ImPlotSpec):Void;
+	static function plotLine(label_id:String, values:Array<Float>, count:Float, ?xscale:Float = 1.0, ?xstart:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotPieChart")
-	static function plotPieChart(label_ids:Null<Array<String>>, values:Array<Float>, count:Float, x:Float, y:Float, radius:Float, ?label_fmt:String, ?angle0:Float, ?spec:ImPlotSpec):Void;
+	static function plotPieChart(label_ids:Null<Array<String>>, values:Array<Float>, count:Float, x:Float, y:Float, radius:Float, ?label_fmt:String = "%.1f", ?angle0:Float = 90.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotPolygon")
-	static function plotPolygon(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotPolygon(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotScatterXY")
-	static function plotScatterXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotScatterXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotScatter")
-	static function plotScatter(label_id:String, values:Array<Float>, count:Float, ?xscale:Float, ?xstart:Float, ?spec:ImPlotSpec):Void;
+	static function plotScatter(label_id:String, values:Array<Float>, count:Float, ?xscale:Float = 1.0, ?xstart:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotShadedBand")
-	static function plotShadedBand(label_id:String, xs:Array<Float>, ys1:Array<Float>, ys2:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotShadedBand(label_id:String, xs:Array<Float>, ys1:Array<Float>, ys2:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotShadedXY")
-	static function plotShadedXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?yref:Float, ?spec:ImPlotSpec):Void;
+	static function plotShadedXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?yref:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotShaded")
-	static function plotShaded(label_id:String, values:Array<Float>, count:Float, ?yref:Float, ?xscale:Float, ?xstart:Float, ?spec:ImPlotSpec):Void;
+	static function plotShaded(label_id:String, values:Array<Float>, count:Float, ?yref:Float = 0.0, ?xscale:Float = 1.0, ?xstart:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotStairsXY")
-	static function plotStairsXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec):Void;
+	static function plotStairsXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotStairs")
-	static function plotStairs(label_id:String, values:Array<Float>, count:Float, ?xscale:Float, ?xstart:Float, ?spec:ImPlotSpec):Void;
+	static function plotStairs(label_id:String, values:Array<Float>, count:Float, ?xscale:Float = 1.0, ?xstart:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotStemsXY")
-	static function plotStemsXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?ref:Float, ?spec:ImPlotSpec):Void;
+	static function plotStemsXY(label_id:String, xs:Array<Float>, ys:Array<Float>, count:Float, ?ref:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotStems")
-	static function plotStems(label_id:String, values:Array<Float>, count:Float, ?ref:Float, ?scale:Float, ?start:Float, ?spec:ImPlotSpec):Void;
+	static function plotStems(label_id:String, values:Array<Float>, count:Float, ?ref:Float = 0.0, ?scale:Float = 1.0, ?start:Float = 0.0, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotText")
-	static function plotText(text:String, x:Float, y:Float, ?pix_offset:imguijs.Abstracts.ImVec2, ?spec:ImPlotSpec):Void;
+	static function plotText(text:String, x:Float, y:Float, ?pix_offset:imguijs.Abstracts.ImVec2 /* JS default: new ImVec2(0, 0) */, ?spec:ImPlotSpec = null):Void;
 	@:native("PlotToPixels")
-	static function plotToPixels(x:Float, y:Float, ?x_axis:Float, ?y_axis:Float):imguijs.Abstracts.ImVec2;
+	static function plotToPixels(x:Float, y:Float, ?x_axis:Float = -1.0, ?y_axis:Float = -1.0):imguijs.Abstracts.ImVec2;
 	@:native("PlotToPixelsPoint")
-	static function plotToPixelsPoint(plt:ImPlotPoint, ?x_axis:Float, ?y_axis:Float):imguijs.Abstracts.ImVec2;
+	static function plotToPixelsPoint(plt:ImPlotPoint, ?x_axis:Float = -1.0, ?y_axis:Float = -1.0):imguijs.Abstracts.ImVec2;
 	@:native("PopColormap")
-	static function popColormap(?count:Float):Void;
+	static function popColormap(?count:Float = 1.0):Void;
 	@:native("PopPlotClipRect")
 	static function popPlotClipRect():Void;
 	@:native("PopStyleColor")
-	static function popStyleColor(?count:Float):Void;
+	static function popStyleColor(?count:Float = 1.0):Void;
 	@:native("PopStyleVar")
-	static function popStyleVar(?count:Float):Void;
+	static function popStyleVar(?count:Float = 1.0):Void;
 	@:native("PushColormap_PlotColormap")
 	static function pushColormap_PlotColormap(cmap:Float):Void;
 	@:native("PushColormap_Str")
 	static function pushColormap_Str(name:String):Void;
 	@:native("PushPlotClipRect")
-	static function pushPlotClipRect(?expand:Float):Void;
+	static function pushPlotClipRect(?expand:Float = 0.0):Void;
 	@:native("PushStyleColor_U32")
 	static function pushStyleColor_U32(idx:Float, col:Float):Void;
 	@:native("PushStyleColor_Vec4")
@@ -642,11 +642,11 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("PushStyleVar_Float")
 	static function pushStyleVar_Float(idx:Float, val:Float):Void;
 	@:native("PushStyleVar_Int")
-	static function pushStyleVar_Int(idx:Float, val:Float):Void;
+	static function pushStyleVar_Int(idx:Int, val:Int):Void;
 	@:native("PushStyleVar_Vec2")
 	static function pushStyleVar_Vec2(idx:Float, val:imguijs.Abstracts.ImVec2):Void;
 	@:native("SampleColormap")
-	static function sampleColormap(t:Float, ?cmap:Float):imguijs.Abstracts.ImVec4;
+	static function sampleColormap(t:Float, ?cmap:Float = -1.0):imguijs.Abstracts.ImVec4;
 	@:native("SetAxes")
 	static function setAxes(x_axis:Float, y_axis:Float):Void;
 	@:native("SetAxis")
@@ -656,25 +656,25 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("SetImGuiContext")
 	static function setImGuiContext(ctx:Float):Void;
 	@:native("SetNextAxesLimits")
-	static function setNextAxesLimits(x_min:Float, x_max:Float, y_min:Float, y_max:Float, ?cond:Float):Void;
+	static function setNextAxesLimits(x_min:Float, x_max:Float, y_min:Float, y_max:Float, ?cond:Float = 2.0):Void;
 	@:native("SetNextAxesToFit")
 	static function setNextAxesToFit():Void;
 	@:native("SetNextAxisLimits")
-	static function setNextAxisLimits(axis:Float, v_min:Float, v_max:Float, ?cond:Float):Void;
+	static function setNextAxisLimits(axis:Float, v_min:Float, v_max:Float, ?cond:Float = 2.0):Void;
 	@:native("SetNextAxisLinks")
 	static function setNextAxisLinks(axis:Float, link_min:Array<Float>, link_max:Array<Float>):Void;
 	@:native("SetNextAxisToFit")
 	static function setNextAxisToFit(axis:Float):Void;
 	@:native("SetupAxes")
-	static function setupAxes(x_label:String, y_label:String, ?x_flags:Float, ?y_flags:Float):Void;
+	static function setupAxes(x_label:String, y_label:String, ?x_flags:Float = 0.0, ?y_flags:Float = 0.0):Void;
 	@:native("SetupAxesLimits")
-	static function setupAxesLimits(x_min:Float, x_max:Float, y_min:Float, y_max:Float, ?cond:Float):Void;
+	static function setupAxesLimits(x_min:Float, x_max:Float, y_min:Float, y_max:Float, ?cond:Float = 2.0):Void;
 	@:native("SetupAxis")
-	static function setupAxis(axis:Float, ?label:String, ?flags:Float):Void;
+	static function setupAxis(axis:Float, ?label:String = "", ?flags:Float = 0.0):Void;
 	@:native("SetupAxisFormat_Str")
 	static function setupAxisFormat_Str(axis:Float, fmt:String):Void;
 	@:native("SetupAxisLimits")
-	static function setupAxisLimits(axis:Float, v_min:Float, v_max:Float, ?cond:Float):Void;
+	static function setupAxisLimits(axis:Float, v_min:Float, v_max:Float, ?cond:Float = 2.0):Void;
 	@:native("SetupAxisLimitsConstraints")
 	static function setupAxisLimitsConstraints(axis:Float, v_min:Float, v_max:Float):Void;
 	@:native("SetupAxisLinks")
@@ -682,39 +682,39 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("SetupAxisScale_PlotScale")
 	static function setupAxisScale_PlotScale(axis:Float, scale:Float):Void;
 	@:native("SetupAxisTicksRange")
-	static function setupAxisTicksRange(axis:Float, v_min:Float, v_max:Float, n_ticks:Float, ?labels:Array<String>, ?keep_default:Bool):Void;
+	static function setupAxisTicksRange(axis:Float, v_min:Float, v_max:Float, n_ticks:Float, ?labels:Array<String> = null, ?keep_default:Bool = false):Void;
 	@:native("SetupAxisTicks")
-	static function setupAxisTicks(axis:Float, values:Array<Float>, n_ticks:Float, ?labels:Array<String>, ?keep_default:Bool):Void;
+	static function setupAxisTicks(axis:Float, values:Array<Float>, n_ticks:Float, ?labels:Array<String> = null, ?keep_default:Bool = false):Void;
 	@:native("SetupAxisZoomConstraints")
 	static function setupAxisZoomConstraints(axis:Float, z_min:Float, z_max:Float):Void;
 	@:native("SetupFinish")
 	static function setupFinish():Void;
 	@:native("SetupLegend")
-	static function setupLegend(location:Float, ?flags:Float):Void;
+	static function setupLegend(location:Float, ?flags:Float = 0.0):Void;
 	@:native("SetupMouseText")
-	static function setupMouseText(location:Float, ?flags:Float):Void;
+	static function setupMouseText(location:Float, ?flags:Float = 0.0):Void;
 	@:native("ShowColormapSelector")
 	static function showColormapSelector(label:String):Bool;
 	@:native("ShowInputMapSelector")
 	static function showInputMapSelector(label:String):Bool;
 	@:native("ShowStyleEditor")
-	static function showStyleEditor(?ref:Float):Void;
+	static function showStyleEditor(?ref:Float = 0.0):Void;
 	@:native("ShowStyleSelector")
 	static function showStyleSelector(label:String):Bool;
 	@:native("ShowUserGuide")
 	static function showUserGuide():Void;
 	@:native("StyleColorsAuto")
-	static function styleColorsAuto(?dst:Float):Void;
+	static function styleColorsAuto(?dst:Float = 0.0):Void;
 	@:native("StyleColorsClassic")
-	static function styleColorsClassic(?dst:Float):Void;
+	static function styleColorsClassic(?dst:Float = 0.0):Void;
 	@:native("StyleColorsDark")
-	static function styleColorsDark(?dst:Float):Void;
+	static function styleColorsDark(?dst:Float = 0.0):Void;
 	@:native("StyleColorsLight")
-	static function styleColorsLight(?dst:Float):Void;
+	static function styleColorsLight(?dst:Float = 0.0):Void;
 	@:native("TagX_Bool")
-	static function tagX_Bool(x:Float, col:imguijs.Abstracts.ImVec4, ?round:Bool):Void;
+	static function tagX_Bool(x:Float, col:imguijs.Abstracts.ImVec4, ?round:Bool = false):Void;
 	@:native("TagY_Bool")
-	static function tagY_Bool(y:Float, col:imguijs.Abstracts.ImVec4, ?round:Bool):Void;
+	static function tagY_Bool(y:Float, col:imguijs.Abstracts.ImVec4, ?round:Bool = false):Void;
 	@:native("InputMap_destroy")
 	static function inputMap_destroy(self:Float):Void;
 	@:native("InputMap_ImPlotInputMap")

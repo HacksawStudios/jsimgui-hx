@@ -1315,7 +1315,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("AddInputCharactersUTF8")
 	function addInputCharactersUTF8(str:String):Void;
 	@:native("SetKeyEventNativeData")
-	function setKeyEventNativeData(key:ImGuiKey, native_keycode:Float, native_scancode:Float, ?native_legacy_index:Float):Void;
+	function setKeyEventNativeData(key:ImGuiKey, native_keycode:Float, native_scancode:Float, ?native_legacy_index:Float = -1.0):Void;
 	@:native("SetAppAcceptingEvents")
 	function setAppAcceptingEvents(accepting_events:Bool):Void;
 	@:native("ClearEventsQueue")
@@ -1362,7 +1362,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("DeleteChars")
 	function deleteChars(pos:Float, bytes_count:Float):Void;
 	@:native("InsertChars")
-	function insertChars(pos:Float, text:String, ?text_end:String):Void;
+	function insertChars(pos:Float, text:String, ?text_end:String = ""):Void;
 	@:native("SelectAll")
 	function selectAll():Void;
 	@:native("SetSelection")
@@ -1452,7 +1452,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("TempData")
 	var tempData:Dynamic;
 	@:native("Begin")
-	function begin(items_count:Float, ?items_height:Float):Void;
+	function begin(items_count:Float, ?items_height:Float = -1.0):Void;
 	@:native("End")
 	function end():Void;
 	@:native("Step")
@@ -1472,9 +1472,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("Value")
 	var value:ImVec4;
 	@:native("SetHSV")
-	function setHSV(h:Float, s:Float, v:Float, ?a:Float):Void;
+	function setHSV(h:Float, s:Float, v:Float, ?a:Float = 1.0):Void;
 	@:native("HSV")
-	function hsv(h:Float, s:Float, v:Float, ?a:Float):ImColor;
+	function hsv(h:Float, s:Float, v:Float, ?a:Float = 1.0):ImColor;
 }
 
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiMultiSelectIO") extern class ImGuiMultiSelectIO extends ReferenceStruct {
@@ -1531,7 +1531,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("Flags")
 	var flags:ImDrawListFlags;
 	@:native("PushClipRect")
-	function pushClipRect(clip_rect_min:ImVec2, clip_rect_max:ImVec2, ?intersect_with_current_clip_rect:Bool):Void;
+	function pushClipRect(clip_rect_min:ImVec2, clip_rect_max:ImVec2, ?intersect_with_current_clip_rect:Bool = false):Void;
 	@:native("PushClipRectFullScreen")
 	function pushClipRectFullScreen():Void;
 	@:native("PopClipRect")
@@ -1545,42 +1545,41 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetClipRectMax")
 	function getClipRectMax():ImVec2;
 	@:native("AddLine")
-	function addLine(p1:ImVec2, p2:ImVec2, col:ImU32, ?thickness:Float):Void;
+	function addLine(p1:ImVec2, p2:ImVec2, col:ImU32, ?thickness:Float = 1.0):Void;
 	@:native("AddRect")
-	function addRect(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float, ?flags:ImDrawFlags, ?thickness:Float):Void;
+	function addRect(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0, ?thickness:Float = 1.0):Void;
 	@:native("AddRectFilled")
-	function addRectFilled(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float, ?flags:ImDrawFlags):Void;
+	function addRectFilled(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddRectFilledMultiColor")
 	function addRectFilledMultiColor(p_min:ImVec2, p_max:ImVec2, col_upr_left:ImU32, col_upr_right:ImU32, col_bot_right:ImU32, col_bot_left:ImU32):Void;
 	@:native("AddQuad")
-	function addQuad(p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, col:ImU32, ?thickness:Float):Void;
+	function addQuad(p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, col:ImU32, ?thickness:Float = 1.0):Void;
 	@:native("AddQuadFilled")
 	function addQuadFilled(p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, col:ImU32):Void;
 	@:native("AddTriangle")
-	function addTriangle(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32, ?thickness:Float):Void;
+	function addTriangle(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32, ?thickness:Float = 1.0):Void;
 	@:native("AddTriangleFilled")
 	function addTriangleFilled(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32):Void;
 	@:native("AddCircle")
-	function addCircle(center:ImVec2, radius:Float, col:ImU32, ?num_segments:Float, ?thickness:Float):Void;
+	function addCircle(center:ImVec2, radius:Float, col:ImU32, ?num_segments:Float = 0.0, ?thickness:Float = 1.0):Void;
 	@:native("AddCircleFilled")
-	function addCircleFilled(center:ImVec2, radius:Float, col:ImU32, ?num_segments:Float):Void;
+	function addCircleFilled(center:ImVec2, radius:Float, col:ImU32, ?num_segments:Float = 0.0):Void;
 	@:native("AddNgon")
-	function addNgon(center:ImVec2, radius:Float, col:ImU32, num_segments:Float, ?thickness:Float):Void;
+	function addNgon(center:ImVec2, radius:Float, col:ImU32, num_segments:Float, ?thickness:Float = 1.0):Void;
 	@:native("AddNgonFilled")
 	function addNgonFilled(center:ImVec2, radius:Float, col:ImU32, num_segments:Float):Void;
 	@:native("AddEllipse")
-	function addEllipse(center:ImVec2, radius:ImVec2, col:ImU32, ?rot:Float, ?num_segments:Float, ?thickness:Float):Void;
+	function addEllipse(center:ImVec2, radius:ImVec2, col:ImU32, ?rot:Float = 0.0, ?num_segments:Float = 0.0, ?thickness:Float = 1.0):Void;
 	@:native("AddEllipseFilled")
-	function addEllipseFilled(center:ImVec2, radius:ImVec2, col:ImU32, ?rot:Float, ?num_segments:Float):Void;
+	function addEllipseFilled(center:ImVec2, radius:ImVec2, col:ImU32, ?rot:Float = 0.0, ?num_segments:Float = 0.0):Void;
 	@:native("AddText")
-	function addText(pos:ImVec2, col:ImU32, text_begin:String, ?text_end:String):Void;
+	function addText(pos:ImVec2, col:ImU32, text_begin:String, ?text_end:String = ""):Void;
 	@:native("AddTextImFontPtr")
-	function addTextImFontPtr(font:ImFont, font_size:Float, pos:ImVec2, col:ImU32, text_begin:String, ?text_end:String, ?wrap_width:Float,
-		?cpu_fine_clip_rect:ImVec4):Void;
+	function addTextImFontPtr(font:ImFont, font_size:Float, pos:ImVec2, col:ImU32, text_begin:String, ?text_end:String = "", ?wrap_width:Float = 0.0, ?cpu_fine_clip_rect:ImVec4 = null):Void;
 	@:native("AddBezierCubic")
-	function addBezierCubic(p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, col:ImU32, thickness:Float, ?num_segments:Float):Void;
+	function addBezierCubic(p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, col:ImU32, thickness:Float, ?num_segments:Float = 0.0):Void;
 	@:native("AddBezierQuadratic")
-	function addBezierQuadratic(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32, thickness:Float, ?num_segments:Float):Void;
+	function addBezierQuadratic(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32, thickness:Float, ?num_segments:Float = 0.0):Void;
 	@:native("AddPolyline")
 	function addPolyline(points:ImVec2, num_points:Float, col:ImU32, flags:ImDrawFlags, thickness:Float):Void;
 	@:native("AddConvexPolyFilled")
@@ -1588,13 +1587,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("AddConcavePolyFilled")
 	function addConcavePolyFilled(points:ImVec2, num_points:Float, col:ImU32):Void;
 	@:native("AddImage")
-	function addImage(tex_ref:ImTextureRef, p_min:ImVec2, p_max:ImVec2, ?uv_min:ImVec2, ?uv_max:ImVec2, ?col:ImU32):Void;
+	function addImage(tex_ref:ImTextureRef, p_min:ImVec2, p_max:ImVec2, ?uv_min:ImVec2 /* JS default: new ImVec2(0, 0) */, ?uv_max:ImVec2 /* JS default: new ImVec2(1, 1) */, ?col:ImU32 /* JS default: IM_COL32_WHITE */):Void;
 	@:native("AddImageQuad")
-	function addImageQuad(tex_ref:ImTextureRef, p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, ?uv1:ImVec2, ?uv2:ImVec2, ?uv3:ImVec2, ?uv4:ImVec2,
-		?col:ImU32):Void;
+	function addImageQuad(tex_ref:ImTextureRef, p1:ImVec2, p2:ImVec2, p3:ImVec2, p4:ImVec2, ?uv1:ImVec2 /* JS default: new ImVec2(0, 0) */, ?uv2:ImVec2 /* JS default: new ImVec2(1, 0) */, ?uv3:ImVec2 /* JS default: new ImVec2(1, 1) */, ?uv4:ImVec2 /* JS default: new ImVec2(0, 1) */, ?col:ImU32 /* JS default: IM_COL32_WHITE */):Void;
 	@:native("AddImageRounded")
-	function addImageRounded(tex_ref:ImTextureRef, p_min:ImVec2, p_max:ImVec2, uv_min:ImVec2, uv_max:ImVec2, col:ImU32, rounding:Float,
-		?flags:ImDrawFlags):Void;
+	function addImageRounded(tex_ref:ImTextureRef, p_min:ImVec2, p_max:ImVec2, uv_min:ImVec2, uv_max:ImVec2, col:ImU32, rounding:Float, ?flags:ImDrawFlags = 0):Void;
 	@:native("PathClear")
 	function pathClear():Void;
 	@:native("PathLineTo")
@@ -1606,21 +1603,21 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PathFillConcave")
 	function pathFillConcave(col:ImU32):Void;
 	@:native("PathStroke")
-	function pathStroke(col:ImU32, ?flags:ImDrawFlags, ?thickness:Float):Void;
+	function pathStroke(col:ImU32, ?flags:ImDrawFlags = 0, ?thickness:Float = 1.0):Void;
 	@:native("PathArcTo")
-	function pathArcTo(center:ImVec2, radius:Float, a_min:Float, a_max:Float, ?num_segments:Float):Void;
+	function pathArcTo(center:ImVec2, radius:Float, a_min:Float, a_max:Float, ?num_segments:Float = 0.0):Void;
 	@:native("PathArcToFast")
 	function pathArcToFast(center:ImVec2, radius:Float, a_min_of_12:Float, a_max_of_12:Float):Void;
 	@:native("PathEllipticalArcTo")
-	function pathEllipticalArcTo(center:ImVec2, radius:ImVec2, rot:Float, a_min:Float, a_max:Float, ?num_segments:Float):Void;
+	function pathEllipticalArcTo(center:ImVec2, radius:ImVec2, rot:Float, a_min:Float, a_max:Float, ?num_segments:Float = 0.0):Void;
 	@:native("PathBezierCubicCurveTo")
-	function pathBezierCubicCurveTo(p2:ImVec2, p3:ImVec2, p4:ImVec2, ?num_segments:Float):Void;
+	function pathBezierCubicCurveTo(p2:ImVec2, p3:ImVec2, p4:ImVec2, ?num_segments:Float = 0.0):Void;
 	@:native("PathBezierQuadraticCurveTo")
-	function pathBezierQuadraticCurveTo(p2:ImVec2, p3:ImVec2, ?num_segments:Float):Void;
+	function pathBezierQuadraticCurveTo(p2:ImVec2, p3:ImVec2, ?num_segments:Float = 0.0):Void;
 	@:native("PathRect")
-	function pathRect(rect_min:ImVec2, rect_max:ImVec2, ?rounding:Float, ?flags:ImDrawFlags):Void;
+	function pathRect(rect_min:ImVec2, rect_max:ImVec2, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddCallback")
-	function addCallback(callback:ImDrawCallback, userdata:Dynamic, ?userdata_size:Float):Void;
+	function addCallback(callback:ImDrawCallback, userdata:Dynamic, ?userdata_size:Float = 0.0):Void;
 	@:native("AddDrawCmd")
 	function addDrawCmd():Void;
 	@:native("CloneOutput")
@@ -1745,13 +1742,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("AddFont")
 	function addFont(font_cfg:ImFontConfig):ImFont;
 	@:native("AddFontDefault")
-	function addFontDefault(?font_cfg:ImFontConfig):ImFont;
+	function addFontDefault(?font_cfg:ImFontConfig = null):ImFont;
 	@:native("AddFontDefaultVector")
-	function addFontDefaultVector(?font_cfg:ImFontConfig):ImFont;
+	function addFontDefaultVector(?font_cfg:ImFontConfig = null):ImFont;
 	@:native("AddFontDefaultBitmap")
-	function addFontDefaultBitmap(?font_cfg:ImFontConfig):ImFont;
+	function addFontDefaultBitmap(?font_cfg:ImFontConfig = null):ImFont;
 	@:native("AddFontFromFileTTF")
-	function addFontFromFileTTF(filename:String, ?size_pixels:Float, ?font_cfg:ImFontConfig, ?glyph_ranges:Array<ImWchar>):ImFont;
+	function addFontFromFileTTF(filename:String, ?size_pixels:Float = 0.0, ?font_cfg:ImFontConfig = null, ?glyph_ranges:Array<ImWchar> = null):ImFont;
 	@:native("RemoveFont")
 	function removeFont(font:ImFont):Void;
 	@:native("Clear")
@@ -1769,7 +1766,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetGlyphRangesDefault")
 	function getGlyphRangesDefault():ImWchar;
 	@:native("AddCustomRect")
-	function addCustomRect(width:Float, height:Float, ?out_r:ImFontAtlasRect):ImFontAtlasRectId;
+	function addCustomRect(width:Float, height:Float, ?out_r:ImFontAtlasRect = null):ImFontAtlasRectId;
 	@:native("RemoveCustomRect")
 	function removeCustomRect(id:ImFontAtlasRectId):Void;
 	@:native("GetCustomRect")
@@ -1842,9 +1839,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGui") extern class ImGui {
 	@:native("CreateContext")
-	static function createContext(?shared_font_atlas:ImFontAtlas):ImGuiContext;
+	static function createContext(?shared_font_atlas:ImFontAtlas = null):ImGuiContext;
 	@:native("DestroyContext")
-	static function destroyContext(?ctx:ImGuiContext):Void;
+	static function destroyContext(?ctx:ImGuiContext = null):Void;
 	@:native("GetCurrentContext")
 	static function getCurrentContext():ImGuiContext;
 	@:native("SetCurrentContext")
@@ -1864,17 +1861,17 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetDrawData")
 	static function getDrawData():ImDrawData;
 	@:native("ShowDemoWindow")
-	static function showDemoWindow(?p_open:Array<Bool>):Void;
+	static function showDemoWindow(?p_open:Array<Bool> = null):Void;
 	@:native("ShowMetricsWindow")
-	static function showMetricsWindow(?p_open:Array<Bool>):Void;
+	static function showMetricsWindow(?p_open:Array<Bool> = null):Void;
 	@:native("ShowDebugLogWindow")
-	static function showDebugLogWindow(?p_open:Array<Bool>):Void;
+	static function showDebugLogWindow(?p_open:Array<Bool> = null):Void;
 	@:native("ShowIDStackToolWindow")
-	static function showIDStackToolWindow(?p_open:Array<Bool>):Void;
+	static function showIDStackToolWindow(?p_open:Array<Bool> = null):Void;
 	@:native("ShowAboutWindow")
-	static function showAboutWindow(?p_open:Array<Bool>):Void;
+	static function showAboutWindow(?p_open:Array<Bool> = null):Void;
 	@:native("ShowStyleEditor")
-	static function showStyleEditor(?ref:ImGuiStyle):Void;
+	static function showStyleEditor(?ref:ImGuiStyle = null):Void;
 	@:native("ShowStyleSelector")
 	static function showStyleSelector(label:String):Bool;
 	@:native("ShowFontSelector")
@@ -1884,19 +1881,19 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetVersion")
 	static function getVersion():String;
 	@:native("StyleColorsDark")
-	static function styleColorsDark(?dst:ImGuiStyle):Void;
+	static function styleColorsDark(?dst:ImGuiStyle = null):Void;
 	@:native("StyleColorsLight")
-	static function styleColorsLight(?dst:ImGuiStyle):Void;
+	static function styleColorsLight(?dst:ImGuiStyle = null):Void;
 	@:native("StyleColorsClassic")
-	static function styleColorsClassic(?dst:ImGuiStyle):Void;
+	static function styleColorsClassic(?dst:ImGuiStyle = null):Void;
 	@:native("Begin")
-	static function begin(name:String, ?p_open:Array<Bool>, ?flags:ImGuiWindowFlags):Bool;
+	static function begin(name:String, ?p_open:Array<Bool> = null, ?flags:ImGuiWindowFlags = 0):Bool;
 	@:native("End")
 	static function end():Void;
 	@:native("BeginChild")
-	static function beginChild(str_id:String, ?size:ImVec2, ?child_flags:ImGuiChildFlags, ?window_flags:ImGuiWindowFlags):Bool;
+	static function beginChild(str_id:String, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?child_flags:ImGuiChildFlags = 0, ?window_flags:ImGuiWindowFlags = 0):Bool;
 	@:native("BeginChildID")
-	static function beginChildID(id:ImGuiID, ?size:ImVec2, ?child_flags:ImGuiChildFlags, ?window_flags:ImGuiWindowFlags):Bool;
+	static function beginChildID(id:ImGuiID, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?child_flags:ImGuiChildFlags = 0, ?window_flags:ImGuiWindowFlags = 0):Bool;
 	@:native("EndChild")
 	static function endChild():Void;
 	@:native("IsWindowAppearing")
@@ -1904,9 +1901,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("IsWindowCollapsed")
 	static function isWindowCollapsed():Bool;
 	@:native("IsWindowFocused")
-	static function isWindowFocused(?flags:ImGuiFocusedFlags):Bool;
+	static function isWindowFocused(?flags:ImGuiFocusedFlags = 0):Bool;
 	@:native("IsWindowHovered")
-	static function isWindowHovered(?flags:ImGuiHoveredFlags):Bool;
+	static function isWindowHovered(?flags:ImGuiHoveredFlags = 0):Bool;
 	@:native("GetWindowDrawList")
 	static function getWindowDrawList():ImDrawList;
 	@:native("GetWindowDpiScale")
@@ -1922,15 +1919,15 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetWindowViewport")
 	static function getWindowViewport():ImGuiViewport;
 	@:native("SetNextWindowPos")
-	static function setNextWindowPos(pos:ImVec2, ?cond:ImGuiCond, ?pivot:ImVec2):Void;
+	static function setNextWindowPos(pos:ImVec2, ?cond:ImGuiCond = 0, ?pivot:ImVec2 /* JS default: new ImVec2(0, 0) */):Void;
 	@:native("SetNextWindowSize")
-	static function setNextWindowSize(size:ImVec2, ?cond:ImGuiCond):Void;
+	static function setNextWindowSize(size:ImVec2, ?cond:ImGuiCond = 0):Void;
 	@:native("SetNextWindowSizeConstraints")
 	static function setNextWindowSizeConstraints(min:ImVec2, max:ImVec2):Void;
 	@:native("SetNextWindowContentSize")
 	static function setNextWindowContentSize(size:ImVec2):Void;
 	@:native("SetNextWindowCollapsed")
-	static function setNextWindowCollapsed(collapsed:Bool, ?cond:ImGuiCond):Void;
+	static function setNextWindowCollapsed(collapsed:Bool, ?cond:ImGuiCond = 0):Void;
 	@:native("SetNextWindowFocus")
 	static function setNextWindowFocus():Void;
 	@:native("SetNextWindowScroll")
@@ -1940,19 +1937,19 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetNextWindowViewport")
 	static function setNextWindowViewport(viewport_id:ImGuiID):Void;
 	@:native("SetWindowPos")
-	static function setWindowPos(pos:ImVec2, ?cond:ImGuiCond):Void;
+	static function setWindowPos(pos:ImVec2, ?cond:ImGuiCond = 0):Void;
 	@:native("SetWindowSize")
-	static function setWindowSize(size:ImVec2, ?cond:ImGuiCond):Void;
+	static function setWindowSize(size:ImVec2, ?cond:ImGuiCond = 0):Void;
 	@:native("SetWindowCollapsed")
-	static function setWindowCollapsed(collapsed:Bool, ?cond:ImGuiCond):Void;
+	static function setWindowCollapsed(collapsed:Bool, ?cond:ImGuiCond = 0):Void;
 	@:native("SetWindowFocus")
 	static function setWindowFocus():Void;
 	@:native("SetWindowPosStr")
-	static function setWindowPosStr(name:String, pos:ImVec2, ?cond:ImGuiCond):Void;
+	static function setWindowPosStr(name:String, pos:ImVec2, ?cond:ImGuiCond = 0):Void;
 	@:native("SetWindowSizeStr")
-	static function setWindowSizeStr(name:String, size:ImVec2, ?cond:ImGuiCond):Void;
+	static function setWindowSizeStr(name:String, size:ImVec2, ?cond:ImGuiCond = 0):Void;
 	@:native("SetWindowCollapsedStr")
-	static function setWindowCollapsedStr(name:String, collapsed:Bool, ?cond:ImGuiCond):Void;
+	static function setWindowCollapsedStr(name:String, collapsed:Bool, ?cond:ImGuiCond = 0):Void;
 	@:native("SetWindowFocusStr")
 	static function setWindowFocusStr(name:String):Void;
 	@:native("GetScrollX")
@@ -1968,13 +1965,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetScrollMaxY")
 	static function getScrollMaxY():Float;
 	@:native("SetScrollHereX")
-	static function setScrollHereX(?center_x_ratio:Float):Void;
+	static function setScrollHereX(?center_x_ratio:Float = 0.5):Void;
 	@:native("SetScrollHereY")
-	static function setScrollHereY(?center_y_ratio:Float):Void;
+	static function setScrollHereY(?center_y_ratio:Float = 0.5):Void;
 	@:native("SetScrollFromPosX")
-	static function setScrollFromPosX(local_x:Float, ?center_x_ratio:Float):Void;
+	static function setScrollFromPosX(local_x:Float, ?center_x_ratio:Float = 0.5):Void;
 	@:native("SetScrollFromPosY")
-	static function setScrollFromPosY(local_y:Float, ?center_y_ratio:Float):Void;
+	static function setScrollFromPosY(local_y:Float, ?center_y_ratio:Float = 0.5):Void;
 	@:native("PushFontFloat")
 	static function pushFontFloat(font:ImFont, font_size_base_unscaled:Float):Void;
 	@:native("PopFont")
@@ -1990,7 +1987,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PushStyleColorImVec4")
 	static function pushStyleColorImVec4(idx:ImGuiCol, col:ImVec4):Void;
 	@:native("PopStyleColor")
-	static function popStyleColor(?count:Float):Void;
+	static function popStyleColor(?count:Float = 1.0):Void;
 	@:native("PushStyleVar")
 	static function pushStyleVar(idx:ImGuiStyleVar, val:Float):Void;
 	@:native("PushStyleVarImVec2")
@@ -2000,7 +1997,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PushStyleVarY")
 	static function pushStyleVarY(idx:ImGuiStyleVar, val_y:Float):Void;
 	@:native("PopStyleVar")
-	static function popStyleVar(?count:Float):Void;
+	static function popStyleVar(?count:Float = 1.0):Void;
 	@:native("PushItemFlag")
 	static function pushItemFlag(option:ImGuiItemFlags, enabled:Bool):Void;
 	@:native("PopItemFlag")
@@ -2014,17 +2011,17 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("CalcItemWidth")
 	static function calcItemWidth():Float;
 	@:native("PushTextWrapPos")
-	static function pushTextWrapPos(?wrap_local_pos_x:Float):Void;
+	static function pushTextWrapPos(?wrap_local_pos_x:Float = 0.0):Void;
 	@:native("PopTextWrapPos")
 	static function popTextWrapPos():Void;
 	@:native("GetFontTexUvWhitePixel")
 	static function getFontTexUvWhitePixel():ImVec2;
 	@:native("GetColorU32")
-	static function getColorU32(idx:ImGuiCol, ?alpha_mul:Float):ImU32;
+	static function getColorU32(idx:ImGuiCol, ?alpha_mul:Float = 1.0):ImU32;
 	@:native("GetColorU32ImVec4")
 	static function getColorU32ImVec4(col:ImVec4):ImU32;
 	@:native("GetColorU32ImU32")
-	static function getColorU32ImU32(col:ImU32, ?alpha_mul:Float):ImU32;
+	static function getColorU32ImU32(col:ImU32, ?alpha_mul:Float = 1.0):ImU32;
 	@:native("GetStyleColorVec4")
 	static function getStyleColorVec4(idx:ImGuiCol):ImVec4;
 	@:native("GetCursorScreenPos")
@@ -2050,7 +2047,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("Separator")
 	static function separator():Void;
 	@:native("SameLine")
-	static function sameLine(?offset_from_start_x:Float, ?spacing:Float):Void;
+	static function sameLine(?offset_from_start_x:Float = 0.0, ?spacing:Float = -1.0):Void;
 	@:native("NewLine")
 	static function newLine():Void;
 	@:native("Spacing")
@@ -2058,9 +2055,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("Dummy")
 	static function dummy(size:ImVec2):Void;
 	@:native("Indent")
-	static function indent(?indent_w:Float):Void;
+	static function indent(?indent_w:Float = 0.0):Void;
 	@:native("Unindent")
-	static function unindent(?indent_w:Float):Void;
+	static function unindent(?indent_w:Float = 0.0):Void;
 	@:native("BeginGroup")
 	static function beginGroup():Void;
 	@:native("EndGroup")
@@ -2078,13 +2075,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PushID")
 	static function pushID(str_id:String):Void;
 	@:native("PushIDInt")
-	static function pushIDInt(int_id:Float):Void;
+	static function pushIDInt(int_id:Int):Void;
 	@:native("PopID")
 	static function popID():Void;
 	@:native("GetID")
 	static function getID(str_id:String):ImGuiID;
 	@:native("GetIDInt")
-	static function getIDInt(int_id:Float):ImGuiID;
+	static function getIDInt(int_id:Int):ImGuiID;
 	@:native("Text")
 	static function text(fmt:String):Void;
 	@:native("TextColored")
@@ -2100,123 +2097,121 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SeparatorText")
 	static function separatorText(label:String):Void;
 	@:native("Button")
-	static function button(label:String, ?size:ImVec2):Bool;
+	static function button(label:String, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("SmallButton")
 	static function smallButton(label:String):Bool;
 	@:native("InvisibleButton")
-	static function invisibleButton(str_id:String, size:ImVec2, ?flags:ImGuiButtonFlags):Bool;
+	static function invisibleButton(str_id:String, size:ImVec2, ?flags:ImGuiButtonFlags = 0):Bool;
 	@:native("ArrowButton")
 	static function arrowButton(str_id:String, dir:ImGuiDir):Bool;
 	@:native("Checkbox")
 	static function checkbox(label:String, v:Array<Bool>):Bool;
 	@:native("CheckboxFlagsIntPtr")
-	static function checkboxFlagsIntPtr(label:String, flags:Array<Float>, flags_value:Float):Bool;
+	static function checkboxFlagsIntPtr(label:String, flags:Array<Int>, flags_value:Int):Bool;
 	@:native("CheckboxFlagsUintPtr")
 	static function checkboxFlagsUintPtr(label:String, flags:Array<Float>, flags_value:Float):Bool;
 	@:native("RadioButton")
 	static function radioButton(label:String, active:Bool):Bool;
 	@:native("RadioButtonIntPtr")
-	static function radioButtonIntPtr(label:String, v:Array<Float>, v_button:Float):Bool;
+	static function radioButtonIntPtr(label:String, v:Array<Int>, v_button:Int):Bool;
 	@:native("ProgressBar")
-	static function progressBar(fraction:Float, ?size_arg:ImVec2, ?overlay:String):Void;
+	static function progressBar(fraction:Float, ?size_arg:ImVec2 /* JS default: new ImVec2(-Number.MIN_VALUE, 0) */, ?overlay:String = ""):Void;
 	@:native("Bullet")
 	static function bullet():Void;
 	@:native("TextLink")
 	static function textLink(label:String):Bool;
 	@:native("TextLinkOpenURL")
-	static function textLinkOpenURL(label:String, ?url:String):Bool;
+	static function textLinkOpenURL(label:String, ?url:String = ""):Bool;
 	@:native("Image")
-	static function image(tex_ref:ImTextureRef, image_size:ImVec2, ?uv0:ImVec2, ?uv1:ImVec2):Void;
+	static function image(tex_ref:ImTextureRef, image_size:ImVec2, ?uv0:ImVec2 /* JS default: new ImVec2(0, 0) */, ?uv1:ImVec2 /* JS default: new ImVec2(1, 1) */):Void;
 	@:native("ImageWithBg")
-	static function imageWithBg(tex_ref:ImTextureRef, image_size:ImVec2, ?uv0:ImVec2, ?uv1:ImVec2, ?bg_col:ImVec4, ?tint_col:ImVec4):Void;
+	static function imageWithBg(tex_ref:ImTextureRef, image_size:ImVec2, ?uv0:ImVec2 /* JS default: new ImVec2(0, 0) */, ?uv1:ImVec2 /* JS default: new ImVec2(1, 1) */, ?bg_col:ImVec4 /* JS default: new ImVec4(0, 0, 0, 0) */, ?tint_col:ImVec4 /* JS default: new ImVec4(1, 1, 1, 1) */):Void;
 	@:native("ImageButton")
-	static function imageButton(str_id:String, tex_ref:ImTextureRef, image_size:ImVec2, ?uv0:ImVec2, ?uv1:ImVec2, ?bg_col:ImVec4, ?tint_col:ImVec4):Bool;
+	static function imageButton(str_id:String, tex_ref:ImTextureRef, image_size:ImVec2, ?uv0:ImVec2 /* JS default: new ImVec2(0, 0) */, ?uv1:ImVec2 /* JS default: new ImVec2(1, 1) */, ?bg_col:ImVec4 /* JS default: new ImVec4(0, 0, 0, 0) */, ?tint_col:ImVec4 /* JS default: new ImVec4(1, 1, 1, 1) */):Bool;
 	@:native("BeginCombo")
-	static function beginCombo(label:String, preview_value:String, ?flags:ImGuiComboFlags):Bool;
+	static function beginCombo(label:String, preview_value:String, ?flags:ImGuiComboFlags = 0):Bool;
 	@:native("EndCombo")
 	static function endCombo():Void;
 	@:native("Combo")
-	static function combo(label:String, current_item:Array<Float>, items_separated_by_zeros:String, ?popup_max_height_in_items:Float):Bool;
+	static function combo(label:String, current_item:Array<Float>, items_separated_by_zeros:String, ?popup_max_height_in_items:Float = -1.0):Bool;
 	@:native("DragFloat")
-	static function dragFloat(label:String, v:Array<Float>, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragFloat(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloat2")
-	static function dragFloat2(label:String, v:Dynamic, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragFloat2(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloat3")
-	static function dragFloat3(label:String, v:Dynamic, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragFloat3(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloat4")
-	static function dragFloat4(label:String, v:Dynamic, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragFloat4(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloatRange2")
-	static function dragFloatRange2(label:String, v_current_min:Array<Float>, v_current_max:Array<Float>, ?v_speed:Float, ?v_min:Float, ?v_max:Float,
-		?format:String, ?format_max:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragFloatRange2(label:String, v_current_min:Array<Float>, v_current_max:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?format_max:String = "", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt")
-	static function dragInt(label:String, v:Array<Float>, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragInt(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt2")
-	static function dragInt2(label:String, v:Dynamic, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragInt2(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt3")
-	static function dragInt3(label:String, v:Dynamic, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragInt3(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt4")
-	static function dragInt4(label:String, v:Dynamic, ?v_speed:Float, ?v_min:Float, ?v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragInt4(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragIntRange2")
-	static function dragIntRange2(label:String, v_current_min:Array<Float>, v_current_max:Array<Float>, ?v_speed:Float, ?v_min:Float, ?v_max:Float,
-		?format:String, ?format_max:String, ?flags:ImGuiSliderFlags):Bool;
+	static function dragIntRange2(label:String, v_current_min:Array<Int>, v_current_max:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?format_max:String = "", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat")
-	static function sliderFloat(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderFloat(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat2")
-	static function sliderFloat2(label:String, v:Dynamic, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderFloat2(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat3")
-	static function sliderFloat3(label:String, v:Dynamic, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderFloat3(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat4")
-	static function sliderFloat4(label:String, v:Dynamic, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderFloat4(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderAngle")
-	static function sliderAngle(label:String, v_rad:Array<Float>, ?v_degrees_min:Float, ?v_degrees_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderAngle(label:String, v_rad:Array<Float>, ?v_degrees_min:Float = -360.0, ?v_degrees_max:Float = 360.0, ?format:String = "%.0f deg", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt")
-	static function sliderInt(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderInt(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt2")
-	static function sliderInt2(label:String, v:Dynamic, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderInt2(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt3")
-	static function sliderInt3(label:String, v:Dynamic, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderInt3(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt4")
-	static function sliderInt4(label:String, v:Dynamic, v_min:Float, v_max:Float, ?format:String, ?flags:ImGuiSliderFlags):Bool;
+	static function sliderInt4(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("InputText")
-	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputTextMultiline")
-	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputTextWithHint")
-	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat")
-	static function inputFloat(label:String, v:Array<Float>, ?step:Float, ?step_fast:Float, ?format:String, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputFloat(label:String, v:Array<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat2")
-	static function inputFloat2(label:String, v:Dynamic, ?format:String, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputFloat2(label:String, v:Array<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat3")
-	static function inputFloat3(label:String, v:Dynamic, ?format:String, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputFloat3(label:String, v:Array<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat4")
-	static function inputFloat4(label:String, v:Dynamic, ?format:String, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputFloat4(label:String, v:Array<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt")
-	static function inputInt(label:String, v:Array<Float>, ?step:Float, ?step_fast:Float, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputInt(label:String, v:Array<Int>, ?step:Int = 1, ?step_fast:Int = 100, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt2")
-	static function inputInt2(label:String, v:Dynamic, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputInt2(label:String, v:Array<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt3")
-	static function inputInt3(label:String, v:Dynamic, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputInt3(label:String, v:Array<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt4")
-	static function inputInt4(label:String, v:Dynamic, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputInt4(label:String, v:Array<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputDouble")
-	static function inputDouble(label:String, v:Array<Float>, ?step:Float, ?step_fast:Float, ?format:String, ?flags:ImGuiInputTextFlags):Bool;
+	static function inputDouble(label:String, v:Array<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.6f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("ColorEdit3")
-	static function colorEdit3(label:String, col:Dynamic, ?flags:ImGuiColorEditFlags):Bool;
+	static function colorEdit3(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
 	@:native("ColorEdit4")
-	static function colorEdit4(label:String, col:Dynamic, ?flags:ImGuiColorEditFlags):Bool;
+	static function colorEdit4(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
 	@:native("ColorPicker3")
-	static function colorPicker3(label:String, col:Dynamic, ?flags:ImGuiColorEditFlags):Bool;
+	static function colorPicker3(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
 	@:native("ColorPicker4")
-	static function colorPicker4(label:String, col:Dynamic, ?flags:ImGuiColorEditFlags, ?ref_col:Array<Float>):Bool;
+	static function colorPicker4(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0, ?ref_col:Array<Float> = null):Bool;
 	@:native("ColorButton")
-	static function colorButton(desc_id:String, col:ImVec4, ?flags:ImGuiColorEditFlags, ?size:ImVec2):Bool;
+	static function colorButton(desc_id:String, col:ImVec4, ?flags:ImGuiColorEditFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("SetColorEditOptions")
 	static function setColorEditOptions(flags:ImGuiColorEditFlags):Void;
 	@:native("TreeNode")
 	static function treeNode(label:String):Bool;
 	@:native("TreeNodeEx")
-	static function treeNodeEx(label:String, ?flags:ImGuiTreeNodeFlags):Bool;
+	static function treeNodeEx(label:String, ?flags:ImGuiTreeNodeFlags = 0):Bool;
 	@:native("TreePush")
 	static function treePush(str_id:String):Void;
 	@:native("TreePop")
@@ -2224,21 +2219,21 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetTreeNodeToLabelSpacing")
 	static function getTreeNodeToLabelSpacing():Float;
 	@:native("CollapsingHeader")
-	static function collapsingHeader(label:String, ?flags:ImGuiTreeNodeFlags):Bool;
+	static function collapsingHeader(label:String, ?flags:ImGuiTreeNodeFlags = 0):Bool;
 	@:native("CollapsingHeaderBoolPtr")
-	static function collapsingHeaderBoolPtr(label:String, p_visible:Array<Bool>, ?flags:ImGuiTreeNodeFlags):Bool;
+	static function collapsingHeaderBoolPtr(label:String, p_visible:Array<Bool>, ?flags:ImGuiTreeNodeFlags = 0):Bool;
 	@:native("SetNextItemOpen")
-	static function setNextItemOpen(is_open:Bool, ?cond:ImGuiCond):Void;
+	static function setNextItemOpen(is_open:Bool, ?cond:ImGuiCond = 0):Void;
 	@:native("SetNextItemStorageID")
 	static function setNextItemStorageID(storage_id:ImGuiID):Void;
 	@:native("TreeNodeGetOpen")
 	static function treeNodeGetOpen(storage_id:ImGuiID):Bool;
 	@:native("Selectable")
-	static function selectable(label:String, ?selected:Bool, ?flags:ImGuiSelectableFlags, ?size:ImVec2):Bool;
+	static function selectable(label:String, ?selected:Bool = false, ?flags:ImGuiSelectableFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("SelectableBoolPtr")
-	static function selectableBoolPtr(label:String, p_selected:Array<Bool>, ?flags:ImGuiSelectableFlags, ?size:ImVec2):Bool;
+	static function selectableBoolPtr(label:String, p_selected:Array<Bool>, ?flags:ImGuiSelectableFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("BeginMultiSelect")
-	static function beginMultiSelect(flags:ImGuiMultiSelectFlags, ?selection_size:Float, ?items_count:Float):ImGuiMultiSelectIO;
+	static function beginMultiSelect(flags:ImGuiMultiSelectFlags, ?selection_size:Float = -1.0, ?items_count:Float = -1.0):ImGuiMultiSelectIO;
 	@:native("EndMultiSelect")
 	static function endMultiSelect():ImGuiMultiSelectIO;
 	@:native("SetNextItemSelectionUserData")
@@ -2246,15 +2241,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("IsItemToggledSelection")
 	static function isItemToggledSelection():Bool;
 	@:native("BeginListBox")
-	static function beginListBox(label:String, ?size:ImVec2):Bool;
+	static function beginListBox(label:String, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("EndListBox")
 	static function endListBox():Void;
 	@:native("PlotLines")
-	static function plotLines(label:String, values:Array<Float>, values_count:Float, ?values_offset:Float, ?overlay_text:String, ?scale_min:Float,
-		?scale_max:Float, ?graph_size:ImVec2, ?stride:Float):Void;
+	static function plotLines(label:String, values:Array<Float>, values_count:Float, ?values_offset:Float = 0.0, ?overlay_text:String = "", ?scale_min:Float = 1.7976931348623157e+308, ?scale_max:Float = 1.7976931348623157e+308, ?graph_size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?stride:Float = 4.0):Void;
 	@:native("PlotHistogram")
-	static function plotHistogram(label:String, values:Array<Float>, values_count:Float, ?values_offset:Float, ?overlay_text:String, ?scale_min:Float,
-		?scale_max:Float, ?graph_size:ImVec2, ?stride:Float):Void;
+	static function plotHistogram(label:String, values:Array<Float>, values_count:Float, ?values_offset:Float = 0.0, ?overlay_text:String = "", ?scale_min:Float = 1.7976931348623157e+308, ?scale_max:Float = 1.7976931348623157e+308, ?graph_size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?stride:Float = 4.0):Void;
 	@:native("BeginMenuBar")
 	static function beginMenuBar():Bool;
 	@:native("EndMenuBar")
@@ -2264,13 +2257,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("EndMainMenuBar")
 	static function endMainMenuBar():Void;
 	@:native("BeginMenu")
-	static function beginMenu(label:String, ?enabled:Bool):Bool;
+	static function beginMenu(label:String, ?enabled:Bool = true):Bool;
 	@:native("EndMenu")
 	static function endMenu():Void;
 	@:native("MenuItem")
-	static function menuItem(label:String, ?shortcut:String, ?selected:Bool, ?enabled:Bool):Bool;
+	static function menuItem(label:String, ?shortcut:String = "", ?selected:Bool = false, ?enabled:Bool = true):Bool;
 	@:native("MenuItemBoolPtr")
-	static function menuItemBoolPtr(label:String, shortcut:String, p_selected:Array<Bool>, ?enabled:Bool):Bool;
+	static function menuItemBoolPtr(label:String, shortcut:String, p_selected:Array<Bool>, ?enabled:Bool = true):Bool;
 	@:native("BeginTooltip")
 	static function beginTooltip():Bool;
 	@:native("EndTooltip")
@@ -2282,39 +2275,39 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetItemTooltip")
 	static function setItemTooltip(fmt:String):Void;
 	@:native("BeginPopup")
-	static function beginPopup(str_id:String, ?flags:ImGuiWindowFlags):Bool;
+	static function beginPopup(str_id:String, ?flags:ImGuiWindowFlags = 0):Bool;
 	@:native("BeginPopupModal")
-	static function beginPopupModal(name:String, ?p_open:Array<Bool>, ?flags:ImGuiWindowFlags):Bool;
+	static function beginPopupModal(name:String, ?p_open:Array<Bool> = null, ?flags:ImGuiWindowFlags = 0):Bool;
 	@:native("EndPopup")
 	static function endPopup():Void;
 	@:native("OpenPopup")
-	static function openPopup(str_id:String, ?popup_flags:ImGuiPopupFlags):Void;
+	static function openPopup(str_id:String, ?popup_flags:ImGuiPopupFlags = 0):Void;
 	@:native("OpenPopupID")
-	static function openPopupID(id:ImGuiID, ?popup_flags:ImGuiPopupFlags):Void;
+	static function openPopupID(id:ImGuiID, ?popup_flags:ImGuiPopupFlags = 0):Void;
 	@:native("OpenPopupOnItemClick")
-	static function openPopupOnItemClick(?str_id:String, ?popup_flags:ImGuiPopupFlags):Void;
+	static function openPopupOnItemClick(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Void;
 	@:native("CloseCurrentPopup")
 	static function closeCurrentPopup():Void;
 	@:native("BeginPopupContextItem")
-	static function beginPopupContextItem(?str_id:String, ?popup_flags:ImGuiPopupFlags):Bool;
+	static function beginPopupContextItem(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("BeginPopupContextWindow")
-	static function beginPopupContextWindow(?str_id:String, ?popup_flags:ImGuiPopupFlags):Bool;
+	static function beginPopupContextWindow(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("BeginPopupContextVoid")
-	static function beginPopupContextVoid(?str_id:String, ?popup_flags:ImGuiPopupFlags):Bool;
+	static function beginPopupContextVoid(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("IsPopupOpen")
-	static function isPopupOpen(str_id:String, ?flags:ImGuiPopupFlags):Bool;
+	static function isPopupOpen(str_id:String, ?flags:ImGuiPopupFlags = 0):Bool;
 	@:native("BeginTable")
-	static function beginTable(str_id:String, columns:Float, ?flags:ImGuiTableFlags, ?outer_size:ImVec2, ?inner_width:Float):Bool;
+	static function beginTable(str_id:String, columns:Float, ?flags:ImGuiTableFlags = 0, ?outer_size:ImVec2 /* JS default: new ImVec2(0.0, 0.0) */, ?inner_width:Float = 0.0):Bool;
 	@:native("EndTable")
 	static function endTable():Void;
 	@:native("TableNextRow")
-	static function tableNextRow(?row_flags:ImGuiTableRowFlags, ?min_row_height:Float):Void;
+	static function tableNextRow(?row_flags:ImGuiTableRowFlags = 0, ?min_row_height:Float = 0.0):Void;
 	@:native("TableNextColumn")
 	static function tableNextColumn():Bool;
 	@:native("TableSetColumnIndex")
 	static function tableSetColumnIndex(column_n:Float):Bool;
 	@:native("TableSetupColumn")
-	static function tableSetupColumn(label:String, ?flags:ImGuiTableColumnFlags, ?init_width_or_weight:Float, ?user_id:ImGuiID):Void;
+	static function tableSetupColumn(label:String, ?flags:ImGuiTableColumnFlags = 0, ?init_width_or_weight:Float = 0.0, ?user_id:ImGuiID = 0):Void;
 	@:native("TableSetupScrollFreeze")
 	static function tableSetupScrollFreeze(cols:Float, rows:Float):Void;
 	@:native("TableHeader")
@@ -2332,49 +2325,49 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("TableGetRowIndex")
 	static function tableGetRowIndex():Float;
 	@:native("TableGetColumnName")
-	static function tableGetColumnName(?column_n:Float):String;
+	static function tableGetColumnName(?column_n:Float = -1.0):String;
 	@:native("TableGetColumnFlags")
-	static function tableGetColumnFlags(?column_n:Float):ImGuiTableColumnFlags;
+	static function tableGetColumnFlags(?column_n:Float = -1.0):ImGuiTableColumnFlags;
 	@:native("TableSetColumnEnabled")
 	static function tableSetColumnEnabled(column_n:Float, v:Bool):Void;
 	@:native("TableGetHoveredColumn")
 	static function tableGetHoveredColumn():Float;
 	@:native("TableSetBgColor")
-	static function tableSetBgColor(target:ImGuiTableBgTarget, color:ImU32, ?column_n:Float):Void;
+	static function tableSetBgColor(target:ImGuiTableBgTarget, color:ImU32, ?column_n:Float = -1.0):Void;
 	@:native("Columns")
-	static function columns(?count:Float, ?id:String, ?borders:Bool):Void;
+	static function columns(?count:Float = 1.0, ?id:String = "", ?borders:Bool = true):Void;
 	@:native("NextColumn")
 	static function nextColumn():Void;
 	@:native("GetColumnIndex")
 	static function getColumnIndex():Float;
 	@:native("GetColumnWidth")
-	static function getColumnWidth(?column_index:Float):Float;
+	static function getColumnWidth(?column_index:Float = -1.0):Float;
 	@:native("SetColumnWidth")
 	static function setColumnWidth(column_index:Float, width:Float):Void;
 	@:native("GetColumnOffset")
-	static function getColumnOffset(?column_index:Float):Float;
+	static function getColumnOffset(?column_index:Float = -1.0):Float;
 	@:native("SetColumnOffset")
 	static function setColumnOffset(column_index:Float, offset_x:Float):Void;
 	@:native("GetColumnsCount")
 	static function getColumnsCount():Float;
 	@:native("BeginTabBar")
-	static function beginTabBar(str_id:String, ?flags:ImGuiTabBarFlags):Bool;
+	static function beginTabBar(str_id:String, ?flags:ImGuiTabBarFlags = 0):Bool;
 	@:native("EndTabBar")
 	static function endTabBar():Void;
 	@:native("BeginTabItem")
-	static function beginTabItem(label:String, ?p_open:Array<Bool>, ?flags:ImGuiTabItemFlags):Bool;
+	static function beginTabItem(label:String, ?p_open:Array<Bool> = null, ?flags:ImGuiTabItemFlags = 0):Bool;
 	@:native("EndTabItem")
 	static function endTabItem():Void;
 	@:native("TabItemButton")
-	static function tabItemButton(label:String, ?flags:ImGuiTabItemFlags):Bool;
+	static function tabItemButton(label:String, ?flags:ImGuiTabItemFlags = 0):Bool;
 	@:native("SetTabItemClosed")
 	static function setTabItemClosed(tab_or_docked_window_label:String):Void;
 	@:native("DockSpace")
-	static function dockSpace(dockspace_id:ImGuiID, ?size:ImVec2, ?flags:ImGuiDockNodeFlags, ?window_class:ImGuiWindowClass):ImGuiID;
+	static function dockSpace(dockspace_id:ImGuiID, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiDockNodeFlags = 0, ?window_class:ImGuiWindowClass = null):ImGuiID;
 	@:native("DockSpaceOverViewport")
-	static function dockSpaceOverViewport(?dockspace_id:ImGuiID, ?viewport:ImGuiViewport, ?flags:ImGuiDockNodeFlags, ?window_class:ImGuiWindowClass):ImGuiID;
+	static function dockSpaceOverViewport(?dockspace_id:ImGuiID = 0, ?viewport:ImGuiViewport = null, ?flags:ImGuiDockNodeFlags = 0, ?window_class:ImGuiWindowClass = null):ImGuiID;
 	@:native("SetNextWindowDockID")
-	static function setNextWindowDockID(dock_id:ImGuiID, ?cond:ImGuiCond):Void;
+	static function setNextWindowDockID(dock_id:ImGuiID, ?cond:ImGuiCond = 0):Void;
 	@:native("SetNextWindowClass")
 	static function setNextWindowClass(window_class:ImGuiWindowClass):Void;
 	@:native("GetWindowDockID")
@@ -2382,11 +2375,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("IsWindowDocked")
 	static function isWindowDocked():Bool;
 	@:native("LogToTTY")
-	static function logToTTY(?auto_open_depth:Float):Void;
+	static function logToTTY(?auto_open_depth:Float = -1.0):Void;
 	@:native("LogToFile")
-	static function logToFile(?auto_open_depth:Float, ?filename:String):Void;
+	static function logToFile(?auto_open_depth:Float = -1.0, ?filename:String = ""):Void;
 	@:native("LogToClipboard")
-	static function logToClipboard(?auto_open_depth:Float):Void;
+	static function logToClipboard(?auto_open_depth:Float = -1.0):Void;
 	@:native("LogFinish")
 	static function logFinish():Void;
 	@:native("LogButtons")
@@ -2394,7 +2387,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("LogText")
 	static function logText(fmt:String):Void;
 	@:native("BeginDragDropSource")
-	static function beginDragDropSource(?flags:ImGuiDragDropFlags):Bool;
+	static function beginDragDropSource(?flags:ImGuiDragDropFlags = 0):Bool;
 	@:native("SetDragDropPayload")
 	static function setDragDropPayload(type:String, data:String, sz:Float, cond:ImGuiCond):Bool;
 	@:native("EndDragDropSource")
@@ -2402,13 +2395,13 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("BeginDragDropTarget")
 	static function beginDragDropTarget():Bool;
 	@:native("AcceptDragDropPayload")
-	static function acceptDragDropPayload(type:String, ?flags:ImGuiDragDropFlags):ImGuiPayload;
+	static function acceptDragDropPayload(type:String, ?flags:ImGuiDragDropFlags = 0):ImGuiPayload;
 	@:native("EndDragDropTarget")
 	static function endDragDropTarget():Void;
 	@:native("GetDragDropPayload")
 	static function getDragDropPayload():ImGuiPayload;
 	@:native("BeginDisabled")
-	static function beginDisabled(?disabled:Bool):Void;
+	static function beginDisabled(?disabled:Bool = true):Void;
 	@:native("EndDisabled")
 	static function endDisabled():Void;
 	@:native("PushClipRect")
@@ -2418,19 +2411,19 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetItemDefaultFocus")
 	static function setItemDefaultFocus():Void;
 	@:native("SetKeyboardFocusHere")
-	static function setKeyboardFocusHere(?offset:Float):Void;
+	static function setKeyboardFocusHere(?offset:Float = 0.0):Void;
 	@:native("SetNavCursorVisible")
 	static function setNavCursorVisible(visible:Bool):Void;
 	@:native("SetNextItemAllowOverlap")
 	static function setNextItemAllowOverlap():Void;
 	@:native("IsItemHovered")
-	static function isItemHovered(?flags:ImGuiHoveredFlags):Bool;
+	static function isItemHovered(?flags:ImGuiHoveredFlags = 0):Bool;
 	@:native("IsItemActive")
 	static function isItemActive():Bool;
 	@:native("IsItemFocused")
 	static function isItemFocused():Bool;
 	@:native("IsItemClicked")
-	static function isItemClicked(?mouse_button:ImGuiMouseButton):Bool;
+	static function isItemClicked(?mouse_button:ImGuiMouseButton = 0):Bool;
 	@:native("IsItemVisible")
 	static function isItemVisible():Bool;
 	@:native("IsItemEdited")
@@ -2462,9 +2455,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetMainViewport")
 	static function getMainViewport():ImGuiViewport;
 	@:native("GetBackgroundDrawList")
-	static function getBackgroundDrawList(?viewport:ImGuiViewport):ImDrawList;
+	static function getBackgroundDrawList(?viewport:ImGuiViewport = null):ImDrawList;
 	@:native("GetForegroundDrawList")
-	static function getForegroundDrawList(?viewport:ImGuiViewport):ImDrawList;
+	static function getForegroundDrawList(?viewport:ImGuiViewport = null):ImDrawList;
 	@:native("IsRectVisibleBySize")
 	static function isRectVisibleBySize(size:ImVec2):Bool;
 	@:native("IsRectVisible")
@@ -2478,7 +2471,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetStyleColorName")
 	static function getStyleColorName(idx:ImGuiCol):String;
 	@:native("CalcTextSize")
-	static function calcTextSize(text:String, ?text_end:String, ?hide_text_after_double_hash:Bool, ?wrap_width:Float):ImVec2;
+	static function calcTextSize(text:String, ?text_end:String = "", ?hide_text_after_double_hash:Bool = false, ?wrap_width:Float = -1.0):ImVec2;
 	@:native("ColorConvertU32ToFloat4")
 	static function colorConvertU32ToFloat4(in_:ImU32):ImVec4;
 	@:native("ColorConvertFloat4ToU32")
@@ -2490,7 +2483,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("IsKeyDown")
 	static function isKeyDown(key:ImGuiKey):Bool;
 	@:native("IsKeyPressed")
-	static function isKeyPressed(key:ImGuiKey, ?repeat:Bool):Bool;
+	static function isKeyPressed(key:ImGuiKey, ?repeat:Bool = true):Bool;
 	@:native("IsKeyReleased")
 	static function isKeyReleased(key:ImGuiKey):Bool;
 	@:native("IsKeyChordPressed")
@@ -2502,15 +2495,15 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetNextFrameWantCaptureKeyboard")
 	static function setNextFrameWantCaptureKeyboard(want_capture_keyboard:Bool):Void;
 	@:native("Shortcut")
-	static function shortcut(key_chord:ImGuiKeyChord, ?flags:ImGuiInputFlags):Bool;
+	static function shortcut(key_chord:ImGuiKeyChord, ?flags:ImGuiInputFlags = 0):Bool;
 	@:native("SetNextItemShortcut")
-	static function setNextItemShortcut(key_chord:ImGuiKeyChord, ?flags:ImGuiInputFlags):Void;
+	static function setNextItemShortcut(key_chord:ImGuiKeyChord, ?flags:ImGuiInputFlags = 0):Void;
 	@:native("SetItemKeyOwner")
 	static function setItemKeyOwner(key:ImGuiKey):Void;
 	@:native("IsMouseDown")
 	static function isMouseDown(button:ImGuiMouseButton):Bool;
 	@:native("IsMouseClicked")
-	static function isMouseClicked(button:ImGuiMouseButton, ?repeat:Bool):Bool;
+	static function isMouseClicked(button:ImGuiMouseButton, ?repeat:Bool = false):Bool;
 	@:native("IsMouseReleased")
 	static function isMouseReleased(button:ImGuiMouseButton):Bool;
 	@:native("IsMouseDoubleClicked")
@@ -2520,9 +2513,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetMouseClickedCount")
 	static function getMouseClickedCount(button:ImGuiMouseButton):Float;
 	@:native("IsMouseHoveringRect")
-	static function isMouseHoveringRect(r_min:ImVec2, r_max:ImVec2, ?clip:Bool):Bool;
+	static function isMouseHoveringRect(r_min:ImVec2, r_max:ImVec2, ?clip:Bool = true):Bool;
 	@:native("IsMousePosValid")
-	static function isMousePosValid(?mouse_pos:ImVec2):Bool;
+	static function isMousePosValid(?mouse_pos:ImVec2 = null):Bool;
 	@:native("IsAnyMouseDown")
 	static function isAnyMouseDown():Bool;
 	@:native("GetMousePos")
@@ -2530,11 +2523,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetMousePosOnOpeningCurrentPopup")
 	static function getMousePosOnOpeningCurrentPopup():ImVec2;
 	@:native("IsMouseDragging")
-	static function isMouseDragging(button:ImGuiMouseButton, ?lock_threshold:Float):Bool;
+	static function isMouseDragging(button:ImGuiMouseButton, ?lock_threshold:Float = -1.0):Bool;
 	@:native("GetMouseDragDelta")
-	static function getMouseDragDelta(?button:ImGuiMouseButton, ?lock_threshold:Float):ImVec2;
+	static function getMouseDragDelta(?button:ImGuiMouseButton = 0, ?lock_threshold:Float = -1.0):ImVec2;
 	@:native("ResetMouseDragDelta")
-	static function resetMouseDragDelta(?button:ImGuiMouseButton):Void;
+	static function resetMouseDragDelta(?button:ImGuiMouseButton = 0):Void;
 	@:native("GetMouseCursor")
 	static function getMouseCursor():ImGuiMouseCursor;
 	@:native("SetMouseCursor")
@@ -2546,9 +2539,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetClipboardText")
 	static function setClipboardText(text:String):Void;
 	@:native("LoadIniSettingsFromMemory")
-	static function loadIniSettingsFromMemory(ini_data:String, ?ini_size:Float):Void;
+	static function loadIniSettingsFromMemory(ini_data:String, ?ini_size:Float = 0.0):Void;
 	@:native("SaveIniSettingsToMemory")
-	static function saveIniSettingsToMemory(?out_ini_size:Array<Float>):String;
+	static function saveIniSettingsToMemory(?out_ini_size:Array<Float> = null):String;
 	@:native("DebugTextEncoding")
 	static function debugTextEncoding(text:String):Void;
 	@:native("DebugFlashStyleColor")
@@ -2563,7 +2556,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("UpdatePlatformWindows")
 	static function updatePlatformWindows():Void;
 	@:native("RenderPlatformWindowsDefault")
-	static function renderPlatformWindowsDefault(?platform_render_arg:Dynamic, ?renderer_render_arg:Dynamic):Void;
+	static function renderPlatformWindowsDefault(?platform_render_arg:Dynamic = null, ?renderer_render_arg:Dynamic = null):Void;
 	@:native("DestroyPlatformWindows")
 	static function destroyPlatformWindows():Void;
 	@:native("FindViewportByID")

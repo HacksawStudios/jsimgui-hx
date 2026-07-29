@@ -16,7 +16,7 @@ package imguijs;
 	@:native("SetLoadIniSettingsFn")
 	static function setLoadIniSettingsFn(fn:Dynamic):Void;
 	@:native("LoadTexture")
-	static function loadTexture(?data:Dynamic, ?options:Dynamic):ImGui.ImTextureRef;
+	static function loadTexture(?data:Dynamic, ?options:Dynamic /* JS default: {} */):ImGui.ImTextureRef;
 	@:native("LoadFont")
 	static function loadFont(filename:String, fontData:js.lib.Uint8Array):Void;
 	@:native("BeginRender")
