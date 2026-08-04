@@ -218,9 +218,30 @@ const handleKeyboardEvent = (event, keyDown, io) => {
 };
 const setDisplayProperties = (canvas) => {
     const io = ImGui.GetIO();
-    const width = Math.floor(canvas.clientWidth);
-    const height = Math.floor(canvas.clientHeight);
-    io.DisplaySize = new ImVec2(width, height);
+    // The drawing buffer, not the CSS box: that is what the GL backend renders into, and
+    // its size is the host's choice (a host scaling it by devicePixelRatio is normal).
+    // Reporting the CSS box while the buffer is larger confines the UI to a corner of the
+    // framebuffer, because the backend derives its viewport from DisplaySize *
+    // DisplayFramebufferScale. One unit is therefore one device pixel.
+    io.DisplaySize = new ImVec2(canvas.width, canvas.height);
+    io.DisplayFramebufferScale = new ImVec2(1, 1);
+};
+/**
+ * Converts a client-space pointer position into the io coordinate space.
+ *
+ * Pointer events carry CSS pixels, while {@linkcode setDisplayProperties} reports the
+ * drawing buffer, so positions have to be scaled by the ratio between the two.
+ *
+ * @param canvas The canvas element the position is relative to.
+ * @param clientX Client-space x position, in CSS pixels.
+ * @param clientY Client-space y position, in CSS pixels.
+ * @return The position in drawing buffer pixels, relative to the canvas.
+ */
+const toDisplayPos = (canvas, clientX, clientY) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+    const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+    return [(clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY];
 };
 /**
  * Handles mouse button events.
@@ -244,8 +265,7 @@ const setupMouseIO = (canvas) => {
     const io = ImGui.GetIO();
     const scrollSpeed = 0.01;
     window.addEventListener("pointermove", (e) => {
-        const rect = canvas.getBoundingClientRect();
-        io.AddMousePosEvent(e.clientX - rect.left, e.clientY - rect.top);
+        io.AddMousePosEvent(...toDisplayPos(canvas, e.clientX, e.clientY));
         canvas.style.cursor = MOUSE_CURSOR_MAP[ImGui.GetMouseCursor()];
     });
     window.addEventListener("pointerdown", (e) => handleMouseButtonEvent(e, true, io));
@@ -282,7 +302,6 @@ const setupTouchIO = (canvas) => {
     let lastPos = { x: 0, y: 0 };
     const handleTouchEvent = (event, isButtonDown) => {
         event.preventDefault();
-        const rect = canvas.getBoundingClientRect();
         if (event.touches.length === 2) {
             const touch1 = event.touches[0];
             const touch2 = event.touches[1];
@@ -301,7 +320,7 @@ const setupTouchIO = (canvas) => {
         lastPos = { x: 0, y: 0 };
         const touch = event.touches[0];
         if (touch) {
-            io.AddMousePosEvent(touch.clientX - rect.left, touch.clientY - rect.top);
+            io.AddMousePosEvent(...toDisplayPos(canvas, touch.clientX, touch.clientY));
         }
         if (typeof isButtonDown === "boolean") {
             io.AddMouseButtonEvent(ImGui.MouseButton.Left, isButtonDown);
