@@ -884,8 +884,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	public static inline final Bitmap:ImGuiFreeTypeLoaderFlags = 512;
 }
 
-@:keep @:native("globalThis.__imguiHxJsImGui.ValueStruct") extern class ValueStruct {
-}
+@:keep @:native("globalThis.__imguiHxJsImGui.ValueStruct") extern class ValueStruct {}
 
 @:keep @:native("globalThis.__imguiHxJsImGui.ReferenceStruct") extern class ReferenceStruct {
 	var ptr:Dynamic;

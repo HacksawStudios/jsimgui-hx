@@ -760,7 +760,12 @@ function renderClass(name, declaration, context) {
 		lines.push(...memberLines)
 	}
 
-	lines.push('}')
+	if (lines.length == 1) {
+		lines[0] += '}'
+	} else {
+		lines.push('}')
+	}
+
 	return lines.join('\n')
 }
 
