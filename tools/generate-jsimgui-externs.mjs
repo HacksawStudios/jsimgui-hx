@@ -860,8 +860,9 @@ function renderConstObjectFile(data) {
 			continue
 		}
 		lines.push(renderTypeAlias(name, declaration, data.context))
-		lines.push('')
 	}
+
+	lines.push('')
 
 	for (const group of data.groups.values()) {
 		lines.push(renderAbstract(group))
@@ -869,7 +870,11 @@ function renderConstObjectFile(data) {
 	}
 
 	for (const [name, declaration] of data.classes) {
-		lines.push(renderClass(name, declaration, data.context))
+		const classLines = renderClass(name, declaration, data.context);
+		if (classLines) {
+			lines.push(classLines)
+			lines.push('')
+		}
 	}
 
 	lines.push(renderConstObjectClass(data.objectName, data.constDeclaration, data.context, data.groupNames))
