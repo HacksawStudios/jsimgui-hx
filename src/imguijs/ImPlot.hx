@@ -1,6 +1,5 @@
 package imguijs;
 
-#if js
 import imguijs.Abstracts;
 
 /**
@@ -724,5 +723,3 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("Style_ImPlotStyle")
 	static function style_ImPlotStyle():Float;
 }
-
-#end
