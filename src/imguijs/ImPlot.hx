@@ -1,6 +1,5 @@
 package imguijs;
 
-#if js
 import imguijs.Abstracts;
 
 /**
@@ -9,9 +8,7 @@ import imguijs.Abstracts;
 **/
 
 typedef ImPlotContext = Float;
-
 typedef ImPlotInputMap = Float;
-
 typedef ImPlotStyle = Float;
 
 abstract ImAxis(Int) from Int to Int {
@@ -395,12 +392,14 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	function new(?Date:Float = 0.0, ?Time:Float = 0.0, ?UseISO8601:Bool = false, ?Use24HourClock:Bool = false);
 	static function From(obj:ImPlotDateTimeSpec):ImPlotDateTimeSpec;
 }
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotPoint") extern class ImPlotPoint extends imguijs.ImGui.ValueStruct {
 	var x:Float;
 	var y:Float;
 	function new(?x:Float = 0.0, ?y:Float = 0.0);
 	static function From(obj:ImPlotPoint):ImPlotPoint;
 }
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotRange") extern class ImPlotRange extends imguijs.ImGui.ValueStruct {
 	@:native("Min")
 	var min:Float;
@@ -409,6 +408,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	function new(?Min:Float = 0.0, ?Max:Float = 0.0);
 	static function From(obj:ImPlotRange):ImPlotRange;
 }
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotRect") extern class ImPlotRect extends imguijs.ImGui.ValueStruct {
 	@:native("X")
 	var x:ImPlotRange;
@@ -417,6 +417,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	function new(?X:ImPlotRange /* JS default: new ImPlotRange() */, ?Y:ImPlotRange /* JS default: new ImPlotRange() */);
 	static function From(obj:ImPlotRect):ImPlotRect;
 }
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotTime") extern class ImPlotTime extends imguijs.ImGui.ValueStruct {
 	@:native("S")
 	var s:Float;
@@ -425,6 +426,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	function new(?S:Float = 0.0, ?Us:Float = 0.0);
 	static function From(obj:ImPlotTime):ImPlotTime;
 }
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlotSpec") extern class ImPlotSpec extends imguijs.ImGui.ValueStruct {
 	@:native("LineColor")
 	var lineColor:imguijs.Abstracts.ImVec4;
@@ -453,6 +455,7 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	function new(?LineColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?LineWeight:Float = 1.0, ?FillColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?FillAlpha:Float = 1.0, ?Marker:Float = 0.0, ?MarkerSize:Float = 4.0, ?MarkerLineColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?MarkerFillColor:imguijs.Abstracts.ImVec4 /* JS default: new ImVec4(0.0, 0.0, 0.0, -1.0) */, ?Size:Float = 4.0, ?Offset:Float = 0.0, ?Stride:Float = -1.0, ?Flags:Float = 0.0);
 	static function From(obj:ImPlotSpec):ImPlotSpec;
 }
+
 @:keep @:native("globalThis.__imguiHxJsImGui.ImPlot") extern class ImPlot {
 	static var Auto:Float;
 	@:native("AddColormap_U32Ptr")
@@ -724,5 +727,3 @@ abstract ImPlotTimeUnit(Int) from Int to Int {
 	@:native("Style_ImPlotStyle")
 	static function style_ImPlotStyle():Float;
 }
-
-#end

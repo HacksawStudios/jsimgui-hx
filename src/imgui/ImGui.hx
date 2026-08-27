@@ -1,6 +1,5 @@
 package imgui;
 
-#if js
 typedef ImGui = imguijs.ImGui;
 typedef ImColor = imguijs.ImGui.ImColor;
 typedef ImDrawCallback = imguijs.ImGui.ImDrawCallback;
@@ -99,4 +98,3 @@ typedef ImWchar16 = imguijs.ImGui.ImWchar16;
 typedef ImWchar32 = imguijs.ImGui.ImWchar32;
 typedef ReferenceStruct = imguijs.ImGui.ReferenceStruct;
 typedef ValueStruct = imguijs.ImGui.ValueStruct;
-#end

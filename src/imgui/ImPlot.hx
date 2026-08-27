@@ -1,6 +1,5 @@
 package imgui;
 
-#if js
 typedef ImPlot = imguijs.ImPlot;
 typedef ImAxis = imguijs.ImPlot.ImAxis;
 typedef ImPlotAxisFlags = imguijs.ImPlot.ImPlotAxisFlags;
@@ -51,4 +50,3 @@ typedef ImPlotTextFlags = imguijs.ImPlot.ImPlotTextFlags;
 typedef ImPlotTime = imguijs.ImPlot.ImPlotTime;
 typedef ImPlotTimeFmt = imguijs.ImPlot.ImPlotTimeFmt;
 typedef ImPlotTimeUnit = imguijs.ImPlot.ImPlotTimeUnit;
-#end
