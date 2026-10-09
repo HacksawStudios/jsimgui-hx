@@ -17,6 +17,7 @@ const optionalSplitDtsPaths = [
 	path.resolve(jsimguiBuildRoot, 'implot.d.ts'),
 ]
 const bundledDtsPaths = [path.resolve(jsimguiBuildRoot, 'mod.d.ts')]
+const enumMetadataPath = path.resolve(jsimguiBuildRoot, 'enums.json')
 const tsPath = require.resolve('typescript/lib/typescript.js')
 const imguiOutputPath = path.resolve(repoRoot, 'src', 'imguijs', 'ImGui.hx')
 const implotOutputPath = path.resolve(repoRoot, 'src', 'imguijs', 'ImPlot.hx')
@@ -191,6 +192,34 @@ function getNodeText(node) {
 	return node.getText(node.getSourceFile())
 }
 
+function extractDocComment(node) {
+	const raw = (node.jsDoc ?? [])
+		.map(doc => (typeof doc.comment === 'string' ? doc.comment : ts.getTextOfJSDocComment(doc.comment)) ?? '')
+		.join('\n')
+	if (raw === '') {
+		return null
+	}
+	const lines = raw
+		// jsimgui escapes every slash in the comments it lifts out of imgui.h.
+		.replace(/\\\//g, '/')
+		.split('\n')
+		.map(line => line.replace(/^\s*\/\/\s?/, '').trimEnd())
+		// A comment containing */ would close the Haxe doc comment early.
+		.map(line => line.replace(/\*\//g, '*\\/'))
+	while (lines.length > 0 && lines[0] === '') {
+		lines.shift()
+	}
+	while (lines.length > 0 && lines.at(-1) === '') {
+		lines.pop()
+	}
+	return lines.length === 0 ? null : lines
+}
+
+function renderDocComment(docLines, level) {
+	const indent = createIndent(level)
+	return [`${indent}/**`, ...docLines.map(line => `${indent}\t${line}`.trimEnd()), `${indent}**/`]
+}
+
 function collectDeclarations(sourceFiles) {
 	const typeAliases = new Map()
 	const interfaces = new Set()
@@ -300,6 +329,7 @@ function collectConstObjectGroups(constDeclaration, aliasNames, rootName) {
 			}
 			groupMembers.push({
 				name: nested.name.text,
+				doc: extractDocComment(nested),
 			})
 		}
 		if (!valid || groupMembers.length === 0) {
@@ -310,6 +340,7 @@ function collectConstObjectGroups(constDeclaration, aliasNames, rootName) {
 			rootName,
 			groupName: member.name.text,
 			typeName,
+			doc: extractDocComment(member),
 			members: groupMembers,
 		})
 	}
@@ -473,9 +504,18 @@ function renderNativeMember(prefix, nativeName, haxeName, level) {
 
 function renderAbstract(group) {
 	const lines = []
+	if (group.doc != null) {
+		lines.push(...renderDocComment(group.doc, 0))
+	}
 	lines.push(`abstract ${group.typeName}(Int) from Int to Int {`)
-	for (const member of group.members) {
-		lines.push(`${createIndent(1)}public static inline final ${member.name}:${group.typeName} = ${member.value};`)
+	for (const [index, member] of group.members.entries()) {
+		if (member.doc != null) {
+			if (index > 0) {
+				lines.push('')
+			}
+			lines.push(...renderDocComment(member.doc, 1))
+		}
+		lines.push(`${createIndent(1)}public static inline final ${member.name}:${group.typeName} = ${member.expression ?? member.value};`)
 	}
 	lines.push('}')
 	return lines.join('\n')
@@ -616,6 +656,107 @@ function attachLiteralValues(groups, literalValuesByRoot) {
 			member.value = value
 		}
 	}
+}
+
+const identifierPattern = /\b[A-Za-z_][A-Za-z0-9_]*\b/g
+
+async function readEnumMetadata() {
+	try {
+		return new Map(Object.entries(JSON.parse(await fs.readFile(enumMetadataPath, 'utf8'))))
+	} catch {
+		console.warn(`[jsimgui] No ${path.relative(repoRoot, enumMetadataPath)}; emitting plain numbers for every enum member. Run "bun tools/extract-enum-metadata.mjs" to restore the original value expressions.`)
+		return new Map()
+	}
+}
+
+function resolveMetadataName(typeName, memberName, metadata) {
+	for (const candidate of [`${typeName}_${memberName}`, `${typeName}${memberName}`, memberName]) {
+		if (metadata.has(candidate)) {
+			return candidate
+		}
+	}
+	return null
+}
+
+// C and Haxe agree on the precedence of every operator imgui.h uses here, so an
+// expression only has to survive renaming. Evaluating it anyway is what catches
+// a member resolved to the wrong enum.
+function evaluateExpression(expression, metadata) {
+	const substituted = expression.replace(identifierPattern, token => String(metadata.get(token)?.value ?? NaN))
+	try {
+		return Function(`"use strict";return (${substituted});`)()
+	} catch {
+		return null
+	}
+}
+
+function translateExpression(expression, group, metadata, haxeNamesByMetadataName) {
+	let resolved = true
+	const translated = expression.replace(identifierPattern, token => {
+		const target = haxeNamesByMetadataName.get(token)
+		if (target == null) {
+			resolved = false
+			return token
+		}
+		if (target.typeName === group.typeName) {
+			return target.memberName
+		}
+		// Haxe will not chain Abstract -> Int -> OtherAbstract on its own, so a
+		// reference into another group has to step through Int explicitly.
+		const qualifier = target.rootName === group.rootName ? target.typeName : `imguijs.${target.rootName}.${target.typeName}`
+		return `(${qualifier}.${target.memberName} : Int)`
+	})
+	if (!resolved) {
+		return null
+	}
+	return translated.replace(/\s*<<\s*/g, ' << ').replace(/\s*\|\s*/g, ' | ')
+}
+
+/**
+ * Restores the `1 << 2` / `FlagA | FlagB` spelling that jsimgui folds away when
+ * it emits runtime/jsimgui. Anything that cannot be matched to the runtime's own
+ * number keeps the plain literal, so metadata that has drifted ahead of the
+ * checked-in runtime degrades instead of emitting a wrong value.
+ */
+function attachValueExpressions(groupMaps, metadata) {
+	const stats = { expressions: 0, literals: 0, drifted: 0 }
+	if (metadata.size === 0) {
+		return stats
+	}
+	const haxeNamesByMetadataName = new Map()
+	const pending = []
+
+	for (const groups of groupMaps) {
+		for (const group of groups.values()) {
+			for (const member of group.members) {
+				const metadataName = resolveMetadataName(group.typeName, member.name, metadata)
+				const entry = metadataName == null ? null : metadata.get(metadataName)
+				if (entry == null) {
+					continue
+				}
+				if (entry.value !== Number(member.value)) {
+					stats.drifted += 1
+					continue
+				}
+				haxeNamesByMetadataName.set(metadataName, { rootName: group.rootName, typeName: group.typeName, memberName: member.name })
+				if (entry.expression != null) {
+					pending.push({ group, member, expression: entry.expression })
+				}
+			}
+		}
+	}
+
+	for (const { group, member, expression } of pending) {
+		const translated = translateExpression(expression, group, metadata, haxeNamesByMetadataName)
+		if (translated == null || evaluateExpression(expression, metadata) !== Number(member.value)) {
+			stats.literals += 1
+			continue
+		}
+		member.expression = translated
+		stats.expressions += 1
+	}
+
+	return stats
 }
 
 function renderTypeAlias(name, declaration, context) {
@@ -967,6 +1108,15 @@ async function main() {
 	const defaultsByFunction = collectParameterDefaults(valueSourceFiles)
 	attachLiteralValues(imguiGroups, literalValues)
 	attachLiteralValues(implotGroups, literalValues)
+
+	const enumMetadata = await readEnumMetadata()
+	const expressionStats = attachValueExpressions([imguiGroups, implotGroups], enumMetadata)
+	if (enumMetadata.size > 0) {
+		console.log(`[jsimgui] Enum value expressions: ${expressionStats.expressions} restored, ${expressionStats.literals} kept as literals.`)
+		if (expressionStats.drifted > 0) {
+			console.warn(`[jsimgui] ${expressionStats.drifted} enum members disagree with runtime/jsimgui/enums.json and kept their literal; regenerate runtime/jsimgui so both come from the same build.`)
+		}
+	}
 
 	const imguiGroupTypeNames = new Set(imguiGroups.keys())
 	const implotGroupTypeNames = new Set(implotGroups.keys())

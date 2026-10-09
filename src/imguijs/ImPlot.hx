@@ -23,36 +23,36 @@ abstract ImAxis(Int) from Int to Int {
 
 abstract ImPlotAxisFlags(Int) from Int to Int {
 	public static inline final None:ImPlotAxisFlags = 0;
-	public static inline final NoLabel:ImPlotAxisFlags = 1;
-	public static inline final NoGridLines:ImPlotAxisFlags = 2;
-	public static inline final NoTickMarks:ImPlotAxisFlags = 4;
-	public static inline final NoTickLabels:ImPlotAxisFlags = 8;
-	public static inline final NoInitialFit:ImPlotAxisFlags = 16;
-	public static inline final NoMenus:ImPlotAxisFlags = 32;
-	public static inline final NoSideSwitch:ImPlotAxisFlags = 64;
-	public static inline final NoHighlight:ImPlotAxisFlags = 128;
-	public static inline final Opposite:ImPlotAxisFlags = 256;
-	public static inline final Foreground:ImPlotAxisFlags = 512;
-	public static inline final Invert:ImPlotAxisFlags = 1024;
-	public static inline final AutoFit:ImPlotAxisFlags = 2048;
-	public static inline final RangeFit:ImPlotAxisFlags = 4096;
-	public static inline final PanStretch:ImPlotAxisFlags = 8192;
-	public static inline final LockMin:ImPlotAxisFlags = 16384;
-	public static inline final LockMax:ImPlotAxisFlags = 32768;
-	public static inline final Lock:ImPlotAxisFlags = 49152;
-	public static inline final NoDecorations:ImPlotAxisFlags = 15;
-	public static inline final AuxDefault:ImPlotAxisFlags = 258;
+	public static inline final NoLabel:ImPlotAxisFlags = 1 << 0;
+	public static inline final NoGridLines:ImPlotAxisFlags = 1 << 1;
+	public static inline final NoTickMarks:ImPlotAxisFlags = 1 << 2;
+	public static inline final NoTickLabels:ImPlotAxisFlags = 1 << 3;
+	public static inline final NoInitialFit:ImPlotAxisFlags = 1 << 4;
+	public static inline final NoMenus:ImPlotAxisFlags = 1 << 5;
+	public static inline final NoSideSwitch:ImPlotAxisFlags = 1 << 6;
+	public static inline final NoHighlight:ImPlotAxisFlags = 1 << 7;
+	public static inline final Opposite:ImPlotAxisFlags = 1 << 8;
+	public static inline final Foreground:ImPlotAxisFlags = 1 << 9;
+	public static inline final Invert:ImPlotAxisFlags = 1 << 10;
+	public static inline final AutoFit:ImPlotAxisFlags = 1 << 11;
+	public static inline final RangeFit:ImPlotAxisFlags = 1 << 12;
+	public static inline final PanStretch:ImPlotAxisFlags = 1 << 13;
+	public static inline final LockMin:ImPlotAxisFlags = 1 << 14;
+	public static inline final LockMax:ImPlotAxisFlags = 1 << 15;
+	public static inline final Lock:ImPlotAxisFlags = LockMin | LockMax;
+	public static inline final NoDecorations:ImPlotAxisFlags = NoLabel | NoGridLines | NoTickMarks | NoTickLabels;
+	public static inline final AuxDefault:ImPlotAxisFlags = NoGridLines | Opposite;
 }
 
 abstract ImPlotBarGroupsFlags(Int) from Int to Int {
 	public static inline final None:ImPlotBarGroupsFlags = 0;
-	public static inline final Horizontal:ImPlotBarGroupsFlags = 1024;
-	public static inline final Stacked:ImPlotBarGroupsFlags = 2048;
+	public static inline final Horizontal:ImPlotBarGroupsFlags = 1 << 10;
+	public static inline final Stacked:ImPlotBarGroupsFlags = 1 << 11;
 }
 
 abstract ImPlotBarsFlags(Int) from Int to Int {
 	public static inline final None:ImPlotBarsFlags = 0;
-	public static inline final Horizontal:ImPlotBarsFlags = 1024;
+	public static inline final Horizontal:ImPlotBarsFlags = 1 << 10;
 }
 
 abstract ImPlotBin(Int) from Int to Int {
@@ -88,9 +88,9 @@ abstract ImPlotCol(Int) from Int to Int {
 
 abstract ImPlotColormapScaleFlags(Int) from Int to Int {
 	public static inline final None:ImPlotColormapScaleFlags = 0;
-	public static inline final NoLabel:ImPlotColormapScaleFlags = 1;
-	public static inline final Opposite:ImPlotColormapScaleFlags = 2;
-	public static inline final Invert:ImPlotColormapScaleFlags = 4;
+	public static inline final NoLabel:ImPlotColormapScaleFlags = 1 << 0;
+	public static inline final Opposite:ImPlotColormapScaleFlags = 1 << 1;
+	public static inline final Invert:ImPlotColormapScaleFlags = 1 << 2;
 }
 
 abstract ImPlotColormap(Int) from Int to Int {
@@ -113,9 +113,9 @@ abstract ImPlotColormap(Int) from Int to Int {
 }
 
 abstract ImPlotCond(Int) from Int to Int {
-	public static inline final None:ImPlotCond = 0;
-	public static inline final Always:ImPlotCond = 1;
-	public static inline final Once:ImPlotCond = 2;
+	public static inline final None:ImPlotCond = (imguijs.ImGui.ImGuiCond.None : Int);
+	public static inline final Always:ImPlotCond = (imguijs.ImGui.ImGuiCond.Always : Int);
+	public static inline final Once:ImPlotCond = (imguijs.ImGui.ImGuiCond.Once : Int);
 }
 
 abstract ImPlotDateFmt(Int) from Int to Int {
@@ -133,10 +133,10 @@ abstract ImPlotDigitalFlags(Int) from Int to Int {
 
 abstract ImPlotDragToolFlags(Int) from Int to Int {
 	public static inline final None:ImPlotDragToolFlags = 0;
-	public static inline final NoCursors:ImPlotDragToolFlags = 1;
-	public static inline final NoFit:ImPlotDragToolFlags = 2;
-	public static inline final NoInputs:ImPlotDragToolFlags = 4;
-	public static inline final Delayed:ImPlotDragToolFlags = 8;
+	public static inline final NoCursors:ImPlotDragToolFlags = 1 << 0;
+	public static inline final NoFit:ImPlotDragToolFlags = 1 << 1;
+	public static inline final NoInputs:ImPlotDragToolFlags = 1 << 2;
+	public static inline final Delayed:ImPlotDragToolFlags = 1 << 3;
 }
 
 abstract ImPlotDummyFlags(Int) from Int to Int {
@@ -145,35 +145,35 @@ abstract ImPlotDummyFlags(Int) from Int to Int {
 
 abstract ImPlotErrorBarsFlags(Int) from Int to Int {
 	public static inline final None:ImPlotErrorBarsFlags = 0;
-	public static inline final Horizontal:ImPlotErrorBarsFlags = 1024;
+	public static inline final Horizontal:ImPlotErrorBarsFlags = 1 << 10;
 }
 
 abstract ImPlotFlags(Int) from Int to Int {
 	public static inline final None:ImPlotFlags = 0;
-	public static inline final NoTitle:ImPlotFlags = 1;
-	public static inline final NoLegend:ImPlotFlags = 2;
-	public static inline final NoMouseText:ImPlotFlags = 4;
-	public static inline final NoInputs:ImPlotFlags = 8;
-	public static inline final NoMenus:ImPlotFlags = 16;
-	public static inline final NoBoxSelect:ImPlotFlags = 32;
-	public static inline final NoFrame:ImPlotFlags = 64;
-	public static inline final Equal:ImPlotFlags = 128;
-	public static inline final Crosshairs:ImPlotFlags = 256;
-	public static inline final CanvasOnly:ImPlotFlags = 55;
+	public static inline final NoTitle:ImPlotFlags = 1 << 0;
+	public static inline final NoLegend:ImPlotFlags = 1 << 1;
+	public static inline final NoMouseText:ImPlotFlags = 1 << 2;
+	public static inline final NoInputs:ImPlotFlags = 1 << 3;
+	public static inline final NoMenus:ImPlotFlags = 1 << 4;
+	public static inline final NoBoxSelect:ImPlotFlags = 1 << 5;
+	public static inline final NoFrame:ImPlotFlags = 1 << 6;
+	public static inline final Equal:ImPlotFlags = 1 << 7;
+	public static inline final Crosshairs:ImPlotFlags = 1 << 8;
+	public static inline final CanvasOnly:ImPlotFlags = NoTitle | NoLegend | NoMenus | NoBoxSelect | NoMouseText;
 }
 
 abstract ImPlotHeatmapFlags(Int) from Int to Int {
 	public static inline final None:ImPlotHeatmapFlags = 0;
-	public static inline final ColMajor:ImPlotHeatmapFlags = 1024;
+	public static inline final ColMajor:ImPlotHeatmapFlags = 1 << 10;
 }
 
 abstract ImPlotHistogramFlags(Int) from Int to Int {
 	public static inline final None:ImPlotHistogramFlags = 0;
-	public static inline final Horizontal:ImPlotHistogramFlags = 1024;
-	public static inline final Cumulative:ImPlotHistogramFlags = 2048;
-	public static inline final Density:ImPlotHistogramFlags = 4096;
-	public static inline final NoOutliers:ImPlotHistogramFlags = 8192;
-	public static inline final ColMajor:ImPlotHistogramFlags = 16384;
+	public static inline final Horizontal:ImPlotHistogramFlags = 1 << 10;
+	public static inline final Cumulative:ImPlotHistogramFlags = 1 << 11;
+	public static inline final Density:ImPlotHistogramFlags = 1 << 12;
+	public static inline final NoOutliers:ImPlotHistogramFlags = 1 << 13;
+	public static inline final ColMajor:ImPlotHistogramFlags = 1 << 14;
 }
 
 abstract ImPlotImageFlags(Int) from Int to Int {
@@ -182,46 +182,46 @@ abstract ImPlotImageFlags(Int) from Int to Int {
 
 abstract ImPlotInfLinesFlags(Int) from Int to Int {
 	public static inline final None:ImPlotInfLinesFlags = 0;
-	public static inline final Horizontal:ImPlotInfLinesFlags = 1024;
+	public static inline final Horizontal:ImPlotInfLinesFlags = 1 << 10;
 }
 
 abstract ImPlotItemFlags(Int) from Int to Int {
 	public static inline final None:ImPlotItemFlags = 0;
-	public static inline final NoLegend:ImPlotItemFlags = 1;
-	public static inline final NoFit:ImPlotItemFlags = 2;
+	public static inline final NoLegend:ImPlotItemFlags = 1 << 0;
+	public static inline final NoFit:ImPlotItemFlags = 1 << 1;
 }
 
 abstract ImPlotLegendFlags(Int) from Int to Int {
 	public static inline final None:ImPlotLegendFlags = 0;
-	public static inline final NoButtons:ImPlotLegendFlags = 1;
-	public static inline final NoHighlightItem:ImPlotLegendFlags = 2;
-	public static inline final NoHighlightAxis:ImPlotLegendFlags = 4;
-	public static inline final NoMenus:ImPlotLegendFlags = 8;
-	public static inline final Outside:ImPlotLegendFlags = 16;
-	public static inline final Horizontal:ImPlotLegendFlags = 32;
-	public static inline final Sort:ImPlotLegendFlags = 64;
-	public static inline final Reverse:ImPlotLegendFlags = 128;
+	public static inline final NoButtons:ImPlotLegendFlags = 1 << 0;
+	public static inline final NoHighlightItem:ImPlotLegendFlags = 1 << 1;
+	public static inline final NoHighlightAxis:ImPlotLegendFlags = 1 << 2;
+	public static inline final NoMenus:ImPlotLegendFlags = 1 << 3;
+	public static inline final Outside:ImPlotLegendFlags = 1 << 4;
+	public static inline final Horizontal:ImPlotLegendFlags = 1 << 5;
+	public static inline final Sort:ImPlotLegendFlags = 1 << 6;
+	public static inline final Reverse:ImPlotLegendFlags = 1 << 7;
 }
 
 abstract ImPlotLineFlags(Int) from Int to Int {
 	public static inline final None:ImPlotLineFlags = 0;
-	public static inline final Segments:ImPlotLineFlags = 1024;
-	public static inline final Loop:ImPlotLineFlags = 2048;
-	public static inline final SkipNaN:ImPlotLineFlags = 4096;
-	public static inline final NoClip:ImPlotLineFlags = 8192;
-	public static inline final Shaded:ImPlotLineFlags = 16384;
+	public static inline final Segments:ImPlotLineFlags = 1 << 10;
+	public static inline final Loop:ImPlotLineFlags = 1 << 11;
+	public static inline final SkipNaN:ImPlotLineFlags = 1 << 12;
+	public static inline final NoClip:ImPlotLineFlags = 1 << 13;
+	public static inline final Shaded:ImPlotLineFlags = 1 << 14;
 }
 
 abstract ImPlotLocation(Int) from Int to Int {
 	public static inline final Center:ImPlotLocation = 0;
-	public static inline final North:ImPlotLocation = 1;
-	public static inline final South:ImPlotLocation = 2;
-	public static inline final West:ImPlotLocation = 4;
-	public static inline final East:ImPlotLocation = 8;
-	public static inline final NorthWest:ImPlotLocation = 5;
-	public static inline final NorthEast:ImPlotLocation = 9;
-	public static inline final SouthWest:ImPlotLocation = 6;
-	public static inline final SouthEast:ImPlotLocation = 10;
+	public static inline final North:ImPlotLocation = 1 << 0;
+	public static inline final South:ImPlotLocation = 1 << 1;
+	public static inline final West:ImPlotLocation = 1 << 2;
+	public static inline final East:ImPlotLocation = 1 << 3;
+	public static inline final NorthWest:ImPlotLocation = North | West;
+	public static inline final NorthEast:ImPlotLocation = North | East;
+	public static inline final SouthWest:ImPlotLocation = South | West;
+	public static inline final SouthEast:ImPlotLocation = South | East;
 }
 
 abstract ImPlotMarkerInternal(Int) from Int to Int {
@@ -246,22 +246,22 @@ abstract ImPlotMarker(Int) from Int to Int {
 
 abstract ImPlotMouseTextFlags(Int) from Int to Int {
 	public static inline final None:ImPlotMouseTextFlags = 0;
-	public static inline final NoAuxAxes:ImPlotMouseTextFlags = 1;
-	public static inline final NoFormat:ImPlotMouseTextFlags = 2;
-	public static inline final ShowAlways:ImPlotMouseTextFlags = 4;
+	public static inline final NoAuxAxes:ImPlotMouseTextFlags = 1 << 0;
+	public static inline final NoFormat:ImPlotMouseTextFlags = 1 << 1;
+	public static inline final ShowAlways:ImPlotMouseTextFlags = 1 << 2;
 }
 
 abstract ImPlotPieChartFlags(Int) from Int to Int {
 	public static inline final None:ImPlotPieChartFlags = 0;
-	public static inline final Normalize:ImPlotPieChartFlags = 1024;
-	public static inline final IgnoreHidden:ImPlotPieChartFlags = 2048;
-	public static inline final Exploding:ImPlotPieChartFlags = 4096;
-	public static inline final NoSliceBorder:ImPlotPieChartFlags = 8192;
+	public static inline final Normalize:ImPlotPieChartFlags = 1 << 10;
+	public static inline final IgnoreHidden:ImPlotPieChartFlags = 1 << 11;
+	public static inline final Exploding:ImPlotPieChartFlags = 1 << 12;
+	public static inline final NoSliceBorder:ImPlotPieChartFlags = 1 << 13;
 }
 
 abstract ImPlotPolygonFlags(Int) from Int to Int {
 	public static inline final None:ImPlotPolygonFlags = 0;
-	public static inline final Concave:ImPlotPolygonFlags = 1024;
+	public static inline final Concave:ImPlotPolygonFlags = 1 << 10;
 }
 
 abstract ImPlotProp(Int) from Int to Int {
@@ -293,7 +293,7 @@ abstract ImPlotScale(Int) from Int to Int {
 
 abstract ImPlotScatterFlags(Int) from Int to Int {
 	public static inline final None:ImPlotScatterFlags = 0;
-	public static inline final NoClip:ImPlotScatterFlags = 1024;
+	public static inline final NoClip:ImPlotScatterFlags = 1 << 10;
 }
 
 abstract ImPlotShadedFlags(Int) from Int to Int {
@@ -302,13 +302,13 @@ abstract ImPlotShadedFlags(Int) from Int to Int {
 
 abstract ImPlotStairsFlags(Int) from Int to Int {
 	public static inline final None:ImPlotStairsFlags = 0;
-	public static inline final PreStep:ImPlotStairsFlags = 1024;
-	public static inline final Shaded:ImPlotStairsFlags = 2048;
+	public static inline final PreStep:ImPlotStairsFlags = 1 << 10;
+	public static inline final Shaded:ImPlotStairsFlags = 1 << 11;
 }
 
 abstract ImPlotStemsFlags(Int) from Int to Int {
 	public static inline final None:ImPlotStemsFlags = 0;
-	public static inline final Horizontal:ImPlotStemsFlags = 1024;
+	public static inline final Horizontal:ImPlotStemsFlags = 1 << 10;
 }
 
 abstract ImPlotStyleVar(Int) from Int to Int {
@@ -337,22 +337,22 @@ abstract ImPlotStyleVar(Int) from Int to Int {
 
 abstract ImPlotSubplotFlags(Int) from Int to Int {
 	public static inline final None:ImPlotSubplotFlags = 0;
-	public static inline final NoTitle:ImPlotSubplotFlags = 1;
-	public static inline final NoLegend:ImPlotSubplotFlags = 2;
-	public static inline final NoMenus:ImPlotSubplotFlags = 4;
-	public static inline final NoResize:ImPlotSubplotFlags = 8;
-	public static inline final NoAlign:ImPlotSubplotFlags = 16;
-	public static inline final ShareItems:ImPlotSubplotFlags = 32;
-	public static inline final LinkRows:ImPlotSubplotFlags = 64;
-	public static inline final LinkCols:ImPlotSubplotFlags = 128;
-	public static inline final LinkAllX:ImPlotSubplotFlags = 256;
-	public static inline final LinkAllY:ImPlotSubplotFlags = 512;
-	public static inline final ColMajor:ImPlotSubplotFlags = 1024;
+	public static inline final NoTitle:ImPlotSubplotFlags = 1 << 0;
+	public static inline final NoLegend:ImPlotSubplotFlags = 1 << 1;
+	public static inline final NoMenus:ImPlotSubplotFlags = 1 << 2;
+	public static inline final NoResize:ImPlotSubplotFlags = 1 << 3;
+	public static inline final NoAlign:ImPlotSubplotFlags = 1 << 4;
+	public static inline final ShareItems:ImPlotSubplotFlags = 1 << 5;
+	public static inline final LinkRows:ImPlotSubplotFlags = 1 << 6;
+	public static inline final LinkCols:ImPlotSubplotFlags = 1 << 7;
+	public static inline final LinkAllX:ImPlotSubplotFlags = 1 << 8;
+	public static inline final LinkAllY:ImPlotSubplotFlags = 1 << 9;
+	public static inline final ColMajor:ImPlotSubplotFlags = 1 << 10;
 }
 
 abstract ImPlotTextFlags(Int) from Int to Int {
 	public static inline final None:ImPlotTextFlags = 0;
-	public static inline final Vertical:ImPlotTextFlags = 1024;
+	public static inline final Vertical:ImPlotTextFlags = 1 << 10;
 }
 
 abstract ImPlotTimeFmt(Int) from Int to Int {
