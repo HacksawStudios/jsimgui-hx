@@ -9,9 +9,7 @@
         },
         "ImGuiSizeCallback": {
             "override": {
-                "ts": [
-                    "export type ImGuiSizeCallback = (data: ImGuiSizeCallbackData) => void;\n"
-                ]
+                "ts": ["export type ImGuiSizeCallback = (data: ImGuiSizeCallbackData) => void;\n"]
             }
         },
         "ImDrawCallback": {
@@ -393,6 +391,45 @@
                 }
             }
         },
+        "ImGuiInputTextCallbackData": {
+            "fields": {
+                "UserData": {
+                    "exclude": true
+                },
+                "Buf": {
+                    "override": {
+                        "ts": [
+                            "/**\n",
+                            " * Text buffer, read-only: edit it through InsertChars() / DeleteChars(). Positions\n",
+                            " * (CursorPos, SelectionStart, ...) are byte offsets into its UTF-8 encoding.\n",
+                            " */\n",
+                            "    get Buf(): string {\n",
+                            "        return this.ptr.get_Buf();\n",
+                            "    }\n"
+                        ],
+                        "cpp": [
+                            ".function(\"get_Buf\", override([](ImGuiInputTextCallbackData const* self){ return std::string(self->Buf, self->BufTextLen); }), allow_raw_ptrs{})\n"
+                        ]
+                    }
+                }
+            },
+            "methods": {
+                "ImGuiInputTextCallbackData_InsertChars": {
+                    "override": {
+                        "ts": [
+                            "    InsertChars(pos: number, text: string): void {\n",
+                            "        this.ptr.ImGuiInputTextCallbackData_InsertChars(pos, text);\n",
+                            "    }\n"
+                        ],
+                        "cpp": [
+                            ".function(\"ImGuiInputTextCallbackData_InsertChars\", override([](ImGuiInputTextCallbackData* self, int pos, std::string text){\n",
+                            "    ImGuiInputTextCallbackData_InsertChars(self, pos, text.data(), text.data() + text.size());\n",
+                            "}), allow_raw_ptrs{})\n"
+                        ]
+                    }
+                }
+            }
+        },
         "ImDrawListSplitter": {
             "exclude": false,
             "fields": {
@@ -550,15 +587,16 @@
         "ImGui_InputText": {
             "override": {
                 "ts": [
-                    "    InputText(label: string, buf: [string], buf_size: number, flags: ImGuiInputTextFlags = 0): boolean {\n",
-                    "        return Mod.export.ImGui_InputText(label, buf, buf_size, flags);\n",
+                    "    InputText(label: string, buf: [string], buf_size: number, flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
+                    "        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputText(label, buf, buf_size, flags, native));\n",
                     "    },\n"
                 ],
                 "cpp": [
-                    "bind_fn(\"ImGui_InputText\", [](std::string label, js_val buf, size_t buf_size, ImGuiInputTextFlags flags){\n",
+                    "bind_fn(\"ImGui_InputText\", [](std::string label, js_val buf, size_t buf_size, ImGuiInputTextFlags flags, js_val callback){\n",
                     "    auto _bind_buf = buf[0].as<std::string>();\n",
                     "    _bind_buf.reserve(buf_size);\n",
-                    "    auto const ret = ImGui_InputText(label.c_str(), _bind_buf.data(), buf_size, flags, nullptr, nullptr);\n",
+                    "    auto const has_callback = !callback.isNull();\n",
+                    "    auto const ret = ImGui_InputText(label.c_str(), _bind_buf.data(), buf_size, flags, has_callback ? call_js_user_data<ImGuiInputTextCallbackData> : nullptr, has_callback ? &callback : nullptr);\n",
                     "    buf.set(0, std::string(_bind_buf.data()));\n",
                     "    return ret;\n",
                     "});\n"
@@ -568,15 +606,16 @@
         "ImGui_InputTextMultiline": {
             "override": {
                 "ts": [
-                    "    InputTextMultiline(label: string, buf: [string], buf_size: number, size: ImVec2 = new ImVec2(0, 0), flags: ImGuiInputTextFlags = 0): boolean {\n",
-                    "        return Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags);\n",
+                    "    InputTextMultiline(label: string, buf: [string], buf_size: number, size: ImVec2 = new ImVec2(0, 0), flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
+                    "        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags, native));\n",
                     "    },\n"
                 ],
                 "cpp": [
-                    "bind_fn(\"ImGui_InputTextMultiline\", [](std::string label, js_val buf, size_t buf_size, ImVec2 size, ImGuiInputTextFlags flags){\n",
+                    "bind_fn(\"ImGui_InputTextMultiline\", [](std::string label, js_val buf, size_t buf_size, ImVec2 size, ImGuiInputTextFlags flags, js_val callback){\n",
                     "    auto _bind_buf = buf[0].as<std::string>();\n",
                     "    _bind_buf.reserve(buf_size);\n",
-                    "    auto const ret = ImGui_InputTextMultiline(label.c_str(), _bind_buf.data(), buf_size, size, flags, nullptr, nullptr);\n",
+                    "    auto const has_callback = !callback.isNull();\n",
+                    "    auto const ret = ImGui_InputTextMultiline(label.c_str(), _bind_buf.data(), buf_size, size, flags, has_callback ? call_js_user_data<ImGuiInputTextCallbackData> : nullptr, has_callback ? &callback : nullptr);\n",
                     "    buf.set(0, std::string(_bind_buf.data()));\n",
                     "    return ret;\n",
                     "});\n"
@@ -586,15 +625,16 @@
         "ImGui_InputTextWithHint": {
             "override": {
                 "ts": [
-                    "    InputTextWithHint(label: string, hint: string, buf: [string], buf_size: number, flags: ImGuiInputTextFlags = 0): boolean {\n",
-                    "        return Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags);\n",
+                    "    InputTextWithHint(label: string, hint: string, buf: [string], buf_size: number, flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
+                    "        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags, native));\n",
                     "    },\n"
                 ],
                 "cpp": [
-                    "bind_fn(\"ImGui_InputTextWithHint\", [](std::string label, std::string hint, js_val buf, size_t buf_size, ImGuiInputTextFlags flags){\n",
+                    "bind_fn(\"ImGui_InputTextWithHint\", [](std::string label, std::string hint, js_val buf, size_t buf_size, ImGuiInputTextFlags flags, js_val callback){\n",
                     "    auto _bind_buf = buf[0].as<std::string>();\n",
                     "    _bind_buf.reserve(buf_size);\n",
-                    "    auto const ret = ImGui_InputTextWithHint(label.c_str(), hint.c_str(), _bind_buf.data(), buf_size, flags, nullptr, nullptr);\n",
+                    "    auto const has_callback = !callback.isNull();\n",
+                    "    auto const ret = ImGui_InputTextWithHint(label.c_str(), hint.c_str(), _bind_buf.data(), buf_size, flags, has_callback ? call_js_user_data<ImGuiInputTextCallbackData> : nullptr, has_callback ? &callback : nullptr);\n",
                     "    buf.set(0, std::string(_bind_buf.data()));\n",
                     "    return ret;\n",
                     "});\n"
@@ -618,13 +658,13 @@
         "ImGui_ComboChar": {
             "exclude": true
         },
-        "ImGui_ComboCallback": {
+        "ImGui_ComboObsolete": {
             "exclude": true
         },
         "ImGui_ListBox": {
             "exclude": true
         },
-        "ImGui_ListBoxCallback": {
+        "ImGui_ListBoxObsolete": {
             "exclude": true
         },
         "ImGui_PlotLinesCallback": {

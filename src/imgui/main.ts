@@ -85,6 +85,43 @@ function getValueStructsTs(): string {
     ].join("\n");
 }
 
+function getInputTextCallbackTs(): string {
+    return [
+        "/**",
+        " * Makes an InputText*() native call with `callback` wrapped for the native side, which passes it",
+        " * a raw ImGuiInputTextCallbackData. An error thrown by `callback` is rethrown once the native",
+        " * call has returned, as unwinding through it would leave ImGui halfway through the widget.",
+        " */",
+        "function callInputText(",
+        "    flags: ImGuiInputTextFlags,",
+        "    callback: ImGuiInputTextCallback | null,",
+        "    call: (native: ((data: unknown) => number) | null) => boolean,",
+        "): boolean {",
+        "    if (flags & ImGui.InputTextFlags.CallbackResize) {",
+        '        throw new Error("ImGuiInputTextFlags.CallbackResize is not supported: buf_size is fixed");',
+        "    }",
+        "    if (!callback) return call(null);",
+        "",
+        "    let failed = false;",
+        "    let error: unknown;",
+        "    const ret = call((data) => {",
+        "        if (failed) return 0;",
+        "        try {",
+        "            // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0",
+        "            return callback(ImGuiInputTextCallbackData.From(data)) | 0;",
+        "        } catch (e) {",
+        "            failed = true;",
+        "            error = e;",
+        "            return 0;",
+        "        }",
+        "    });",
+        "    if (failed) throw error;",
+        "    return ret;",
+        "}",
+        "",
+    ].join("\n");
+}
+
 function getValueStructsCpp(): string {
     return [
         `emscripten::value_object<ImVec2>("ImVec2")`,
@@ -133,6 +170,7 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
         "\n",
         getValueStructsTs(),
         structsCodeTs,
+        getInputTextCallbackTs(),
         "export const ImGui = {\n",
         enumsCodeTs,
         getFreeTypeEnumTs(),

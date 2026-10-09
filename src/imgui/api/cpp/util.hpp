@@ -45,6 +45,15 @@ constexpr auto bind_struct(const char* name) -> emscripten::class_<T> {
     return emscripten::class_<T>(name);
 }
 
+// C callback that calls the JS function passed as its `UserData`, handing it the callback data.
+// The JS function must outlive the native call, so only use it for callbacks fired before that
+// call returns (e.g. ImGuiInputTextCallback).
+template <typename Data>
+auto call_js_user_data(Data* data) -> int {
+    auto const& fn = *static_cast<js_val const*>(data->UserData);
+    return fn(data, allow_raw_ptrs{}).template as<int>();
+}
+
 template <typename T, size_t N>
 struct array_param {
     std::array<T, N> arr = {};

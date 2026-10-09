@@ -11,6 +11,8 @@ interface CimPlotDefinition {
     defaults?: Record<string, string>;
     funcname: string;
     isvararg?: string;
+    // Fixed-arity copy of a vararg function, only compiled with CIMGUI_VARGS0
+    isVARG0?: boolean;
     location?: string;
     namespace?: string;
     ov_cimguiname: string;
@@ -176,7 +178,7 @@ function getReturnType(definition: CimPlotDefinition): string {
 
 function getUnsupportedReason(definition: CimPlotDefinition): string | undefined {
     if (!definition.location?.startsWith("implot:")) return "internal";
-    if (definition.isvararg) return "vararg";
+    if (definition.isvararg || definition.isVARG0) return "vararg";
 
     const types = [
         getReturnType(definition),
