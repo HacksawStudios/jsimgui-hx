@@ -2567,6 +2567,10 @@
 		"value": 240,
 		"expression": "ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight | ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight"
 	},
+	"ImDrawFlags_RoundCornersDefault_": {
+		"value": 240,
+		"expression": "ImDrawFlags_RoundCornersAll"
+	},
 	"ImDrawFlags_RoundCornersTop": {
 		"value": 48,
 		"expression": "ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight"
@@ -2583,85 +2587,40 @@
 		"value": 160,
 		"expression": "ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight"
 	},
-	"ImDrawFlags_Closed": {
-		"value": 512,
-		"expression": "1<<9"
-	},
-	"ImDrawFlags_JoinMiter": {
-		"value": 1024,
-		"expression": "1<<10"
-	},
-	"ImDrawFlags_CapSquare": {
-		"value": 2048,
-		"expression": "1<<11"
-	},
-	"ImDrawFlags_AAFill": {
-		"value": 4096,
-		"expression": "1<<12"
-	},
-	"ImDrawFlags_AALines": {
-		"value": 8192,
-		"expression": "1<<13"
-	},
-	"ImDrawFlags_AALineEnds": {
-		"value": 16384,
-		"expression": "1<<14"
-	},
-	"ImDrawFlags_StrokeInside": {
-		"value": 131072,
-		"expression": "1<<17"
-	},
-	"ImDrawFlags_StrokeCenter": {
-		"value": 262144,
-		"expression": "2<<17"
-	},
-	"ImDrawFlags_StrokeCenterBiased": {
-		"value": 393216,
-		"expression": "3<<17"
-	},
-	"ImDrawFlags_StrokeOutside": {
-		"value": 524288,
-		"expression": "4<<17"
-	},
-	"ImDrawFlags_StrokeLegacy": {
-		"value": 917504,
-		"expression": "7<<17"
-	},
-	"ImDrawFlags_TextNoPixelSnap": {
-		"value": 1048576,
-		"expression": "1<<20"
-	},
-	"ImDrawFlags_UseTexForRoundCorners": {
-		"value": 2097152,
-		"expression": "1<<21"
-	},
-	"ImDrawFlags_UseVtxOffset": {
-		"value": 4194304,
-		"expression": "1<<22"
-	},
-	"ImDrawFlags_AllowTexForRoundCorners_": {
-		"value": 8388608,
-		"expression": "1<<23"
-	},
 	"ImDrawFlags_RoundCornersMask_": {
 		"value": 496,
 		"expression": "ImDrawFlags_RoundCornersAll | ImDrawFlags_RoundCornersNone"
 	},
-	"ImDrawFlags_AllowInPushScope_": {
-		"value": 8286704,
-		"expression": "ImDrawFlags_AAFill | ImDrawFlags_AALines | ImDrawFlags_AALineEnds | ImDrawFlags_StrokeLegacy | ImDrawFlags_TextNoPixelSnap | ImDrawFlags_UseTexForRoundCorners | ImDrawFlags_UseVtxOffset | ImDrawFlags_RoundCornersMask_"
-	},
-	"ImDrawFlags_AllowInFrameScope_": {
-		"value": 16675312,
-		"expression": "ImDrawFlags_AllowInPushScope_ | ImDrawFlags_AllowTexForRoundCorners_"
-	},
-	"ImDrawFlags_StrokeMask_": {
-		"value": 917504,
-		"expression": "0x07<<17"
+	"ImDrawFlags_Closed": {
+		"value": 512,
+		"expression": "1<<9"
 	},
 	"ImDrawFlags_InvalidMask_": {
 		"value": -2147483633,
 		"expression": "~0x7FFFFFF0"
+	},
+	"ImDrawListFlags_None": {
+		"value": 0
+	},
+	"ImDrawListFlags_AntiAliasedLines": {
+		"value": 1,
+		"expression": "1<<0"
+	},
+	"ImDrawListFlags_AntiAliasedLinesUseTex": {
+		"value": 2,
+		"expression": "1<<1"
+	},
+	"ImDrawListFlags_AntiAliasedFill": {
+		"value": 4,
+		"expression": "1<<2"
+	},
+	"ImDrawListFlags_AllowVtxOffset": {
+		"value": 8,
+		"expression": "1<<3"
+	},
+	"ImDrawListFlags_TextNoPixelSnap": {
+		"value": 16,
+		"expression": "1<<4"
 	},
 	"ImTextureFormat_RGBA32": {
 		"value": 0
@@ -2698,10 +2657,6 @@
 	"ImFontAtlasFlags_NoBakedLines": {
 		"value": 4,
 		"expression": "1<<2"
-	},
-	"ImFontAtlasFlags_NoBakedRoundCorners": {
-		"value": 8,
-		"expression": "1<<3"
 	},
 	"ImFontFlags_None": {
 		"value": 0
@@ -2780,30 +2735,6 @@
 	"ImGuiViewportFlags_IsFocused": {
 		"value": 8192,
 		"expression": "1<<13"
-	},
-	"ImDrawListFlags_None": {
-		"value": 0,
-		"expression": "ImDrawFlags_None"
-	},
-	"ImDrawListFlags_AntiAliasedFill": {
-		"value": 4096,
-		"expression": "ImDrawFlags_AAFill"
-	},
-	"ImDrawListFlags_AntiAliasedLines": {
-		"value": 8192,
-		"expression": "ImDrawFlags_AALines"
-	},
-	"ImDrawListFlags_AntiAliasedLinesUseTex": {
-		"value": 8192,
-		"expression": "ImDrawFlags_AALines"
-	},
-	"ImDrawListFlags_AllowVtxOffset": {
-		"value": 4194304,
-		"expression": "ImDrawFlags_UseVtxOffset"
-	},
-	"ImDrawListFlags_TextNoPixelSnap": {
-		"value": 1048576,
-		"expression": "ImDrawFlags_TextNoPixelSnap"
 	},
 	"ImAxis_X1": {
 		"value": 0

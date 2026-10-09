@@ -206,7 +206,7 @@ abstract ImGuiChildFlags(Int) from Int to Int {
 **/
 abstract ImGuiItemFlags(Int) from Int to Int {
 	/**
-		(Default)
+		Default:
 	**/
 	public static inline final None:ImGuiItemFlags = 0;
 
@@ -216,7 +216,7 @@ abstract ImGuiItemFlags(Int) from Int to Int {
 	public static inline final NoTabStop:ImGuiItemFlags = 1 << 0;
 
 	/**
-		false    // Disable any form of focusing (keyboard/gamepad directional navigation and SetKeyboardFocusHere() calls).
+		false    // Disable any form of focusing: keyboard/gamepad directional navigation and SetKeyboardFocusHere() calls.
 	**/
 	public static inline final NoNav:ImGuiItemFlags = 1 << 1;
 
@@ -244,6 +244,17 @@ abstract ImGuiItemFlags(Int) from Int to Int {
 		false    // [Internal] Disable interactions. DOES NOT affect visuals. This is used by BeginDisabled()/EndDisabled() and only provided here so you can read back via GetItemFlags().
 	**/
 	public static inline final Disabled:ImGuiItemFlags = 1 << 6;
+
+	/**
+		true     // InputText: apply keyboard edits to backing value while typing. Otherwise, edits are applied when validating, tabbing out or losing focus.
+	**/
+	public static inline final LiveEditOnInputText:ImGuiItemFlags = 1 << 7;
+
+	/**
+		false    // DragXXX, SliderXXX, InputScalar: apply keyboard edits to backing value while typing. Otherwise, edits are applied when validating, tabbing out or losing focus.
+	**/
+	public static inline final LiveEditOnInputScalar:ImGuiItemFlags = 1 << 8;
+	public static inline final LiveEditOnInput:ImGuiItemFlags = LiveEditOnInputText | LiveEditOnInputScalar;
 }
 
 /**
@@ -287,7 +298,7 @@ abstract ImGuiInputTextFlags(Int) from Int to Int {
 	public static inline final AllowTabInput:ImGuiInputTextFlags = 1 << 5;
 
 	/**
-		Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider using IsItemDeactivatedAfterEdit() instead!
+		Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider disabling LiveEdit! or using IsItemDeactivatedAfterEdit() instead!
 	**/
 	public static inline final EnterReturnsTrue:ImGuiInputTextFlags = 1 << 6;
 
@@ -671,7 +682,7 @@ abstract ImGuiTabBarFlags(Int) from Int to Int {
 	public static inline final DrawSelectedOverline:ImGuiTabBarFlags = 1 << 6;
 
 	/**
-		Shrink down tabs when they don't fit, until width is style.TabMinWidthShrink, then enable scrolling buttons.
+		Shrink down tabs when they don't fit, until width is style.TabMinWidthShrink, then enable scrolling. Setting TabMinWidthShrink to FLT_MAX makes this behave like ImGuiTabBarFlags_FittingPolicyScroll.
 	**/
 	public static inline final FittingPolicyMixed:ImGuiTabBarFlags = 1 << 7;
 
@@ -1602,7 +1613,7 @@ abstract ImGuiBackendFlags(Int) from Int to Int {
 	public static inline final HasMouseHoveredViewport:ImGuiBackendFlags = 1 << 12;
 
 	/**
-		Backend Platform supports honoring viewport->ParentViewport/ParentViewportId value, by applying the corresponding parent/child relation at the Platform level.
+		Backend Platform supports honoring viewport->ParentViewport/ParentViewportId value, by applying the corresponding parent/child relationship at the Platform level. Child windows always appear in front of their parent window.
 	**/
 	public static inline final HasParentViewport:ImGuiBackendFlags = 1 << 13;
 }
@@ -1662,158 +1673,163 @@ abstract ImGuiCol(Int) from Int to Int {
 		Checkbox tick and RadioButton circle
 	**/
 	public static inline final CheckMark:ImGuiCol = 18;
-	public static inline final SliderGrab:ImGuiCol = 19;
-	public static inline final SliderGrabActive:ImGuiCol = 20;
-	public static inline final Button:ImGuiCol = 21;
-	public static inline final ButtonHovered:ImGuiCol = 22;
-	public static inline final ButtonActive:ImGuiCol = 23;
+
+	/**
+		Checkbox background when Selected, otherwise use FrameBg
+	**/
+	public static inline final CheckboxSelectedBg:ImGuiCol = 19;
+	public static inline final SliderGrab:ImGuiCol = 20;
+	public static inline final SliderGrabActive:ImGuiCol = 21;
+	public static inline final Button:ImGuiCol = 22;
+	public static inline final ButtonHovered:ImGuiCol = 23;
+	public static inline final ButtonActive:ImGuiCol = 24;
 
 	/**
 		Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
 	**/
-	public static inline final Header:ImGuiCol = 24;
-	public static inline final HeaderHovered:ImGuiCol = 25;
-	public static inline final HeaderActive:ImGuiCol = 26;
-	public static inline final Separator:ImGuiCol = 27;
-	public static inline final SeparatorHovered:ImGuiCol = 28;
-	public static inline final SeparatorActive:ImGuiCol = 29;
+	public static inline final Header:ImGuiCol = 25;
+	public static inline final HeaderHovered:ImGuiCol = 26;
+	public static inline final HeaderActive:ImGuiCol = 27;
+	public static inline final Separator:ImGuiCol = 28;
+	public static inline final SeparatorHovered:ImGuiCol = 29;
+	public static inline final SeparatorActive:ImGuiCol = 30;
 
 	/**
 		Resize grip in lower-right and lower-left corners of windows.
 	**/
-	public static inline final ResizeGrip:ImGuiCol = 30;
-	public static inline final ResizeGripHovered:ImGuiCol = 31;
-	public static inline final ResizeGripActive:ImGuiCol = 32;
+	public static inline final ResizeGrip:ImGuiCol = 31;
+	public static inline final ResizeGripHovered:ImGuiCol = 32;
+	public static inline final ResizeGripActive:ImGuiCol = 33;
 
 	/**
 		InputText cursor/caret
 	**/
-	public static inline final InputTextCursor:ImGuiCol = 33;
+	public static inline final InputTextCursor:ImGuiCol = 34;
 
 	/**
 		Tab background, when hovered
 	**/
-	public static inline final TabHovered:ImGuiCol = 34;
+	public static inline final TabHovered:ImGuiCol = 35;
 
 	/**
 		Tab background, when tab-bar is focused & tab is unselected
 	**/
-	public static inline final Tab:ImGuiCol = 35;
+	public static inline final Tab:ImGuiCol = 36;
 
 	/**
 		Tab background, when tab-bar is focused & tab is selected
 	**/
-	public static inline final TabSelected:ImGuiCol = 36;
+	public static inline final TabSelected:ImGuiCol = 37;
 
 	/**
 		Tab horizontal overline, when tab-bar is focused & tab is selected
 	**/
-	public static inline final TabSelectedOverline:ImGuiCol = 37;
+	public static inline final TabSelectedOverline:ImGuiCol = 38;
 
 	/**
 		Tab background, when tab-bar is unfocused & tab is unselected
 	**/
-	public static inline final TabDimmed:ImGuiCol = 38;
+	public static inline final TabDimmed:ImGuiCol = 39;
 
 	/**
 		Tab background, when tab-bar is unfocused & tab is selected
 	**/
-	public static inline final TabDimmedSelected:ImGuiCol = 39;
+	public static inline final TabDimmedSelected:ImGuiCol = 40;
 
 	/**
 		..horizontal overline, when tab-bar is unfocused & tab is selected
 	**/
-	public static inline final TabDimmedSelectedOverline:ImGuiCol = 40;
+	public static inline final TabDimmedSelectedOverline:ImGuiCol = 41;
 
 	/**
 		Preview overlay color when about to docking something
 	**/
-	public static inline final DockingPreview:ImGuiCol = 41;
+	public static inline final DockingPreview:ImGuiCol = 42;
 
 	/**
 		Background color for empty node (e.g. CentralNode with no window docked into it)
 	**/
-	public static inline final DockingEmptyBg:ImGuiCol = 42;
-	public static inline final PlotLines:ImGuiCol = 43;
-	public static inline final PlotLinesHovered:ImGuiCol = 44;
-	public static inline final PlotHistogram:ImGuiCol = 45;
-	public static inline final PlotHistogramHovered:ImGuiCol = 46;
+	public static inline final DockingEmptyBg:ImGuiCol = 43;
+	public static inline final PlotLines:ImGuiCol = 44;
+	public static inline final PlotLinesHovered:ImGuiCol = 45;
+	public static inline final PlotHistogram:ImGuiCol = 46;
+	public static inline final PlotHistogramHovered:ImGuiCol = 47;
 
 	/**
 		Table header background
 	**/
-	public static inline final TableHeaderBg:ImGuiCol = 47;
+	public static inline final TableHeaderBg:ImGuiCol = 48;
 
 	/**
 		Table outer and header borders (prefer using Alpha=1.0 here)
 	**/
-	public static inline final TableBorderStrong:ImGuiCol = 48;
+	public static inline final TableBorderStrong:ImGuiCol = 49;
 
 	/**
 		Table inner borders (prefer using Alpha=1.0 here)
 	**/
-	public static inline final TableBorderLight:ImGuiCol = 49;
+	public static inline final TableBorderLight:ImGuiCol = 50;
 
 	/**
 		Table row background (even rows)
 	**/
-	public static inline final TableRowBg:ImGuiCol = 50;
+	public static inline final TableRowBg:ImGuiCol = 51;
 
 	/**
 		Table row background (odd rows)
 	**/
-	public static inline final TableRowBgAlt:ImGuiCol = 51;
+	public static inline final TableRowBgAlt:ImGuiCol = 52;
 
 	/**
 		Hyperlink color
 	**/
-	public static inline final TextLink:ImGuiCol = 52;
+	public static inline final TextLink:ImGuiCol = 53;
 
 	/**
 		Selected text inside an InputText
 	**/
-	public static inline final TextSelectedBg:ImGuiCol = 53;
+	public static inline final TextSelectedBg:ImGuiCol = 54;
 
 	/**
 		Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
 	**/
-	public static inline final TreeLines:ImGuiCol = 54;
+	public static inline final TreeLines:ImGuiCol = 55;
 
 	/**
 		Rectangle border highlighting a drop target
 	**/
-	public static inline final DragDropTarget:ImGuiCol = 55;
+	public static inline final DragDropTarget:ImGuiCol = 56;
 
 	/**
 		Rectangle background highlighting a drop target
 	**/
-	public static inline final DragDropTargetBg:ImGuiCol = 56;
+	public static inline final DragDropTargetBg:ImGuiCol = 57;
 
 	/**
 		Unsaved Document marker (in window title and tabs)
 	**/
-	public static inline final UnsavedMarker:ImGuiCol = 57;
+	public static inline final UnsavedMarker:ImGuiCol = 58;
 
 	/**
 		Color of keyboard/gamepad navigation cursor/rectangle, when visible
 	**/
-	public static inline final NavCursor:ImGuiCol = 58;
+	public static inline final NavCursor:ImGuiCol = 59;
 
 	/**
 		Highlight window when using Ctrl+Tab
 	**/
-	public static inline final NavWindowingHighlight:ImGuiCol = 59;
+	public static inline final NavWindowingHighlight:ImGuiCol = 60;
 
 	/**
 		Darken/colorize entire screen behind the Ctrl+Tab window list, when active
 	**/
-	public static inline final NavWindowingDimBg:ImGuiCol = 60;
+	public static inline final NavWindowingDimBg:ImGuiCol = 61;
 
 	/**
 		Darken/colorize entire screen behind a modal window, when one is active
 	**/
-	public static inline final ModalWindowDimBg:ImGuiCol = 61;
-	public static inline final COUNT:ImGuiCol = 62;
+	public static inline final ModalWindowDimBg:ImGuiCol = 62;
+	public static inline final COUNT:ImGuiCol = 63;
 }
 
 /**
@@ -2003,40 +2019,55 @@ abstract ImGuiStyleVar(Int) from Int to Int {
 	public static inline final TreeLinesRounding:ImGuiStyleVar = 34;
 
 	/**
+		float     MenuItemRounding
+	**/
+	public static inline final MenuItemRounding:ImGuiStyleVar = 35;
+
+	/**
+		float     SelectableRounding
+	**/
+	public static inline final SelectableRounding:ImGuiStyleVar = 36;
+
+	/**
+		float     DragDropTargetRounding
+	**/
+	public static inline final DragDropTargetRounding:ImGuiStyleVar = 37;
+
+	/**
 		ImVec2    ButtonTextAlign
 	**/
-	public static inline final ButtonTextAlign:ImGuiStyleVar = 35;
+	public static inline final ButtonTextAlign:ImGuiStyleVar = 38;
 
 	/**
 		ImVec2    SelectableTextAlign
 	**/
-	public static inline final SelectableTextAlign:ImGuiStyleVar = 36;
+	public static inline final SelectableTextAlign:ImGuiStyleVar = 39;
 
 	/**
 		float     SeparatorSize
 	**/
-	public static inline final SeparatorSize:ImGuiStyleVar = 37;
+	public static inline final SeparatorSize:ImGuiStyleVar = 40;
 
 	/**
 		float     SeparatorTextBorderSize
 	**/
-	public static inline final SeparatorTextBorderSize:ImGuiStyleVar = 38;
+	public static inline final SeparatorTextBorderSize:ImGuiStyleVar = 41;
 
 	/**
 		ImVec2    SeparatorTextAlign
 	**/
-	public static inline final SeparatorTextAlign:ImGuiStyleVar = 39;
+	public static inline final SeparatorTextAlign:ImGuiStyleVar = 42;
 
 	/**
 		ImVec2    SeparatorTextPadding
 	**/
-	public static inline final SeparatorTextPadding:ImGuiStyleVar = 40;
+	public static inline final SeparatorTextPadding:ImGuiStyleVar = 43;
 
 	/**
 		float     DockingSeparatorSize
 	**/
-	public static inline final DockingSeparatorSize:ImGuiStyleVar = 41;
-	public static inline final COUNT:ImGuiStyleVar = 42;
+	public static inline final DockingSeparatorSize:ImGuiStyleVar = 44;
+	public static inline final COUNT:ImGuiStyleVar = 45;
 }
 
 /**
@@ -2193,14 +2224,19 @@ abstract ImGuiColorEditFlags(Int) from Int to Int {
 	public static inline final PickerHueWheel:ImGuiColorEditFlags = 1 << 26;
 
 	/**
+		[Picker]     // ColorPicker: disable rotating Sat/Value triangle. Best set in io.ConfigColorEditFlags once.
+	**/
+	public static inline final PickerNoRotate:ImGuiColorEditFlags = 1 << 27;
+
+	/**
 		[Input]      // ColorEdit, ColorPicker: input and output data in RGB format.
 	**/
-	public static inline final InputRGB:ImGuiColorEditFlags = 134217728;
+	public static inline final InputRGB:ImGuiColorEditFlags = 1 << 28;
 
 	/**
 		[Input]      // ColorEdit, ColorPicker: input and output data in HSV format.
 	**/
-	public static inline final InputHSV:ImGuiColorEditFlags = 268435456;
+	public static inline final InputHSV:ImGuiColorEditFlags = 1 << 29;
 }
 
 /**
@@ -2878,45 +2914,48 @@ abstract ImGuiSelectionRequestType(Int) from Int to Int {
 
 /**
 	Flags for ImDrawList functions
-	(Legacy: bit 0 must always correspond to ImDrawFlags_Closed to be backward compatible with old API using a bool. Bits 1..3 must be unused)
 **/
 abstract ImDrawFlags(Int) from Int to Int {
 	public static inline final None:ImDrawFlags = 0;
 
 	/**
-		PathStroke(), AddPolyline(): specify that shape should be closed (Important: this is always == 1 for legacy reason)
-	**/
-	public static inline final Closed:ImDrawFlags = 1;
-
-	/**
-		AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners). Was 0x01.
+		Round top-left corner only (when rounding > 0.0f, we default to all corners).
 	**/
 	public static inline final RoundCornersTopLeft:ImDrawFlags = 1 << 4;
 
 	/**
-		AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners). Was 0x02.
+		Round top-right corner only (when rounding > 0.0f, we default to all corners).
 	**/
 	public static inline final RoundCornersTopRight:ImDrawFlags = 1 << 5;
 
 	/**
-		AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners). Was 0x04.
+		Round bottom-left corner only (when rounding > 0.0f, we default to all corners).
 	**/
 	public static inline final RoundCornersBottomLeft:ImDrawFlags = 1 << 6;
 
 	/**
-		AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f, we default to all corners). Wax 0x08.
+		Round bottom-right corner only (when rounding > 0.0f, we default to all corners).
 	**/
 	public static inline final RoundCornersBottomRight:ImDrawFlags = 1 << 7;
 
 	/**
-		AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
+		Disable rounding even if `float rounding > 0.0f`. This is NOT zero, NOT an implicit flag!
 	**/
 	public static inline final RoundCornersNone:ImDrawFlags = 1 << 8;
+
+	/**
+		(Default!!)
+	**/
+	public static inline final RoundCornersAll:ImDrawFlags = RoundCornersTopLeft | RoundCornersTopRight | RoundCornersBottomLeft | RoundCornersBottomRight;
 	public static inline final RoundCornersTop:ImDrawFlags = RoundCornersTopLeft | RoundCornersTopRight;
 	public static inline final RoundCornersBottom:ImDrawFlags = RoundCornersBottomLeft | RoundCornersBottomRight;
 	public static inline final RoundCornersLeft:ImDrawFlags = RoundCornersBottomLeft | RoundCornersTopLeft;
 	public static inline final RoundCornersRight:ImDrawFlags = RoundCornersBottomRight | RoundCornersTopRight;
-	public static inline final RoundCornersAll:ImDrawFlags = RoundCornersTopLeft | RoundCornersTopRight | RoundCornersBottomLeft | RoundCornersBottomRight;
+
+	/**
+		PathStroke(), AddPolyline(): specify that shape should be closed.
+	**/
+	public static inline final Closed:ImDrawFlags = 1 << 9;
 }
 
 /**
@@ -2924,27 +2963,32 @@ abstract ImDrawFlags(Int) from Int to Int {
 	It is however possible to temporarily alter flags between calls to ImDrawList:: functions.
 **/
 abstract ImDrawListFlags(Int) from Int to Int {
-	public static inline final None:ImDrawListFlags = (ImDrawFlags.None : Int);
+	public static inline final None:ImDrawListFlags = 0;
 
 	/**
 		Enable anti-aliased lines/borders (*2 the number of triangles for 1.0f wide line or lines thin enough to be drawn using textures, otherwise *3 the number of triangles)
 	**/
-	public static inline final AntiAliasedLines:ImDrawListFlags = 1;
+	public static inline final AntiAliasedLines:ImDrawListFlags = 1 << 0;
 
 	/**
 		Enable anti-aliased lines/borders using textures when possible. Require backend to render with bilinear filtering (NOT point/nearest filtering).
 	**/
-	public static inline final AntiAliasedLinesUseTex:ImDrawListFlags = 2;
+	public static inline final AntiAliasedLinesUseTex:ImDrawListFlags = 1 << 1;
 
 	/**
 		Enable anti-aliased edge around filled shapes (rounded rectangles, circles).
 	**/
-	public static inline final AntiAliasedFill:ImDrawListFlags = 4;
+	public static inline final AntiAliasedFill:ImDrawListFlags = 1 << 2;
 
 	/**
 		Can emit 'VtxOffset > 0' to allow large meshes. Set when 'ImGuiBackendFlags_RendererHasVtxOffset' is enabled.
 	**/
-	public static inline final AllowVtxOffset:ImDrawListFlags = 8;
+	public static inline final AllowVtxOffset:ImDrawListFlags = 1 << 3;
+
+	/**
+		Disable automatically snapping AddText() calls to pixel boundaries.
+	**/
+	public static inline final TextNoPixelSnap:ImDrawListFlags = 1 << 4;
 }
 
 /**
@@ -3032,6 +3076,11 @@ abstract ImFontFlags(Int) from Int to Int {
 		[Internal] Disable loading new baked sizes, disable garbage collecting current ones. e.g. if you want to lock a font to a single size. Important: if you use this to preload given sizes, consider the possibility of multiple font density used on Retina display.
 	**/
 	public static inline final LockBakedSizes:ImFontFlags = 1 << 3;
+
+	/**
+		[Internal] Reference size was not set explicitly.
+	**/
+	public static inline final ImplicitRefSize:ImFontFlags = 1 << 4;
 }
 
 /**
@@ -3280,6 +3329,10 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var treeLinesSize:Float;
 	@:native("TreeLinesRounding")
 	var treeLinesRounding:Float;
+	@:native("MenuItemRounding")
+	var menuItemRounding:Float;
+	@:native("SelectableRounding")
+	var selectableRounding:Float;
 	@:native("DragDropTargetRounding")
 	var dragDropTargetRounding:Float;
 	@:native("DragDropTargetBorderSize")
@@ -3294,6 +3347,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var buttonTextAlign:ImVec2;
 	@:native("SelectableTextAlign")
 	var selectableTextAlign:ImVec2;
+	@:native("InputTextCursorSize")
+	var inputTextCursorSize:Float;
 	@:native("SeparatorSize")
 	var separatorSize:Float;
 	@:native("SeparatorTextBorderSize")
@@ -3403,8 +3458,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configDpiScaleFonts:Bool;
 	@:native("ConfigDpiScaleViewports")
 	var configDpiScaleViewports:Bool;
-	@:native("MouseDrawCursor")
-	var mouseDrawCursor:Bool;
 	@:native("ConfigMacOSXBehaviors")
 	var configMacOSXBehaviors:Bool;
 	@:native("ConfigInputTrickleEventQueue")
@@ -3413,6 +3466,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configInputTextCursorBlink:Bool;
 	@:native("ConfigInputTextEnterKeepActive")
 	var configInputTextEnterKeepActive:Bool;
+	@:native("ConfigColorEditFlags")
+	var configColorEditFlags:ImGuiColorEditFlags;
 	@:native("ConfigDragClickToInputText")
 	var configDragClickToInputText:Bool;
 	@:native("ConfigWindowsResizeFromEdges")
@@ -3423,12 +3478,22 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configWindowsCopyContentsWithCtrlC:Bool;
 	@:native("ConfigScrollbarScrollByPage")
 	var configScrollbarScrollByPage:Bool;
+	@:native("ConfigIniSettingsSaveLastUsedDate")
+	var configIniSettingsSaveLastUsedDate:Bool;
+	@:native("ConfigIniSettingsAutoDiscardMonths")
+	var configIniSettingsAutoDiscardMonths:Float;
+	@:native("ConfigDebugIniSettings")
+	var configDebugIniSettings:Bool;
+	@:native("MouseDrawCursor")
+	var mouseDrawCursor:Bool;
 	@:native("ConfigMemoryCompactTimer")
 	var configMemoryCompactTimer:Float;
 	@:native("MouseDoubleClickTime")
 	var mouseDoubleClickTime:Float;
 	@:native("MouseDoubleClickMaxDist")
 	var mouseDoubleClickMaxDist:Float;
+	@:native("MouseSingleClickDelay")
+	var mouseSingleClickDelay:Float;
 	@:native("MouseDragThreshold")
 	var mouseDragThreshold:Float;
 	@:native("KeyRepeatDelay")
@@ -3455,8 +3520,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configDebugBeginReturnValueLoop:Bool;
 	@:native("ConfigDebugIgnoreFocusLoss")
 	var configDebugIgnoreFocusLoss:Bool;
-	@:native("ConfigDebugIniSettings")
-	var configDebugIniSettings:Bool;
 	@:native("BackendPlatformName")
 	var backendPlatformName:String;
 	@:native("BackendRendererName")
@@ -3574,8 +3637,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var eventFlag:ImGuiInputTextFlags;
 	@:native("Flags")
 	var flags:ImGuiInputTextFlags;
-	@:native("UserData")
-	var userData:Dynamic;
 	@:native("ID")
 	var id:ImGuiID;
 	@:native("EventKey")
@@ -3601,7 +3662,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("DeleteChars")
 	function deleteChars(pos:Float, bytes_count:Float):Void;
 	@:native("InsertChars")
-	function insertChars(pos:Float, text:String, ?text_end:String = ""):Void;
+	function insertChars(pos:Float, text:String):Void;
 	@:native("SelectAll")
 	function selectAll():Void;
 	@:native("SetSelection")
@@ -3647,6 +3708,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var dockingAlwaysTabBar:Bool;
 	@:native("DockingAllowUnclassed")
 	var dockingAllowUnclassed:Bool;
+	@:native("PlatformIconData")
+	var platformIconData:Dynamic;
 }
 
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiPayload") extern class ImGuiPayload extends ReferenceStruct {
@@ -3785,8 +3848,12 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function getClipRectMax():ImVec2;
 	@:native("AddLine")
 	function addLine(p1:ImVec2, p2:ImVec2, col:ImU32, ?thickness:Float = 1.0):Void;
+	@:native("AddLineH")
+	function addLineH(min_x:Float, max_x:Float, y:Float, col:ImU32, ?thickness:Float = 1.0):Void;
+	@:native("AddLineV")
+	function addLineV(x:Float, min_y:Float, max_y:Float, col:ImU32, ?thickness:Float = 1.0):Void;
 	@:native("AddRect")
-	function addRect(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0, ?thickness:Float = 1.0):Void;
+	function addRect(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?thickness:Float = 1.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddRectFilled")
 	function addRectFilled(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddRectFilledMultiColor")
@@ -3820,7 +3887,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("AddBezierQuadratic")
 	function addBezierQuadratic(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32, thickness:Float, ?num_segments:Float = 0.0):Void;
 	@:native("AddPolyline")
-	function addPolyline(points:ImVec2, num_points:Float, col:ImU32, flags:ImDrawFlags, thickness:Float):Void;
+	function addPolyline(points:ImVec2, num_points:Float, col:ImU32, thickness:Float, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddConvexPolyFilled")
 	function addConvexPolyFilled(points:ImVec2, num_points:Float, col:ImU32):Void;
 	@:native("AddConcavePolyFilled")
@@ -3842,7 +3909,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PathFillConcave")
 	function pathFillConcave(col:ImU32):Void;
 	@:native("PathStroke")
-	function pathStroke(col:ImU32, ?flags:ImDrawFlags = 0, ?thickness:Float = 1.0):Void;
+	function pathStroke(col:ImU32, ?thickness:Float = 1.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("PathArcTo")
 	function pathArcTo(center:ImVec2, radius:Float, a_min:Float, a_max:Float, ?num_segments:Float = 0.0):Void;
 	@:native("PathArcToFast")
@@ -3856,7 +3923,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PathRect")
 	function pathRect(rect_min:ImVec2, rect_max:ImVec2, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddCallback")
-	function addCallback(callback:ImDrawCallback, userdata:Dynamic, ?userdata_size:Float = 0.0):Void;
+	function addCallback(callback:ImDrawCallback, ?userdata:Dynamic = null, ?userdata_size:Float = 0.0):Void;
 	@:native("AddDrawCmd")
 	function addDrawCmd():Void;
 	@:native("CloneOutput")
@@ -3990,16 +4057,16 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function addFontFromFileTTF(filename:String, ?size_pixels:Float = 0.0, ?font_cfg:ImFontConfig = null, ?glyph_ranges:Array<ImWchar> = null):ImFont;
 	@:native("RemoveFont")
 	function removeFont(font:ImFont):Void;
-	@:native("Clear")
-	function clear():Void;
 	@:native("CompactCache")
 	function compactCache():Void;
 	@:native("SetFontLoader")
 	function setFontLoader(font_loader:ImFontLoader):Void;
-	@:native("ClearInputData")
-	function clearInputData():Void;
+	@:native("Clear")
+	function clear():Void;
 	@:native("ClearFonts")
 	function clearFonts():Void;
+	@:native("ClearInputData")
+	function clearInputData():Void;
 	@:native("ClearTexData")
 	function clearTexData():Void;
 	@:native("GetGlyphRangesDefault")
@@ -4051,6 +4118,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var rendererUserData:Dynamic;
 	@:native("PlatformUserData")
 	var platformUserData:Dynamic;
+	@:native("PlatformIconData")
+	var platformIconData:Dynamic;
 	@:native("PlatformHandle")
 	var platformHandle:Dynamic;
 	@:native("PlatformHandleRaw")
@@ -4412,11 +4481,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SliderInt4")
 	static function sliderInt4(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("InputText")
-	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputTextMultiline")
-	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputTextWithHint")
-	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputFloat")
 	static function inputFloat(label:String, v:Array<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat2")
@@ -4445,8 +4514,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	static function colorPicker4(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0, ?ref_col:Array<Float> = null):Bool;
 	@:native("ColorButton")
 	static function colorButton(desc_id:String, col:ImVec4, ?flags:ImGuiColorEditFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
-	@:native("SetColorEditOptions")
-	static function setColorEditOptions(flags:ImGuiColorEditFlags):Void;
 	@:native("TreeNode")
 	static function treeNode(label:String):Bool;
 	@:native("TreeNodeEx")
@@ -4520,11 +4587,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("EndPopup")
 	static function endPopup():Void;
 	@:native("OpenPopup")
-	static function openPopup(str_id:String, ?popup_flags:ImGuiPopupFlags = 0):Void;
+	static function openPopup(str_id:String, ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("OpenPopupID")
-	static function openPopupID(id:ImGuiID, ?popup_flags:ImGuiPopupFlags = 0):Void;
+	static function openPopupID(id:ImGuiID, ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("OpenPopupOnItemClick")
-	static function openPopupOnItemClick(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Void;
+	static function openPopupOnItemClick(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("CloseCurrentPopup")
 	static function closeCurrentPopup():Void;
 	@:native("BeginPopupContextItem")
@@ -4546,7 +4613,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("TableSetColumnIndex")
 	static function tableSetColumnIndex(column_n:Float):Bool;
 	@:native("TableSetupColumn")
-	static function tableSetupColumn(label:String, ?flags:ImGuiTableColumnFlags = 0, ?init_width_or_weight:Float = 0.0, ?user_id:ImGuiID = 0):Void;
+	static function tableSetupColumn(label:String, ?flags:ImGuiTableColumnFlags = 0, ?init_width_or_weight:Float = 0.0, ?user_data:ImGuiID = 0):Void;
 	@:native("TableSetupScrollFreeze")
 	static function tableSetupScrollFreeze(cols:Float, rows:Float):Void;
 	@:native("TableHeader")
@@ -4691,6 +4758,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	static function getItemRectSize():ImVec2;
 	@:native("GetItemFlags")
 	static function getItemFlags():ImGuiItemFlags;
+	@:native("GetItemClickedCountWithSingleClickDelay")
+	static function getItemClickedCountWithSingleClickDelay(?mouse_button:ImGuiMouseButton = 0, ?delay:Float = -1.0):Float;
 	@:native("GetMainViewport")
 	static function getMainViewport():ImGuiViewport;
 	@:native("GetBackgroundDrawList")
@@ -4738,7 +4807,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetNextItemShortcut")
 	static function setNextItemShortcut(key_chord:ImGuiKeyChord, ?flags:ImGuiInputFlags = 0):Void;
 	@:native("SetItemKeyOwner")
-	static function setItemKeyOwner(key:ImGuiKey):Void;
+	static function setItemKeyOwner(key:ImGuiKey):Bool;
 	@:native("IsMouseDown")
 	static function isMouseDown(button:ImGuiMouseButton):Bool;
 	@:native("IsMouseClicked")
@@ -4748,7 +4817,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("IsMouseDoubleClicked")
 	static function isMouseDoubleClicked(button:ImGuiMouseButton):Bool;
 	@:native("IsMouseReleasedWithDelay")
-	static function isMouseReleasedWithDelay(button:ImGuiMouseButton, delay:Float):Bool;
+	static function isMouseReleasedWithDelay(button:ImGuiMouseButton, ?delay:Float = -1.):Bool;
 	@:native("GetMouseClickedCount")
 	static function getMouseClickedCount(button:ImGuiMouseButton):Float;
 	@:native("IsMouseHoveringRect")
