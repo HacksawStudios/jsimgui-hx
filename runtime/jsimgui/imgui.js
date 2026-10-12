@@ -101,7 +101,7 @@ export class ImGuiTableSortSpecs extends ReferenceStruct {
  */
 export class ImGuiTableColumnSortSpecs extends ReferenceStruct {
     /**
-     * \/\/ User id of the column (if specified by a TableSetupColumn() call)
+     * \/\/ User data for the column (if specified by a TableSetupColumn() call in the 'ImGuiID user_data' field). FIXME: Should be called 'UserData'..
      */
     get ColumnUserID() {
         return this.ptr.get_ColumnUserID();
@@ -474,7 +474,7 @@ export class ImGuiStyle extends ReferenceStruct {
         this.ptr.set_TabMinWidthShrink(v);
     }
     /**
-     * \/\/ -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width.
+     * \/\/ -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width. FLT_MAX: never shrink, will behave like ImGuiTabBarFlags_FittingPolicyScroll.
      */
     get TabCloseButtonMinWidthSelected() {
         return this.ptr.get_TabCloseButtonMinWidthSelected();
@@ -555,7 +555,25 @@ export class ImGuiStyle extends ReferenceStruct {
         this.ptr.set_TreeLinesRounding(v);
     }
     /**
-     * \/\/ Radius of the drag and drop target frame.
+     * \/\/ Radius of MenuItem, BeginMenu rounding.
+     */
+    get MenuItemRounding() {
+        return this.ptr.get_MenuItemRounding();
+    }
+    set MenuItemRounding(v) {
+        this.ptr.set_MenuItemRounding(v);
+    }
+    /**
+     * \/\/ Radius of Selectable rounding. MODIFYING THIS IS DISCOURAGED. CONTIGUOUS SELECTIONS WILL NOT LOOK RIGHT. (#7589)
+     */
+    get SelectableRounding() {
+        return this.ptr.get_SelectableRounding();
+    }
+    set SelectableRounding(v) {
+        this.ptr.set_SelectableRounding(v);
+    }
+    /**
+     * \/\/ Radius of the drag and drop target frame. When <0.0f: use FrameRounding.
      */
     get DragDropTargetRounding() {
         return this.ptr.get_DragDropTargetRounding();
@@ -618,7 +636,16 @@ export class ImGuiStyle extends ReferenceStruct {
         this.ptr.set_SelectableTextAlign(v);
     }
     /**
-     * \/\/ Thickness of border in Separator()
+     * \/\/ Thickness of cursor\/caret in InputText().
+     */
+    get InputTextCursorSize() {
+        return this.ptr.get_InputTextCursorSize();
+    }
+    set InputTextCursorSize(v) {
+        this.ptr.set_InputTextCursorSize(v);
+    }
+    /**
+     * \/\/ Thickness of border in Separator(). Must be >= 1.0f.
      */
     get SeparatorSize() {
         return this.ptr.get_SeparatorSize();
@@ -797,7 +824,7 @@ export class ImGuiStyle extends ReferenceStruct {
         this.ptr.set_HoverFlagsForTooltipNav(v);
     }
     /**
-     * \/\/ Scale all spacing\/padding\/thickness values. Do not scale fonts.
+     * \/\/ Scale all spacing\/padding\/thickness values. Do not scale fonts. See comments in definition. Consider not calling this if your initial scale factor if <1.0.
      */
     ScaleAllSizes(scale_factor) {
         this.ptr.ImGuiStyle_ScaleAllSizes(scale_factor);
@@ -1024,6 +1051,7 @@ export class ImGuiIO extends ReferenceStruct {
         this.ptr.set_ConfigDockingTransparentPayload(v);
     }
     // \/\/ Viewport options (when ImGuiConfigFlags_ViewportsEnable is set)
+    // \/\/ (sorry for the amount of "NoXXXX" flags, which may be harder to reason about! may rework someday)
     /**
      * \/\/ = false;         \/\/ Set to make all floating imgui windows always create their own viewport. Otherwise, they are merged into the main host viewports when overlapping it. May also set ImGuiViewportFlags_NoAutoMerge on individual viewport.
      */
@@ -1052,7 +1080,7 @@ export class ImGuiIO extends ReferenceStruct {
         this.ptr.set_ConfigViewportsNoDecoration(v);
     }
     /**
-     * \/\/ = true           \/\/ When false: set secondary viewports' ParentViewportId to main viewport ID by default. Expects the platform backend to setup a parent\/child relationship between the OS windows based on this value. Some backend may ignore this. Set to true if you want viewports to automatically be parent of main viewport, otherwise all viewports will be top-level OS windows.
+     * \/\/ = true           \/\/ Disable setting OS window parent to main viewport by default. The platform backend is expected to honor `viewport->ParentViewportID` to setup a parent\/child relationship between the OS windows (supported if ImGuiBackendFlags_HasParentViewport is set). When parented: child windows always appear in front of their parent. Set to false if you want viewports to automatically be parent of main viewport, otherwise all viewports will be top-level OS windows. Parent\/child relationship may be set on a per-window basis using ImGuiWindowClass.
      */
     get ConfigViewportsNoDefaultParent() {
         return this.ptr.get_ConfigViewportsNoDefaultParent();
@@ -1089,17 +1117,7 @@ export class ImGuiIO extends ReferenceStruct {
     set ConfigDpiScaleViewports(v) {
         this.ptr.set_ConfigDpiScaleViewports(v);
     }
-    // \/\/ Miscellaneous options
-    // \/\/ (you can visualize and interact with all options in 'Demo->Configuration')
-    /**
-     * \/\/ = false          \/\/ Request ImGui to draw a mouse cursor for you (if you are on a platform without a mouse cursor). Cannot be easily renamed to 'io.ConfigXXX' because this is frequently used by backend implementations.
-     */
-    get MouseDrawCursor() {
-        return this.ptr.get_MouseDrawCursor();
-    }
-    set MouseDrawCursor(v) {
-        this.ptr.set_MouseDrawCursor(v);
-    }
+    // \/\/ Widget options
     /**
      * \/\/ = defined(__APPLE__) \/\/ Swap Cmd<>Ctrl keys + OS X style text editing cursor movement using Alt instead of Ctrl, Shortcuts using Cmd\/Super instead of Ctrl, Line\/Text Start and End using Cmd+Arrows instead of Home\/End, Double click selects by word instead of selecting whole text, Multi-selection in lists uses Cmd\/Super instead of Ctrl.
      */
@@ -1128,13 +1146,22 @@ export class ImGuiIO extends ReferenceStruct {
         this.ptr.set_ConfigInputTextCursorBlink(v);
     }
     /**
-     * \/\/ = false          \/\/ [BETA] Pressing Enter will reactivate item and select all text (single-line only).
+     * \/\/ = false          \/\/ [BETA] Pressing Enter will reactivate item and select all text (single-line only). Ctrl+Enter or Shift+Enter will deactivate normally.
      */
     get ConfigInputTextEnterKeepActive() {
         return this.ptr.get_ConfigInputTextEnterKeepActive();
     }
     set ConfigInputTextEnterKeepActive(v) {
         this.ptr.set_ConfigInputTextEnterKeepActive(v);
+    }
+    /**
+     * \/\/ = <defaults>     \/\/ Current settings for ColorEdit\/ColorPicker widgets. Must have one bit of ImGuiColorEditFlags_DisplayMask_, one bit of ImGuiColorEditFlags_DataTypeMask_, one bit of ImGuiColorEditFlags_PickerMask_, one bit of ImGuiColorEditFlags_InputMask_. Defaults to ImGuiColorEditFlags_DefaultOptions_. May be further edited by users, unless you also set ImGuiColorEditFlags_NoOptions.
+     */
+    get ConfigColorEditFlags() {
+        return this.ptr.get_ConfigColorEditFlags();
+    }
+    set ConfigColorEditFlags(v) {
+        this.ptr.set_ConfigColorEditFlags(v);
     }
     /**
      * \/\/ = false          \/\/ [BETA] Enable turning DragXXX widgets into text input with a simple mouse click-release (without moving). Not desirable on devices without a keyboard.
@@ -1181,6 +1208,45 @@ export class ImGuiIO extends ReferenceStruct {
     set ConfigScrollbarScrollByPage(v) {
         this.ptr.set_ConfigScrollbarScrollByPage(v);
     }
+    // \/\/ Ini Settings options
+    /**
+     * \/\/ = true         \/\/ Enable loading\/saving last used day (YYYYMMDD) in some .ini struct, making things easier to audit and allowing custom tools to cleanup old data.
+     */
+    get ConfigIniSettingsSaveLastUsedDate() {
+        return this.ptr.get_ConfigIniSettingsSaveLastUsedDate();
+    }
+    set ConfigIniSettingsSaveLastUsedDate(v) {
+        this.ptr.set_ConfigIniSettingsSaveLastUsedDate(v);
+    }
+    /**
+     * \/\/ = 0          \/\/ [BETA] Set number of months after which unused .ini entries are discarded on load. Require platform_io.Platform_SessionDate to be set. For systems supporting the feature, .ini entries without a LastUsed field will always be discarded! Please report if you are using this.
+     */
+    get ConfigIniSettingsAutoDiscardMonths() {
+        return this.ptr.get_ConfigIniSettingsAutoDiscardMonths();
+    }
+    set ConfigIniSettingsAutoDiscardMonths(v) {
+        this.ptr.set_ConfigIniSettingsAutoDiscardMonths(v);
+    }
+    /**
+     * \/\/ = false          \/\/ Save .ini data with extra comments (particularly helpful for Docking, but makes saving slower)
+     */
+    get ConfigDebugIniSettings() {
+        return this.ptr.get_ConfigDebugIniSettings();
+    }
+    set ConfigDebugIniSettings(v) {
+        this.ptr.set_ConfigDebugIniSettings(v);
+    }
+    // \/\/ Miscellaneous options
+    // \/\/ (you can visualize and interact with all options in 'Demo->Configuration')
+    /**
+     * \/\/ = false          \/\/ Request ImGui to draw a mouse cursor for you (if you are on a platform without a mouse cursor). Cannot be easily renamed to 'io.ConfigXXX' because this is frequently used by backend implementations.
+     */
+    get MouseDrawCursor() {
+        return this.ptr.get_MouseDrawCursor();
+    }
+    set MouseDrawCursor(v) {
+        this.ptr.set_MouseDrawCursor(v);
+    }
     /**
      * \/\/ = 60.0f          \/\/ Timer (in seconds) to free transient windows\/tables memory buffers when unused. Set to -1.0f to disable.
      */
@@ -1193,7 +1259,7 @@ export class ImGuiIO extends ReferenceStruct {
     // \/\/ Inputs Behaviors
     // \/\/ (other variables, ones which are expected to be tweaked within UI code, are exposed in ImGuiStyle)
     /**
-     * \/\/ = 0.30f          \/\/ Time for a double-click, in seconds.
+     * \/\/ = 0.30f          \/\/ Time for consecutive clicks to account as a double-click, in seconds.
      */
     get MouseDoubleClickTime() {
         return this.ptr.get_MouseDoubleClickTime();
@@ -1202,13 +1268,22 @@ export class ImGuiIO extends ReferenceStruct {
         this.ptr.set_MouseDoubleClickTime(v);
     }
     /**
-     * \/\/ = 6.0f           \/\/ Distance threshold to stay in to validate a double-click, in pixels.
+     * \/\/ = 6.0f           \/\/ Distance threshold to stay in to validate a double-click or multiple clicks, in pixels.
      */
     get MouseDoubleClickMaxDist() {
         return this.ptr.get_MouseDoubleClickMaxDist();
     }
     set MouseDoubleClickMaxDist(v) {
         this.ptr.set_MouseDoubleClickMaxDist(v);
+    }
+    /**
+     * \/\/ = 0.60f          \/\/ Time for a delayed click when using GetItemClickedCountWithSingleClickDelay() or IsMouseReleasedWithDelay(), in seconds. Must be > io.MouseDoubleClickTime.
+     */
+    get MouseSingleClickDelay() {
+        return this.ptr.get_MouseSingleClickDelay();
+    }
+    set MouseSingleClickDelay(v) {
+        this.ptr.set_MouseSingleClickDelay(v);
     }
     /**
      * \/\/ = 6.0f           \/\/ Distance threshold before considering we are dragging.
@@ -1355,16 +1430,6 @@ export class ImGuiIO extends ReferenceStruct {
     }
     set ConfigDebugIgnoreFocusLoss(v) {
         this.ptr.set_ConfigDebugIgnoreFocusLoss(v);
-    }
-    // \/\/ Option to audit .ini data
-    /**
-     * \/\/ = false          \/\/ Save .ini data with extra comments (particularly helpful for Docking, but makes saving slower)
-     */
-    get ConfigDebugIniSettings() {
-        return this.ptr.get_ConfigDebugIniSettings();
-    }
-    set ConfigDebugIniSettings(v) {
-        this.ptr.set_ConfigDebugIniSettings(v);
     }
     // \/\/ Nowadays those would be stored in ImGuiPlatformIO but we are leaving them here for legacy reasons.
     // \/\/ Optional: Platform\/Renderer backend name (informational only! will be displayed in About Window) + User data for backend\/wrappers to store their own stuff.
@@ -1843,16 +1908,7 @@ export class ImGuiInputTextCallbackData extends ReferenceStruct {
         this.ptr.set_Flags(v);
     }
     /**
-     * \/\/ What user passed to InputText()      \/\/ Read-only
-     */
-    get UserData() {
-        return this.ptr.get_UserData();
-    }
-    set UserData(v) {
-        this.ptr.set_UserData(v);
-    }
-    /**
-     * \/\/ Widget ID                             \/\/ Read-only
+     * \/\/ Widget ID                            \/\/ Read-only
      */
     get ID() {
         return this.ptr.get_ID();
@@ -1902,13 +1958,11 @@ export class ImGuiInputTextCallbackData extends ReferenceStruct {
         this.ptr.set_BufDirty(v);
     }
     /**
-     * \/\/ Text buffer                          \/\/ Read-write   \/\/ [Resize] Can replace pointer \/ [Completion,History,Always] Only write to pointed data, don't replace the actual pointer!
+     * Text buffer, read-only: edit it through InsertChars() / DeleteChars(). Positions
+     * (CursorPos, SelectionStart, ...) are byte offsets into its UTF-8 encoding.
      */
     get Buf() {
         return this.ptr.get_Buf();
-    }
-    set Buf(v) {
-        this.ptr.set_Buf(v);
     }
     /**
      * \/\/ Text length (in bytes)               \/\/ Read-write   \/\/ [Resize,Completion,History,Always] Exclude zero-terminator storage. In C land: == strlen(some_text), in C++ land: string.length()
@@ -1929,7 +1983,7 @@ export class ImGuiInputTextCallbackData extends ReferenceStruct {
         this.ptr.set_BufSize(v);
     }
     /**
-     * \/\/                                      \/\/ Read-write   \/\/ [Completion,History,Always]
+     * \/\/                                      \/\/ Read-write   \/\/ [Completion,History,Always,CharFilter]
      */
     get CursorPos() {
         return this.ptr.get_CursorPos();
@@ -1938,7 +1992,7 @@ export class ImGuiInputTextCallbackData extends ReferenceStruct {
         this.ptr.set_CursorPos(v);
     }
     /**
-     * \/\/                                      \/\/ Read-write   \/\/ [Completion,History,Always] == to SelectionEnd when no selection
+     * \/\/                                      \/\/ Read-write   \/\/ [Completion,History,Always,CharFilter] == to SelectionEnd when no selection
      */
     get SelectionStart() {
         return this.ptr.get_SelectionStart();
@@ -1947,7 +2001,7 @@ export class ImGuiInputTextCallbackData extends ReferenceStruct {
         this.ptr.set_SelectionStart(v);
     }
     /**
-     * \/\/                                      \/\/ Read-write   \/\/ [Completion,History,Always]
+     * \/\/                                      \/\/ Read-write   \/\/ [Completion,History,Always,CharFilter]
      */
     get SelectionEnd() {
         return this.ptr.get_SelectionEnd();
@@ -1958,8 +2012,8 @@ export class ImGuiInputTextCallbackData extends ReferenceStruct {
     DeleteChars(pos, bytes_count) {
         this.ptr.ImGuiInputTextCallbackData_DeleteChars(pos, bytes_count);
     }
-    InsertChars(pos, text, text_end = "") {
-        this.ptr.ImGuiInputTextCallbackData_InsertChars(pos, text, text_end);
+    InsertChars(pos, text) {
+        this.ptr.ImGuiInputTextCallbackData_InsertChars(pos, text);
     }
     SelectAll() {
         this.ptr.ImGuiInputTextCallbackData_SelectAll();
@@ -2022,7 +2076,7 @@ export class ImGuiSizeCallbackData extends ReferenceStruct {
  * \/\/ before we stabilize Docking features. Please be mindful if using this.
  * \/\/ Provide hints:
  * \/\/ - To the platform backend via altered viewport flags (enable\/disable OS decoration, OS task bar icons, etc.)
- * \/\/ - To the platform backend for OS level parent\/child relationships of viewport.
+ * \/\/ - To the platform backend for OS level parent\/child relationships of viewport (otherwise: default is configured via io.ConfigViewportsNoDefaultParent)
  * \/\/ - To the docking system for various options and filtering.
  */
 export class ImGuiWindowClass extends ReferenceStruct {
@@ -2106,6 +2160,15 @@ export class ImGuiWindowClass extends ReferenceStruct {
     }
     set DockingAllowUnclassed(v) {
         this.ptr.set_DockingAllowUnclassed(v);
+    }
+    /**
+     * \/\/ [EXPERIMENTAL] Pass opaque data for Platform backend to handle.
+     */
+    get PlatformIconData() {
+        return this.ptr.get_PlatformIconData();
+    }
+    set PlatformIconData(v) {
+        this.ptr.set_PlatformIconData(v);
     }
 }
 /**
@@ -2510,11 +2573,17 @@ export class ImDrawList extends ReferenceStruct {
     AddLine(p1, p2, col, thickness = 1.0) {
         this.ptr.ImDrawList_AddLine(p1, p2, col, thickness);
     }
+    AddLineH(min_x, max_x, y, col, thickness = 1.0) {
+        this.ptr.ImDrawList_AddLineH(min_x, max_x, y, col, thickness);
+    }
+    AddLineV(x, min_y, max_y, col, thickness = 1.0) {
+        this.ptr.ImDrawList_AddLineV(x, min_y, max_y, col, thickness);
+    }
     /**
      * \/\/ a: upper-left, b: lower-right (== upper-left + size)
      */
-    AddRect(p_min, p_max, col, rounding = 0.0, flags = 0, thickness = 1.0) {
-        this.ptr.ImDrawList_AddRect(p_min, p_max, col, rounding, flags, thickness);
+    AddRect(p_min, p_max, col, rounding = 0.0, thickness = 1.0, flags = 0) {
+        this.ptr.ImDrawList_AddRect(p_min, p_max, col, rounding, thickness, flags);
     }
     /**
      * \/\/ a: upper-left, b: lower-right (== upper-left + size)
@@ -2578,8 +2647,8 @@ export class ImDrawList extends ReferenceStruct {
      * \/\/ - Only simple polygons are supported by filling functions (no self-intersections, no holes).
      * \/\/ - Concave polygon fill is more expensive than convex one: it has O(N^2) complexity. Provided as a convenience for the user but not used by the main library.
      */
-    AddPolyline(points, num_points, col, flags, thickness) {
-        this.ptr.ImDrawList_AddPolyline(points, num_points, col, flags, thickness);
+    AddPolyline(points, num_points, col, thickness, flags = 0) {
+        this.ptr.ImDrawList_AddPolyline(points, num_points, col, thickness, flags);
     }
     AddConvexPolyFilled(points, num_points, col) {
         this.ptr.ImDrawList_AddConvexPolyFilled(points, num_points, col);
@@ -2622,8 +2691,8 @@ export class ImDrawList extends ReferenceStruct {
     PathFillConcave(col) {
         this.ptr.ImDrawList_PathFillConcave(col);
     }
-    PathStroke(col, flags = 0, thickness = 1.0) {
-        this.ptr.ImDrawList_PathStroke(col, flags, thickness);
+    PathStroke(col, thickness = 1.0, flags = 0) {
+        this.ptr.ImDrawList_PathStroke(col, thickness, flags);
     }
     PathArcTo(center, radius, a_min, a_max, num_segments = 0) {
         this.ptr.ImDrawList_PathArcTo(center, radius, a_min, a_max, num_segments);
@@ -2658,7 +2727,8 @@ export class ImDrawList extends ReferenceStruct {
     /**
      * \/\/ Advanced: Draw Callbacks
      * \/\/ - May be used to alter render state (change sampler, blending, current shader). May be used to emit custom rendering commands (difficult to do correctly, but possible).
-     * \/\/ - Use special ImDrawCallback_ResetRenderState callback to instruct backend to reset its render state to the default.
+     * \/\/ - Use special GetPlatformIO().DrawCallback_ResetRenderState callback to instruct backend to reset its render state to the default.
+     * \/\/ - See other standard callbacks in GetPlatformIO(), which may or not be supported by your backend.
      * \/\/ - Your rendering loop must check for 'UserCallback' in ImDrawCmd and call the function instead of rendering triangles. All standard backends are honoring this.
      * \/\/ - For some backends, the callback may access selected render-states exposed by the backend in a ImGui_ImplXXXX_RenderState structure pointed to by platform_io.Renderer_RenderState.
      * \/\/ - IMPORTANT: please be mindful of the different level of indirection between using size==0 (copying argument) and using size>0 (copying pointed data into a buffer).
@@ -2666,7 +2736,7 @@ export class ImDrawList extends ReferenceStruct {
      * \/\/   - If userdata_size > 0,  we copy\/store 'userdata_size' bytes pointed to by 'userdata'. We store them in a buffer stored inside the drawlist. ImDrawCmd::UserCallbackData will point inside that buffer so you have to retrieve data from there. Your callback may need to use ImDrawCmd::UserCallbackDataSize if you expect dynamically-sized data.
      * \/\/   - Support for userdata_size > 0 was added in v1.91.4, October 2024. So earlier code always only allowed to copy\/store a simple void*.
      */
-    AddCallback(callback, userdata, userdata_size = 0) {
+    AddCallback(callback, userdata = null, userdata_size = 0) {
         this.ptr.ImDrawList_AddCallback(callback, userdata, userdata_size);
     }
     // \/\/ Advanced: Miscellaneous
@@ -3149,14 +3219,11 @@ export class ImFontAtlas extends ReferenceStruct {
     AddFontFromFileTTF(filename, size_pixels = 0.0, font_cfg = null, glyph_ranges = null) {
         return this.ptr.ImFontAtlas_AddFontFromFileTTF(filename, size_pixels, font_cfg?.ptr || null, glyph_ranges);
     }
+    /**
+     * \/\/ Remove a font
+     */
     RemoveFont(font) {
         this.ptr.ImFontAtlas_RemoveFont(font?.ptr ?? null);
-    }
-    /**
-     * \/\/ Clear everything (input fonts, output glyphs\/textures).
-     */
-    Clear() {
-        this.ptr.ImFontAtlas_Clear();
     }
     /**
      * \/\/ Compact cached glyphs and texture.
@@ -3170,18 +3237,27 @@ export class ImFontAtlas extends ReferenceStruct {
     SetFontLoader(font_loader) {
         this.ptr.ImFontAtlas_SetFontLoader(font_loader?.ptr ?? null);
     }
-    // \/\/ As we are transitioning toward a new font system, we expect to obsolete those soon:
+    // \/\/ Clearing the atlas\/fonts has little use nowadays, unless you want to batch remove all fonts.
+    // \/\/ - Since 1.92, you can call ClearFonts() mid-frame, if you load new fonts afterwards.
+    // \/\/ - As we are transitioning toward our new font system the semantic for those functions gets increasingly misleading and are often a source of issues.
+    // \/\/   TL;DR; most likely, don't use any of those functions. We expect to obsolete\/rework them.
+    /**
+     * \/\/ Clear everything (fonts + textures). Don't call mid-frame!
+     */
+    Clear() {
+        this.ptr.ImFontAtlas_Clear();
+    }
+    /**
+     * \/\/ Clear input+output font data\/glyphs. New fonts and textures will be recreated afterwards.
+     */
+    ClearFonts() {
+        this.ptr.ImFontAtlas_ClearFonts();
+    }
     /**
      * \/\/ [OBSOLETE] Clear input data (all ImFontConfig structures including sizes, TTF data, glyph ranges, etc.) = all the data used to build the texture and fonts.
      */
     ClearInputData() {
         this.ptr.ImFontAtlas_ClearInputData();
-    }
-    /**
-     * \/\/ [OBSOLETE] Clear input+output font data (same as ClearInputData() + glyphs storage, UV coordinates).
-     */
-    ClearFonts() {
-        this.ptr.ImFontAtlas_ClearFonts();
     }
     /**
      * \/\/ [OBSOLETE] Clear CPU-side copy of the texture data. Saves RAM once the texture has been copied to graphics memory.
@@ -3380,6 +3456,15 @@ export class ImGuiViewport extends ReferenceStruct {
         this.ptr.set_PlatformUserData(v);
     }
     /**
+     * \/\/ void* to hold custom data structure for the OS \/ platform to specify an icon. Currently unused for exposed to allow experiments.
+     */
+    get PlatformIconData() {
+        return this.ptr.get_PlatformIconData();
+    }
+    set PlatformIconData(v) {
+        this.ptr.set_PlatformIconData(v);
+    }
+    /**
      * \/\/ void* to hold higher-level, platform window handle (e.g. HWND for Win32 backend, Uint32 WindowID for SDL, GLFWWindow* for GLFW), for FindViewportByPlatformHandle().
      */
     get PlatformHandle() {
@@ -3450,6 +3535,36 @@ export class ImGuiViewport extends ReferenceStruct {
  * \/\/ Access via ImGui::GetPlatformIO()
  */
 export class ImGuiPlatformIO extends ReferenceStruct {
+}
+/**
+ * Makes an InputText*() native call with `callback` wrapped for the native side, which passes it
+ * a raw ImGuiInputTextCallbackData. An error thrown by `callback` is rethrown once the native
+ * call has returned, as unwinding through it would leave ImGui halfway through the widget.
+ */
+function callInputText(flags, callback, call) {
+    if (flags & ImGui.InputTextFlags.CallbackResize) {
+        throw new Error("ImGuiInputTextFlags.CallbackResize is not supported: buf_size is fixed");
+    }
+    if (!callback)
+        return call(null);
+    let failed = false;
+    let error;
+    const ret = call((data) => {
+        if (failed)
+            return 0;
+        try {
+            // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0
+            return callback(ImGuiInputTextCallbackData.From(data)) | 0;
+        }
+        catch (e) {
+            failed = true;
+            error = e;
+            return 0;
+        }
+    });
+    if (failed)
+        throw error;
+    return ret;
 }
 export const ImGui = {
     /**
@@ -3598,7 +3713,7 @@ export const ImGui = {
      */
     ItemFlags: {
         /**
-         * \/\/ (Default)
+         * \/\/ Default:
          */
         None: 0,
         /**
@@ -3606,7 +3721,7 @@ export const ImGui = {
          */
         NoTabStop: 1,
         /**
-         * \/\/ false    \/\/ Disable any form of focusing (keyboard\/gamepad directional navigation and SetKeyboardFocusHere() calls).
+         * \/\/ false    \/\/ Disable any form of focusing: keyboard\/gamepad directional navigation and SetKeyboardFocusHere() calls.
          */
         NoNav: 2,
         /**
@@ -3629,6 +3744,24 @@ export const ImGui = {
          * \/\/ false    \/\/ [Internal] Disable interactions. DOES NOT affect visuals. This is used by BeginDisabled()\/EndDisabled() and only provided here so you can read back via GetItemFlags().
          */
         Disabled: 64,
+        // \/\/---------------------------------------------------------------------------------
+        // \/\/ LiveEdit refers to applying edits to backing variables _while_ typing a value using the keyboard.
+        // \/\/ Widget:                          | Input:   | w\/ LiveEdit:    | Output:
+        // \/\/   InputText()                    |   "123"  |   on(default)   |  "1" then "12" then "123"
+        // \/\/   InputText()                    |   "123"  |   off           |  "123" after validating or tabbing out or losing focus.
+        // \/\/   DragFloat(), SliderInt(), etc. |   "123"  |   on*           |  1 then 12 then 123
+        // \/\/   DragFloat(), SliderInt(), etc. |   "123"  |   off(default)* |  123 after validation or tabbing out or losing focus.
+        // \/\/ (*) Since 1.92.9 (July 2026), ImGuiItemFlags_LiveEditOnInputScalar is OFF by default. In prior version it was ON for everything.
+        // \/\/---------------------------------------------------------------------------------
+        /**
+         * \/\/ true     \/\/ InputText: apply keyboard edits to backing value while typing. Otherwise, edits are applied when validating, tabbing out or losing focus.
+         */
+        LiveEditOnInputText: 128,
+        /**
+         * \/\/ false    \/\/ DragXXX, SliderXXX, InputScalar: apply keyboard edits to backing value while typing. Otherwise, edits are applied when validating, tabbing out or losing focus.
+         */
+        LiveEditOnInputScalar: 256,
+        LiveEditOnInput: 384,
     },
     /**
      * \/\/ Flags for ImGui::InputText()
@@ -3665,7 +3798,7 @@ export const ImGui = {
          */
         AllowTabInput: 32,
         /**
-         * \/\/ Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider using IsItemDeactivatedAfterEdit() instead!
+         * \/\/ Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider disabling LiveEdit! or using IsItemDeactivatedAfterEdit() instead!
          */
         EnterReturnsTrue: 64,
         /**
@@ -3990,7 +4123,7 @@ export const ImGui = {
         DrawSelectedOverline: 64,
         // \/\/ Fitting\/Resize policy
         /**
-         * \/\/ Shrink down tabs when they don't fit, until width is style.TabMinWidthShrink, then enable scrolling buttons.
+         * \/\/ Shrink down tabs when they don't fit, until width is style.TabMinWidthShrink, then enable scrolling. Setting TabMinWidthShrink to FLT_MAX makes this behave like ImGuiTabBarFlags_FittingPolicyScroll.
          */
         FittingPolicyMixed: 128,
         /**
@@ -4804,7 +4937,7 @@ export const ImGui = {
          */
         HasMouseHoveredViewport: 4096,
         /**
-         * \/\/ Backend Platform supports honoring viewport->ParentViewport\/ParentViewportId value, by applying the corresponding parent\/child relation at the Platform level.
+         * \/\/ Backend Platform supports honoring viewport->ParentViewport\/ParentViewportId value, by applying the corresponding parent\/child relationship at the Platform level. Child windows always appear in front of their parent window.
          */
         HasParentViewport: 8192,
     },
@@ -4855,131 +4988,135 @@ export const ImGui = {
          * \/\/ Checkbox tick and RadioButton circle
          */
         CheckMark: 18,
-        SliderGrab: 19,
-        SliderGrabActive: 20,
-        Button: 21,
-        ButtonHovered: 22,
-        ButtonActive: 23,
+        /**
+         * \/\/ Checkbox background when Selected, otherwise use FrameBg
+         */
+        CheckboxSelectedBg: 19,
+        SliderGrab: 20,
+        SliderGrabActive: 21,
+        Button: 22,
+        ButtonHovered: 23,
+        ButtonActive: 24,
         /**
          * \/\/ Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
          */
-        Header: 24,
-        HeaderHovered: 25,
-        HeaderActive: 26,
-        Separator: 27,
-        SeparatorHovered: 28,
-        SeparatorActive: 29,
+        Header: 25,
+        HeaderHovered: 26,
+        HeaderActive: 27,
+        Separator: 28,
+        SeparatorHovered: 29,
+        SeparatorActive: 30,
         /**
          * \/\/ Resize grip in lower-right and lower-left corners of windows.
          */
-        ResizeGrip: 30,
-        ResizeGripHovered: 31,
-        ResizeGripActive: 32,
+        ResizeGrip: 31,
+        ResizeGripHovered: 32,
+        ResizeGripActive: 33,
         /**
          * \/\/ InputText cursor\/caret
          */
-        InputTextCursor: 33,
+        InputTextCursor: 34,
         /**
          * \/\/ Tab background, when hovered
          */
-        TabHovered: 34,
+        TabHovered: 35,
         /**
          * \/\/ Tab background, when tab-bar is focused & tab is unselected
          */
-        Tab: 35,
+        Tab: 36,
         /**
          * \/\/ Tab background, when tab-bar is focused & tab is selected
          */
-        TabSelected: 36,
+        TabSelected: 37,
         /**
          * \/\/ Tab horizontal overline, when tab-bar is focused & tab is selected
          */
-        TabSelectedOverline: 37,
+        TabSelectedOverline: 38,
         /**
          * \/\/ Tab background, when tab-bar is unfocused & tab is unselected
          */
-        TabDimmed: 38,
+        TabDimmed: 39,
         /**
          * \/\/ Tab background, when tab-bar is unfocused & tab is selected
          */
-        TabDimmedSelected: 39,
+        TabDimmedSelected: 40,
         /**
          * \/\/..horizontal overline, when tab-bar is unfocused & tab is selected
          */
-        TabDimmedSelectedOverline: 40,
+        TabDimmedSelectedOverline: 41,
         /**
          * \/\/ Preview overlay color when about to docking something
          */
-        DockingPreview: 41,
+        DockingPreview: 42,
         /**
          * \/\/ Background color for empty node (e.g. CentralNode with no window docked into it)
          */
-        DockingEmptyBg: 42,
-        PlotLines: 43,
-        PlotLinesHovered: 44,
-        PlotHistogram: 45,
-        PlotHistogramHovered: 46,
+        DockingEmptyBg: 43,
+        PlotLines: 44,
+        PlotLinesHovered: 45,
+        PlotHistogram: 46,
+        PlotHistogramHovered: 47,
         /**
          * \/\/ Table header background
          */
-        TableHeaderBg: 47,
+        TableHeaderBg: 48,
         /**
          * \/\/ Table outer and header borders (prefer using Alpha=1.0 here)
          */
-        TableBorderStrong: 48,
+        TableBorderStrong: 49,
         /**
          * \/\/ Table inner borders (prefer using Alpha=1.0 here)
          */
-        TableBorderLight: 49,
+        TableBorderLight: 50,
         /**
          * \/\/ Table row background (even rows)
          */
-        TableRowBg: 50,
+        TableRowBg: 51,
         /**
          * \/\/ Table row background (odd rows)
          */
-        TableRowBgAlt: 51,
+        TableRowBgAlt: 52,
         /**
          * \/\/ Hyperlink color
          */
-        TextLink: 52,
+        TextLink: 53,
         /**
          * \/\/ Selected text inside an InputText
          */
-        TextSelectedBg: 53,
+        TextSelectedBg: 54,
         /**
          * \/\/ Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
          */
-        TreeLines: 54,
+        TreeLines: 55,
         /**
          * \/\/ Rectangle border highlighting a drop target
          */
-        DragDropTarget: 55,
+        DragDropTarget: 56,
         /**
          * \/\/ Rectangle background highlighting a drop target
          */
-        DragDropTargetBg: 56,
+        DragDropTargetBg: 57,
         /**
          * \/\/ Unsaved Document marker (in window title and tabs)
          */
-        UnsavedMarker: 57,
+        UnsavedMarker: 58,
         /**
          * \/\/ Color of keyboard\/gamepad navigation cursor\/rectangle, when visible
          */
-        NavCursor: 58,
+        NavCursor: 59,
         /**
          * \/\/ Highlight window when using Ctrl+Tab
          */
-        NavWindowingHighlight: 59,
+        NavWindowingHighlight: 60,
         /**
          * \/\/ Darken\/colorize entire screen behind the Ctrl+Tab window list, when active
          */
-        NavWindowingDimBg: 60,
+        NavWindowingDimBg: 61,
         /**
          * \/\/ Darken\/colorize entire screen behind a modal window, when one is active
          */
-        ModalWindowDimBg: 61,
-        COUNT: 62,
+        ModalWindowDimBg: 62,
+        COUNT: 63,
     },
     /**
      * \/\/ Enumeration for PushStyleVar() \/ PopStyleVar() to temporarily modify the ImGuiStyle structure.
@@ -5134,34 +5271,46 @@ export const ImGui = {
          */
         TreeLinesRounding: 34,
         /**
+         * \/\/ float     MenuItemRounding
+         */
+        MenuItemRounding: 35,
+        /**
+         * \/\/ float     SelectableRounding
+         */
+        SelectableRounding: 36,
+        /**
+         * \/\/ float     DragDropTargetRounding
+         */
+        DragDropTargetRounding: 37,
+        /**
          * \/\/ ImVec2    ButtonTextAlign
          */
-        ButtonTextAlign: 35,
+        ButtonTextAlign: 38,
         /**
          * \/\/ ImVec2    SelectableTextAlign
          */
-        SelectableTextAlign: 36,
+        SelectableTextAlign: 39,
         /**
          * \/\/ float     SeparatorSize
          */
-        SeparatorSize: 37,
+        SeparatorSize: 40,
         /**
          * \/\/ float     SeparatorTextBorderSize
          */
-        SeparatorTextBorderSize: 38,
+        SeparatorTextBorderSize: 41,
         /**
          * \/\/ ImVec2    SeparatorTextAlign
          */
-        SeparatorTextAlign: 39,
+        SeparatorTextAlign: 42,
         /**
          * \/\/ ImVec2    SeparatorTextPadding
          */
-        SeparatorTextPadding: 40,
+        SeparatorTextPadding: 43,
         /**
          * \/\/ float     DockingSeparatorSize
          */
-        DockingSeparatorSize: 41,
-        COUNT: 42,
+        DockingSeparatorSize: 44,
+        COUNT: 45,
     },
     /**
      * \/\/ Flags for InvisibleButton() [extended in imgui_internal.h]
@@ -5254,7 +5403,8 @@ export const ImGui = {
          * \/\/              \/\/ ColorEdit, ColorPicker, ColorButton: display half opaque \/ half transparent preview.
          */
         AlphaPreviewHalf: 16384,
-        // \/\/ User Options (right-click on widget to change some of them).
+        // \/\/ User Options (right-click on widget to change some of them)
+        // \/\/ Current settings are stored in style.ColorEditFlags.
         /**
          * \/\/              \/\/ ColorEdit, ColorPicker: show vertical alpha bar\/gradient in picker.
          */
@@ -5292,13 +5442,17 @@ export const ImGui = {
          */
         PickerHueWheel: 67108864,
         /**
+         * \/\/ [Picker]     \/\/ ColorPicker: disable rotating Sat\/Value triangle. Best set in io.ConfigColorEditFlags once.
+         */
+        PickerNoRotate: 134217728,
+        /**
          * \/\/ [Input]      \/\/ ColorEdit, ColorPicker: input and output data in RGB format.
          */
-        InputRGB: 134217728,
+        InputRGB: 268435456,
         /**
          * \/\/ [Input]      \/\/ ColorEdit, ColorPicker: input and output data in HSV format.
          */
-        InputHSV: 268435456,
+        InputHSV: 536870912,
     },
     /**
      * \/\/ Flags for DragFloat(), DragInt(), SliderFloat(), SliderInt() etc.
@@ -5870,39 +6024,44 @@ export const ImGui = {
     },
     /**
      * \/\/ Flags for ImDrawList functions
-     * \/\/ (Legacy: bit 0 must always correspond to ImDrawFlags_Closed to be backward compatible with old API using a bool. Bits 1..3 must be unused)
      */
     ImDrawFlags: {
         None: 0,
+        // \/\/ Rounding for AddRect(), AddRectFilled(), PathRect()
+        // \/\/ - When not specified, we defaults to ImDrawFlags_RoundCornersAll! So you only need to use those flags if you want another configuration.
         /**
-         * \/\/ PathStroke(), AddPolyline(): specify that shape should be closed (Important: this is always == 1 for legacy reason)
-         */
-        Closed: 1,
-        /**
-         * \/\/ AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners). Was 0x01.
+         * \/\/ Round top-left corner only (when rounding > 0.0f, we default to all corners).
          */
         RoundCornersTopLeft: 16,
         /**
-         * \/\/ AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners). Was 0x02.
+         * \/\/ Round top-right corner only (when rounding > 0.0f, we default to all corners).
          */
         RoundCornersTopRight: 32,
         /**
-         * \/\/ AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners). Was 0x04.
+         * \/\/ Round bottom-left corner only (when rounding > 0.0f, we default to all corners).
          */
         RoundCornersBottomLeft: 64,
         /**
-         * \/\/ AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f, we default to all corners). Wax 0x08.
+         * \/\/ Round bottom-right corner only (when rounding > 0.0f, we default to all corners).
          */
         RoundCornersBottomRight: 128,
         /**
-         * \/\/ AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
+         * \/\/ Disable rounding even if `float rounding > 0.0f`. This is NOT zero, NOT an implicit flag!
          */
         RoundCornersNone: 256,
+        /**
+         * \/\/ (Default!!)
+         */
+        RoundCornersAll: 240,
         RoundCornersTop: 48,
         RoundCornersBottom: 192,
         RoundCornersLeft: 80,
         RoundCornersRight: 160,
-        RoundCornersAll: 240,
+        // \/\/ Stroke options
+        /**
+         * \/\/ PathStroke(), AddPolyline(): specify that shape should be closed.
+         */
+        Closed: 512,
     },
     /**
      * \/\/ Flags for ImDrawList instance. Those are set automatically by ImGui:: functions from ImGuiIO settings, and generally not manipulated directly.
@@ -5926,6 +6085,10 @@ export const ImGui = {
          * \/\/ Can emit 'VtxOffset > 0' to allow large meshes. Set when 'ImGuiBackendFlags_RendererHasVtxOffset' is enabled.
          */
         AllowVtxOffset: 8,
+        /**
+         * \/\/ Disable automatically snapping AddText() calls to pixel boundaries.
+         */
+        TextNoPixelSnap: 16,
     },
     /**
      * \/\/ Most standard backends only support RGBA32 but we provide a single channel option for low-resource\/embedded systems.
@@ -5998,6 +6161,10 @@ export const ImGui = {
          * \/\/ [Internal] Disable loading new baked sizes, disable garbage collecting current ones. e.g. if you want to lock a font to a single size. Important: if you use this to preload given sizes, consider the possibility of multiple font density used on Retina display.
          */
         LockBakedSizes: 8,
+        /**
+         * \/\/ [Internal] Reference size was not set explicitly.
+         */
+        ImplicitRefSize: 16,
     },
     /**
      * \/\/ Flags stored in ImGuiViewport::Flags, giving indications to the platform backends.
@@ -6940,7 +7107,7 @@ export const ImGui = {
      * \/\/ Widgets: Images
      * \/\/ - Read about ImTextureID\/ImTextureRef  here: https:\/\/github.com\/ocornut\/imgui\/wiki\/Image-Loading-and-Displaying-Examples
      * \/\/ - 'uv0' and 'uv1' are texture coordinates. Read about them from the same link above.
-     * \/\/ - Image() pads adds style.ImageBorderSize on each side, ImageButton() adds style.FramePadding on each side.
+     * \/\/ - Image() adds style.ImageBorderSize on each side, ImageButton() adds style.FramePadding on each side.
      * \/\/ - ImageButton() draws a background based on regular Button() color + optionally an inner background if specified.
      * \/\/ - An obsolete version of Image(), before 1.91.9 (March 2025), had a 'tint_col' parameter which is now supported by the ImageWithBg() function.
      */
@@ -7057,14 +7224,14 @@ export const ImGui = {
     SliderInt4(label, v, v_min, v_max, format = "%d", flags = 0) {
         return Mod.export.ImGui_SliderInt4(label, v, v_min, v_max, format, flags);
     },
-    InputText(label, buf, buf_size, flags = 0) {
-        return Mod.export.ImGui_InputText(label, buf, buf_size, flags);
+    InputText(label, buf, buf_size, flags = 0, callback = null) {
+        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputText(label, buf, buf_size, flags, native));
     },
-    InputTextMultiline(label, buf, buf_size, size = new ImVec2(0, 0), flags = 0) {
-        return Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags);
+    InputTextMultiline(label, buf, buf_size, size = new ImVec2(0, 0), flags = 0, callback = null) {
+        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags, native));
     },
-    InputTextWithHint(label, hint, buf, buf_size, flags = 0) {
-        return Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags);
+    InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = null) {
+        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags, native));
     },
     InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0) {
         return Mod.export.ImGui_InputFloat(label, v, step, step_fast, format, flags);
@@ -7115,12 +7282,6 @@ export const ImGui = {
      */
     ColorButton(desc_id, col, flags = 0, size = new ImVec2(0, 0)) {
         return Mod.export.ImGui_ColorButton(desc_id, col, flags, size);
-    },
-    /**
-     * \/\/ initialize current options (generally on application startup) if you want to select a default format, picker type, etc. User will be able to change many settings, unless you pass the _NoOptions flag to your calls.
-     */
-    SetColorEditOptions(flags) {
-        Mod.export.ImGui_SetColorEditOptions(flags);
     },
     /**
      * \/\/ Widgets: Trees
@@ -7252,7 +7413,7 @@ export const ImGui = {
     // \/\/ - Use BeginMenuBar() on a window ImGuiWindowFlags_MenuBar to append to its menu bar.
     // \/\/ - Use BeginMainMenuBar() to create a menu bar at the top of the screen and append to it.
     // \/\/ - Use BeginMenu() to create a menu. You can call BeginMenu() multiple time with the same identifier to append more items to it.
-    // \/\/ - Not that MenuItem() keyboardshortcuts are displayed as a convenience but _not processed_ by Dear ImGui at the moment.
+    // \/\/ - Note that MenuItem() keyboard shortcuts are displayed as a convenience but _not processed_ by Dear ImGui at the moment.
     /**
      * \/\/ append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window).
      */
@@ -7335,7 +7496,7 @@ export const ImGui = {
     },
     // \/\/ Popups, Modals
     // \/\/  - They block normal mouse hovering detection (and therefore most mouse interactions) behind them.
-    // \/\/  - If not modal: they can be closed by clicking anywhere outside them, or by pressing ESCAPE.
+    // \/\/  - If not modal: they can be closed by clicking anywhere outside them, or by pressing Escape (call 'Shortcut(ImGuiKey_Escape)' to claim a higher-priority shortcut).
     // \/\/  - Their visibility state (~bool) is held internally instead of being held by the programmer as we are used to with regular Begin*() calls.
     // \/\/  - The 3 properties above are related: we need to retain popup visibility state in the library because popups may be closed as any time.
     // \/\/  - You can bypass the hovering restriction by using ImGuiHoveredFlags_AllowWhenBlockedByPopup when calling IsItemHovered() or IsWindowHovered().
@@ -7362,7 +7523,9 @@ export const ImGui = {
         Mod.export.ImGui_EndPopup();
     },
     // \/\/ Popups: open\/close functions
-    // \/\/  - OpenPopup(): set popup state to open. ImGuiPopupFlags are available for opening options.
+    // \/\/  - OpenPopup(): set popup state to open (unless one of the specified ImGuiPopupFlags prevent opening).
+    // \/\/  - OpenPopupXXX() functions return true when the popup is toggled open, which allows you to capture local state if needed.
+    // \/\/    You may also call IsWindowAppearing() inside the later BeginPopup() scope if you need to prepare\/compute data for the popup.
     // \/\/  - If not modal: they can be closed by clicking anywhere outside them, or by pressing ESCAPE.
     // \/\/  - CloseCurrentPopup(): use inside the BeginPopup()\/EndPopup() scope to close manually.
     // \/\/  - CloseCurrentPopup() is called by default by Selectable()\/MenuItem() when activated (FIXME: need some options).
@@ -7372,19 +7535,19 @@ export const ImGui = {
      * \/\/ call to mark popup as open (don't call every frame!).
      */
     OpenPopup(str_id, popup_flags = 0) {
-        Mod.export.ImGui_OpenPopup(str_id, popup_flags);
+        return Mod.export.ImGui_OpenPopup(str_id, popup_flags);
     },
     /**
      * \/\/ id overload to facilitate calling from nested stacks
      */
     OpenPopupID(id, popup_flags = 0) {
-        Mod.export.ImGui_OpenPopupID(id, popup_flags);
+        return Mod.export.ImGui_OpenPopupID(id, popup_flags);
     },
     /**
      * \/\/ helper to open popup when clicked on last item. Default to ImGuiPopupFlags_MouseButtonRight == 1. (note: actually triggers on the mouse _released_ event to be consistent with popup behaviors)
      */
     OpenPopupOnItemClick(str_id = "", popup_flags = 0) {
-        Mod.export.ImGui_OpenPopupOnItemClick(str_id, popup_flags);
+        return Mod.export.ImGui_OpenPopupOnItemClick(str_id, popup_flags);
     },
     /**
      * \/\/ manually close the popup we have begin-ed into.
@@ -7481,7 +7644,8 @@ export const ImGui = {
     },
     /**
      * \/\/ Tables: Headers & Columns declaration
-     * \/\/ - Use TableSetupColumn() to specify label, resizing policy, default width\/weight, id, various other flags etc.
+     * \/\/ - Use TableSetupColumn() to specify label, resizing policy, default width\/weight, various other flags etc.
+     * \/\/   (the trailing 'ImGuiID user_data', which used to be referred to as 'ImGuiID user_id', is merely user data that is blindly copied in ImGuiTableColumnSortSpecs).
      * \/\/ - Use TableHeadersRow() to create a header row and automatically submit a TableHeader() for each column.
      * \/\/   Headers are required to perform: reordering, sorting, and opening the context menu.
      * \/\/   The context menu can also be made available in columns body using ImGuiTableFlags_ContextMenuInBody.
@@ -7489,8 +7653,8 @@ export const ImGui = {
      * \/\/   some advanced use cases (e.g. adding custom widgets in header row).
      * \/\/ - Use TableSetupScrollFreeze() to lock columns\/rows so they stay visible when scrolled. When freezing columns you would usually also use ImGuiTableColumnFlags_NoHide on them.
      */
-    TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_id = 0) {
-        Mod.export.ImGui_TableSetupColumn(label, flags, init_width_or_weight, user_id);
+    TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_data = 0) {
+        Mod.export.ImGui_TableSetupColumn(label, flags, init_width_or_weight, user_data);
     },
     /**
      * \/\/ lock columns\/rows so they stay visible when scrolled.
@@ -7953,6 +8117,12 @@ export const ImGui = {
     GetItemFlags() {
         return Mod.export.ImGui_GetItemFlags();
     },
+    /**
+     * \/\/ [BETA] building block for disambiguation between single-click and double-click. Returns 1 on single-click but delayed by io.MouseSingleClickDelay after mouse release. Returns 2+ on double-click or repeated clicks.
+     */
+    GetItemClickedCountWithSingleClickDelay(mouse_button = 0, delay = -1.0) {
+        return Mod.export.ImGui_GetItemClickedCountWithSingleClickDelay(mouse_button, delay);
+    },
     // \/\/ Viewports
     // \/\/ - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
     // \/\/ - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
@@ -8111,14 +8281,15 @@ export const ImGui = {
     // \/\/ Inputs Utilities: Key\/Input Ownership [BETA]
     // \/\/ - One common use case would be to allow your items to disable standard inputs behaviors such
     // \/\/   as Tab or Alt key handling, Mouse Wheel scrolling, etc.
-    // \/\/   e.g. Button(...); SetItemKeyOwner(ImGuiKey_MouseWheelY); to make hovering\/activating a button disable wheel for scrolling.
+    // \/\/   e.g. `Button(...); if (SetItemKeyOwner(ImGuiKey_MouseWheelY)) { ... }` to make hovering\/activating a button disable wheel for scrolling.
     // \/\/ - Reminder ImGuiKey enum include access to mouse buttons and gamepad, so key ownership can apply to them.
+    // \/\/ - The return value of SetItemKeyOwner() says if ownership has been requested for the item, which is a shortcut to calling yet non-public TestKeyOwner() function.
     // \/\/ - Many related features are still in imgui_internal.h. For instance, most IsKeyXXX()\/IsMouseXXX() functions have an owner-id-aware version.
     /**
-     * \/\/ Set key owner to last item ID if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
+     * \/\/ Set key owner to last item ID if it is hovered or active. Return true when ownership has been set. Roughly equivalent to 'if (TestKeyOwner(key, GetItemID()) && (IsItemHovered() || IsItemActive())) { SetKeyOwner(key, GetItemID());'.
      */
     SetItemKeyOwner(key) {
-        Mod.export.ImGui_SetItemKeyOwner(key);
+        return Mod.export.ImGui_SetItemKeyOwner(key);
     },
     // \/\/ Inputs Utilities: Mouse
     // \/\/ - To refer to a mouse button, you may use named enums in your code e.g. ImGuiMouseButton_Left, ImGuiMouseButton_Right.
@@ -8149,9 +8320,9 @@ export const ImGui = {
         return Mod.export.ImGui_IsMouseDoubleClicked(button);
     },
     /**
-     * \/\/ delayed mouse release (use very sparingly!). Generally used with 'delay >= io.MouseDoubleClickTime' + combined with a 'io.MouseClickedLastCount==1' test. This is a very rarely used UI idiom, but some apps use this: e.g. MS Explorer single click on an icon to rename.
+     * \/\/ delayed mouse release. Use sparingly. Prefer higher-level helper GetItemClickedCountWithSingleClickDelay(). Generally used with 'delay >= io.MouseDoubleClickTime' + combined with a 'io.MouseClickedLastCount==1' test.
      */
-    IsMouseReleasedWithDelay(button, delay) {
+    IsMouseReleasedWithDelay(button, delay = -1.) {
         return Mod.export.ImGui_IsMouseReleasedWithDelay(button, delay);
     },
     /**

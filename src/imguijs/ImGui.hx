@@ -29,252 +29,1044 @@ typedef ImDrawCallback = Dynamic;
 typedef ImFontAtlasRectId = Float;
 typedef ImWchar = Float;
 
+/**
+	Flags for ImGui::Begin()
+	(Those are per-window flags. There are shared flags in ImGuiIO: io.ConfigWindowsResizeFromEdges and io.ConfigWindowsMoveFromTitleBarOnly)
+**/
 abstract ImGuiWindowFlags(Int) from Int to Int {
 	public static inline final None:ImGuiWindowFlags = 0;
-	public static inline final NoTitleBar:ImGuiWindowFlags = 1;
-	public static inline final NoResize:ImGuiWindowFlags = 2;
-	public static inline final NoMove:ImGuiWindowFlags = 4;
-	public static inline final NoScrollbar:ImGuiWindowFlags = 8;
-	public static inline final NoScrollWithMouse:ImGuiWindowFlags = 16;
-	public static inline final NoCollapse:ImGuiWindowFlags = 32;
-	public static inline final AlwaysAutoResize:ImGuiWindowFlags = 64;
-	public static inline final NoBackground:ImGuiWindowFlags = 128;
-	public static inline final NoSavedSettings:ImGuiWindowFlags = 256;
-	public static inline final NoMouseInputs:ImGuiWindowFlags = 512;
-	public static inline final MenuBar:ImGuiWindowFlags = 1024;
-	public static inline final HorizontalScrollbar:ImGuiWindowFlags = 2048;
-	public static inline final NoFocusOnAppearing:ImGuiWindowFlags = 4096;
-	public static inline final NoBringToFrontOnFocus:ImGuiWindowFlags = 8192;
-	public static inline final AlwaysVerticalScrollbar:ImGuiWindowFlags = 16384;
-	public static inline final AlwaysHorizontalScrollbar:ImGuiWindowFlags = 32768;
-	public static inline final NoNavInputs:ImGuiWindowFlags = 65536;
-	public static inline final NoNavFocus:ImGuiWindowFlags = 131072;
-	public static inline final UnsavedDocument:ImGuiWindowFlags = 262144;
-	public static inline final NoDocking:ImGuiWindowFlags = 524288;
-	public static inline final NoNav:ImGuiWindowFlags = 196608;
-	public static inline final NoDecoration:ImGuiWindowFlags = 43;
-	public static inline final NoInputs:ImGuiWindowFlags = 197120;
+
+	/**
+		Disable title-bar
+	**/
+	public static inline final NoTitleBar:ImGuiWindowFlags = 1 << 0;
+
+	/**
+		Disable user resizing with the lower-right grip
+	**/
+	public static inline final NoResize:ImGuiWindowFlags = 1 << 1;
+
+	/**
+		Disable user moving the window
+	**/
+	public static inline final NoMove:ImGuiWindowFlags = 1 << 2;
+
+	/**
+		Disable scrollbars (window can still scroll with mouse or programmatically)
+	**/
+	public static inline final NoScrollbar:ImGuiWindowFlags = 1 << 3;
+
+	/**
+		Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set.
+	**/
+	public static inline final NoScrollWithMouse:ImGuiWindowFlags = 1 << 4;
+
+	/**
+		Disable user collapsing window by double-clicking on it. Also referred to as Window Menu Button (e.g. within a docking node).
+	**/
+	public static inline final NoCollapse:ImGuiWindowFlags = 1 << 5;
+
+	/**
+		Resize every window to its content every frame
+	**/
+	public static inline final AlwaysAutoResize:ImGuiWindowFlags = 1 << 6;
+
+	/**
+		Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f).
+	**/
+	public static inline final NoBackground:ImGuiWindowFlags = 1 << 7;
+
+	/**
+		Never load/save settings in .ini file
+	**/
+	public static inline final NoSavedSettings:ImGuiWindowFlags = 1 << 8;
+
+	/**
+		Disable catching mouse, hovering test with pass through.
+	**/
+	public static inline final NoMouseInputs:ImGuiWindowFlags = 1 << 9;
+
+	/**
+		Has a menu-bar
+	**/
+	public static inline final MenuBar:ImGuiWindowFlags = 1 << 10;
+
+	/**
+		Allow horizontal scrollbar to appear (off by default). You may use SetNextWindowContentSize(ImVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo in the "Horizontal Scrolling" section.
+	**/
+	public static inline final HorizontalScrollbar:ImGuiWindowFlags = 1 << 11;
+
+	/**
+		Disable taking focus when transitioning from hidden to visible state
+	**/
+	public static inline final NoFocusOnAppearing:ImGuiWindowFlags = 1 << 12;
+
+	/**
+		Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus)
+	**/
+	public static inline final NoBringToFrontOnFocus:ImGuiWindowFlags = 1 << 13;
+
+	/**
+		Always show vertical scrollbar (even if ContentSize.y < Size.y)
+	**/
+	public static inline final AlwaysVerticalScrollbar:ImGuiWindowFlags = 1 << 14;
+
+	/**
+		Always show horizontal scrollbar (even if ContentSize.x < Size.x)
+	**/
+	public static inline final AlwaysHorizontalScrollbar:ImGuiWindowFlags = 1 << 15;
+
+	/**
+		No keyboard/gamepad navigation within the window
+	**/
+	public static inline final NoNavInputs:ImGuiWindowFlags = 1 << 16;
+
+	/**
+		No focusing toward this window with keyboard/gamepad navigation (e.g. skipped by Ctrl+Tab)
+	**/
+	public static inline final NoNavFocus:ImGuiWindowFlags = 1 << 17;
+
+	/**
+		Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
+	**/
+	public static inline final UnsavedDocument:ImGuiWindowFlags = 1 << 18;
+
+	/**
+		Disable docking of this window
+	**/
+	public static inline final NoDocking:ImGuiWindowFlags = 1 << 19;
+	public static inline final NoNav:ImGuiWindowFlags = NoNavInputs | NoNavFocus;
+	public static inline final NoDecoration:ImGuiWindowFlags = NoTitleBar | NoResize | NoScrollbar | NoCollapse;
+	public static inline final NoInputs:ImGuiWindowFlags = NoMouseInputs | NoNavInputs | NoNavFocus;
 }
 
+/**
+	Flags for ImGui::BeginChild()
+	(Legacy: bit 0 must always correspond to ImGuiChildFlags_Borders to be backward compatible with old API using 'bool border = false'.)
+	About using AutoResizeX/AutoResizeY flags:
+	- May be combined with SetNextWindowSizeConstraints() to set a min/max size for each axis (see "Demo->Child->Auto-resize with Constraints").
+	- Size measurement for a given axis is only performed when the child window is within visible boundaries, or is just appearing.
+	  - This allows BeginChild() to return false when not within boundaries (e.g. when scrolling), which is more optimal. BUT it won't update its auto-size while clipped.
+	    While not perfect, it is a better default behavior as the always-on performance gain is more valuable than the occasional "resizing after becoming visible again" glitch.
+	  - You may also use ImGuiChildFlags_AlwaysAutoResize to force an update even when child window is not in view.
+	    HOWEVER PLEASE UNDERSTAND THAT DOING SO WILL PREVENT BeginChild() FROM EVER RETURNING FALSE, disabling benefits of coarse clipping.
+**/
 abstract ImGuiChildFlags(Int) from Int to Int {
 	public static inline final None:ImGuiChildFlags = 0;
-	public static inline final Borders:ImGuiChildFlags = 1;
-	public static inline final AlwaysUseWindowPadding:ImGuiChildFlags = 2;
-	public static inline final ResizeX:ImGuiChildFlags = 4;
-	public static inline final ResizeY:ImGuiChildFlags = 8;
-	public static inline final AutoResizeX:ImGuiChildFlags = 16;
-	public static inline final AutoResizeY:ImGuiChildFlags = 32;
-	public static inline final AlwaysAutoResize:ImGuiChildFlags = 64;
-	public static inline final FrameStyle:ImGuiChildFlags = 128;
-	public static inline final NavFlattened:ImGuiChildFlags = 256;
+
+	/**
+		Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
+	**/
+	public static inline final Borders:ImGuiChildFlags = 1 << 0;
+
+	/**
+		Pad with style.WindowPadding even if no border are drawn (no padding by default for non-bordered child windows because it makes more sense)
+	**/
+	public static inline final AlwaysUseWindowPadding:ImGuiChildFlags = 1 << 1;
+
+	/**
+		Allow resize from right border (layout direction). Enable .ini saving (unless ImGuiWindowFlags_NoSavedSettings passed to window flags)
+	**/
+	public static inline final ResizeX:ImGuiChildFlags = 1 << 2;
+
+	/**
+		Allow resize from bottom border (layout direction). "
+	**/
+	public static inline final ResizeY:ImGuiChildFlags = 1 << 3;
+
+	/**
+		Enable auto-resizing width. Read "IMPORTANT: Size measurement" details above.
+	**/
+	public static inline final AutoResizeX:ImGuiChildFlags = 1 << 4;
+
+	/**
+		Enable auto-resizing height. Read "IMPORTANT: Size measurement" details above.
+	**/
+	public static inline final AutoResizeY:ImGuiChildFlags = 1 << 5;
+
+	/**
+		Combined with AutoResizeX/AutoResizeY. Always measure size even when child is hidden, always return true, always disable clipping optimization! NOT RECOMMENDED.
+	**/
+	public static inline final AlwaysAutoResize:ImGuiChildFlags = 1 << 6;
+
+	/**
+		Style the child window like a framed item: use FrameBg, FrameRounding, FrameBorderSize, FramePadding instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
+	**/
+	public static inline final FrameStyle:ImGuiChildFlags = 1 << 7;
+
+	/**
+		[BETA] Share focus scope, allow keyboard/gamepad navigation to cross over parent border to this child or between sibling child windows.
+	**/
+	public static inline final NavFlattened:ImGuiChildFlags = 1 << 8;
 }
 
+/**
+	Flags for ImGui::PushItemFlag()
+	(Those are shared by all submitted items)
+**/
 abstract ImGuiItemFlags(Int) from Int to Int {
+	/**
+		Default:
+	**/
 	public static inline final None:ImGuiItemFlags = 0;
-	public static inline final NoTabStop:ImGuiItemFlags = 1;
-	public static inline final NoNav:ImGuiItemFlags = 2;
-	public static inline final NoNavDefaultFocus:ImGuiItemFlags = 4;
-	public static inline final ButtonRepeat:ImGuiItemFlags = 8;
-	public static inline final AutoClosePopups:ImGuiItemFlags = 16;
-	public static inline final AllowDuplicateId:ImGuiItemFlags = 32;
-	public static inline final Disabled:ImGuiItemFlags = 64;
+
+	/**
+		false    // Disable keyboard tabbing. This is a "lighter" version of ImGuiItemFlags_NoNav.
+	**/
+	public static inline final NoTabStop:ImGuiItemFlags = 1 << 0;
+
+	/**
+		false    // Disable any form of focusing: keyboard/gamepad directional navigation and SetKeyboardFocusHere() calls.
+	**/
+	public static inline final NoNav:ImGuiItemFlags = 1 << 1;
+
+	/**
+		false    // Disable item being a candidate for default focus (e.g. used by title bar items).
+	**/
+	public static inline final NoNavDefaultFocus:ImGuiItemFlags = 1 << 2;
+
+	/**
+		false    // Any button-like behavior will have repeat mode enabled (based on io.KeyRepeatDelay and io.KeyRepeatRate values). Note that you can also call IsItemActive() after any button to tell if it is being held.
+	**/
+	public static inline final ButtonRepeat:ImGuiItemFlags = 1 << 3;
+
+	/**
+		true     // MenuItem()/Selectable() automatically close their parent popup window.
+	**/
+	public static inline final AutoClosePopups:ImGuiItemFlags = 1 << 4;
+
+	/**
+		false    // Allow submitting an item with the same identifier as an item already submitted this frame without triggering a warning tooltip if io.ConfigDebugHighlightIdConflicts is set.
+	**/
+	public static inline final AllowDuplicateId:ImGuiItemFlags = 1 << 5;
+
+	/**
+		false    // [Internal] Disable interactions. DOES NOT affect visuals. This is used by BeginDisabled()/EndDisabled() and only provided here so you can read back via GetItemFlags().
+	**/
+	public static inline final Disabled:ImGuiItemFlags = 1 << 6;
+
+	/**
+		true     // InputText: apply keyboard edits to backing value while typing. Otherwise, edits are applied when validating, tabbing out or losing focus.
+	**/
+	public static inline final LiveEditOnInputText:ImGuiItemFlags = 1 << 7;
+
+	/**
+		false    // DragXXX, SliderXXX, InputScalar: apply keyboard edits to backing value while typing. Otherwise, edits are applied when validating, tabbing out or losing focus.
+	**/
+	public static inline final LiveEditOnInputScalar:ImGuiItemFlags = 1 << 8;
+	public static inline final LiveEditOnInput:ImGuiItemFlags = LiveEditOnInputText | LiveEditOnInputScalar;
 }
 
+/**
+	Flags for ImGui::InputText()
+	(Those are per-item flags. There are shared flags in ImGuiIO: io.ConfigInputTextCursorBlink and io.ConfigInputTextEnterKeepActive)
+**/
 abstract ImGuiInputTextFlags(Int) from Int to Int {
+	/**
+		Basic filters (also see ImGuiInputTextFlags_CallbackCharFilter)
+	**/
 	public static inline final None:ImGuiInputTextFlags = 0;
-	public static inline final CharsDecimal:ImGuiInputTextFlags = 1;
-	public static inline final CharsHexadecimal:ImGuiInputTextFlags = 2;
-	public static inline final CharsScientific:ImGuiInputTextFlags = 4;
-	public static inline final CharsUppercase:ImGuiInputTextFlags = 8;
-	public static inline final CharsNoBlank:ImGuiInputTextFlags = 16;
-	public static inline final AllowTabInput:ImGuiInputTextFlags = 32;
-	public static inline final EnterReturnsTrue:ImGuiInputTextFlags = 64;
-	public static inline final EscapeClearsAll:ImGuiInputTextFlags = 128;
-	public static inline final CtrlEnterForNewLine:ImGuiInputTextFlags = 256;
-	public static inline final ReadOnly:ImGuiInputTextFlags = 512;
-	public static inline final Password:ImGuiInputTextFlags = 1024;
-	public static inline final AlwaysOverwrite:ImGuiInputTextFlags = 2048;
-	public static inline final AutoSelectAll:ImGuiInputTextFlags = 4096;
-	public static inline final ParseEmptyRefVal:ImGuiInputTextFlags = 8192;
-	public static inline final DisplayEmptyRefVal:ImGuiInputTextFlags = 16384;
-	public static inline final NoHorizontalScroll:ImGuiInputTextFlags = 32768;
-	public static inline final NoUndoRedo:ImGuiInputTextFlags = 65536;
-	public static inline final ElideLeft:ImGuiInputTextFlags = 131072;
-	public static inline final CallbackCompletion:ImGuiInputTextFlags = 262144;
-	public static inline final CallbackHistory:ImGuiInputTextFlags = 524288;
-	public static inline final CallbackAlways:ImGuiInputTextFlags = 1048576;
-	public static inline final CallbackCharFilter:ImGuiInputTextFlags = 2097152;
-	public static inline final CallbackResize:ImGuiInputTextFlags = 4194304;
-	public static inline final CallbackEdit:ImGuiInputTextFlags = 8388608;
-	public static inline final WordWrap:ImGuiInputTextFlags = 16777216;
+
+	/**
+		Allow 0123456789.+-*\/
+	**/
+	public static inline final CharsDecimal:ImGuiInputTextFlags = 1 << 0;
+
+	/**
+		Allow 0123456789ABCDEFabcdef
+	**/
+	public static inline final CharsHexadecimal:ImGuiInputTextFlags = 1 << 1;
+
+	/**
+		Allow 0123456789.+-*\/eE (Scientific notation input)
+	**/
+	public static inline final CharsScientific:ImGuiInputTextFlags = 1 << 2;
+
+	/**
+		Turn a..z into A..Z
+	**/
+	public static inline final CharsUppercase:ImGuiInputTextFlags = 1 << 3;
+
+	/**
+		Filter out spaces, tabs
+	**/
+	public static inline final CharsNoBlank:ImGuiInputTextFlags = 1 << 4;
+
+	/**
+		Pressing TAB input a '\t' character into the text field
+	**/
+	public static inline final AllowTabInput:ImGuiInputTextFlags = 1 << 5;
+
+	/**
+		Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider disabling LiveEdit! or using IsItemDeactivatedAfterEdit() instead!
+	**/
+	public static inline final EnterReturnsTrue:ImGuiInputTextFlags = 1 << 6;
+
+	/**
+		Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)
+	**/
+	public static inline final EscapeClearsAll:ImGuiInputTextFlags = 1 << 7;
+
+	/**
+		In multi-line mode: validate with Enter, add new line with Ctrl+Enter (default is opposite: validate with Ctrl+Enter, add line with Enter). Note that Shift+Enter always enter a new line either way.
+	**/
+	public static inline final CtrlEnterForNewLine:ImGuiInputTextFlags = 1 << 8;
+
+	/**
+		Read-only mode
+	**/
+	public static inline final ReadOnly:ImGuiInputTextFlags = 1 << 9;
+
+	/**
+		Password mode, display all characters as '*', disable copy
+	**/
+	public static inline final Password:ImGuiInputTextFlags = 1 << 10;
+
+	/**
+		Overwrite mode
+	**/
+	public static inline final AlwaysOverwrite:ImGuiInputTextFlags = 1 << 11;
+
+	/**
+		Select entire text when first taking mouse focus
+	**/
+	public static inline final AutoSelectAll:ImGuiInputTextFlags = 1 << 12;
+
+	/**
+		InputFloat(), InputInt(), InputScalar() etc. only: parse empty string as zero value.
+	**/
+	public static inline final ParseEmptyRefVal:ImGuiInputTextFlags = 1 << 13;
+
+	/**
+		InputFloat(), InputInt(), InputScalar() etc. only: when value is zero, do not display it. Generally used with ImGuiInputTextFlags_ParseEmptyRefVal.
+	**/
+	public static inline final DisplayEmptyRefVal:ImGuiInputTextFlags = 1 << 14;
+
+	/**
+		Disable following the cursor horizontally
+	**/
+	public static inline final NoHorizontalScroll:ImGuiInputTextFlags = 1 << 15;
+
+	/**
+		Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
+	**/
+	public static inline final NoUndoRedo:ImGuiInputTextFlags = 1 << 16;
+
+	/**
+		When text doesn't fit, elide left side to ensure right side stays visible. Useful for path/filenames. Single-line only!
+	**/
+	public static inline final ElideLeft:ImGuiInputTextFlags = 1 << 17;
+
+	/**
+		Callback on pressing TAB (for completion handling)
+	**/
+	public static inline final CallbackCompletion:ImGuiInputTextFlags = 1 << 18;
+
+	/**
+		Callback on pressing Up/Down arrows (for history handling)
+	**/
+	public static inline final CallbackHistory:ImGuiInputTextFlags = 1 << 19;
+
+	/**
+		Callback on each iteration. User code may query cursor position, modify text buffer.
+	**/
+	public static inline final CallbackAlways:ImGuiInputTextFlags = 1 << 20;
+
+	/**
+		Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
+	**/
+	public static inline final CallbackCharFilter:ImGuiInputTextFlags = 1 << 21;
+
+	/**
+		Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
+	**/
+	public static inline final CallbackResize:ImGuiInputTextFlags = 1 << 22;
+
+	/**
+		Callback on any edit. Note that InputText() already returns true on edit + you can always use IsItemEdited(). The callback is useful to manipulate the underlying buffer while focus is active.
+	**/
+	public static inline final CallbackEdit:ImGuiInputTextFlags = 1 << 23;
+
+	/**
+		InputTextMultiline(): word-wrap lines that are too long.
+	**/
+	public static inline final WordWrap:ImGuiInputTextFlags = 1 << 24;
 }
 
+/**
+	Flags for ImGui::TreeNodeEx(), ImGui::CollapsingHeader*()
+**/
 abstract ImGuiTreeNodeFlags(Int) from Int to Int {
 	public static inline final None:ImGuiTreeNodeFlags = 0;
-	public static inline final Selected:ImGuiTreeNodeFlags = 1;
-	public static inline final Framed:ImGuiTreeNodeFlags = 2;
-	public static inline final AllowOverlap:ImGuiTreeNodeFlags = 4;
-	public static inline final NoTreePushOnOpen:ImGuiTreeNodeFlags = 8;
-	public static inline final NoAutoOpenOnLog:ImGuiTreeNodeFlags = 16;
-	public static inline final DefaultOpen:ImGuiTreeNodeFlags = 32;
-	public static inline final OpenOnDoubleClick:ImGuiTreeNodeFlags = 64;
-	public static inline final OpenOnArrow:ImGuiTreeNodeFlags = 128;
-	public static inline final Leaf:ImGuiTreeNodeFlags = 256;
-	public static inline final Bullet:ImGuiTreeNodeFlags = 512;
-	public static inline final FramePadding:ImGuiTreeNodeFlags = 1024;
-	public static inline final SpanAvailWidth:ImGuiTreeNodeFlags = 2048;
-	public static inline final SpanFullWidth:ImGuiTreeNodeFlags = 4096;
-	public static inline final SpanLabelWidth:ImGuiTreeNodeFlags = 8192;
-	public static inline final SpanAllColumns:ImGuiTreeNodeFlags = 16384;
-	public static inline final LabelSpanAllColumns:ImGuiTreeNodeFlags = 32768;
-	public static inline final NavLeftJumpsToParent:ImGuiTreeNodeFlags = 131072;
-	public static inline final CollapsingHeader:ImGuiTreeNodeFlags = 26;
-	public static inline final DrawLinesNone:ImGuiTreeNodeFlags = 262144;
-	public static inline final DrawLinesFull:ImGuiTreeNodeFlags = 524288;
-	public static inline final DrawLinesToNodes:ImGuiTreeNodeFlags = 1048576;
+
+	/**
+		Draw as selected
+	**/
+	public static inline final Selected:ImGuiTreeNodeFlags = 1 << 0;
+
+	/**
+		Draw frame with background (e.g. for CollapsingHeader)
+	**/
+	public static inline final Framed:ImGuiTreeNodeFlags = 1 << 1;
+
+	/**
+		Hit testing will allow subsequent widgets to overlap this one. Require previous frame HoveredId to match before being usable. Shortcut to calling SetNextItemAllowOverlap().
+	**/
+	public static inline final AllowOverlap:ImGuiTreeNodeFlags = 1 << 2;
+
+	/**
+		Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
+	**/
+	public static inline final NoTreePushOnOpen:ImGuiTreeNodeFlags = 1 << 3;
+
+	/**
+		Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
+	**/
+	public static inline final NoAutoOpenOnLog:ImGuiTreeNodeFlags = 1 << 4;
+
+	/**
+		Default node to be open
+	**/
+	public static inline final DefaultOpen:ImGuiTreeNodeFlags = 1 << 5;
+
+	/**
+		Open on double-click instead of simple click (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+	**/
+	public static inline final OpenOnDoubleClick:ImGuiTreeNodeFlags = 1 << 6;
+
+	/**
+		Open when clicking on the arrow part (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+	**/
+	public static inline final OpenOnArrow:ImGuiTreeNodeFlags = 1 << 7;
+
+	/**
+		No collapsing, no arrow (use as a convenience for leaf nodes). Note: will always open a tree/id scope and return true. If you never use that scope, add ImGuiTreeNodeFlags_NoTreePushOnOpen.
+	**/
+	public static inline final Leaf:ImGuiTreeNodeFlags = 1 << 8;
+
+	/**
+		Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
+	**/
+	public static inline final Bullet:ImGuiTreeNodeFlags = 1 << 9;
+
+	/**
+		Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding() before the node.
+	**/
+	public static inline final FramePadding:ImGuiTreeNodeFlags = 1 << 10;
+
+	/**
+		Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line without using AllowOverlap mode.
+	**/
+	public static inline final SpanAvailWidth:ImGuiTreeNodeFlags = 1 << 11;
+
+	/**
+		Extend hit box to the left-most and right-most edges (cover the indent area).
+	**/
+	public static inline final SpanFullWidth:ImGuiTreeNodeFlags = 1 << 12;
+
+	/**
+		Narrow hit box + narrow hovering highlight, will only cover the label text.
+	**/
+	public static inline final SpanLabelWidth:ImGuiTreeNodeFlags = 1 << 13;
+
+	/**
+		Frame will span all columns of its container table (label will still fit in current column)
+	**/
+	public static inline final SpanAllColumns:ImGuiTreeNodeFlags = 1 << 14;
+
+	/**
+		Label will span all columns of its container table
+	**/
+	public static inline final LabelSpanAllColumns:ImGuiTreeNodeFlags = 1 << 15;
+
+	/**
+		Nav: left arrow moves back to parent. This is processed in TreePop() when there's an unfulfilled Left nav request remaining.
+	**/
+	public static inline final NavLeftJumpsToParent:ImGuiTreeNodeFlags = 1 << 17;
+	public static inline final CollapsingHeader:ImGuiTreeNodeFlags = Framed | NoTreePushOnOpen | NoAutoOpenOnLog;
+
+	/**
+		No lines drawn
+	**/
+	public static inline final DrawLinesNone:ImGuiTreeNodeFlags = 1 << 18;
+
+	/**
+		Horizontal lines to child nodes. Vertical line drawn down to TreePop() position: cover full contents. Faster (for large trees).
+	**/
+	public static inline final DrawLinesFull:ImGuiTreeNodeFlags = 1 << 19;
+
+	/**
+		Horizontal lines to child nodes. Vertical line drawn down to bottom-most child node. Slower (for large trees).
+	**/
+	public static inline final DrawLinesToNodes:ImGuiTreeNodeFlags = 1 << 20;
 }
 
+/**
+	Flags for OpenPopup*(), BeginPopupContext*(), IsPopupOpen() functions.
+	- IMPORTANT: If you ever used the left mouse button with BeginPopupContextXXX() helpers before 1.92.6: Read "API BREAKING CHANGES" 2026/01/07 (1.92.6) entry in imgui.cpp or GitHub topic #9157.
+	- Multiple buttons currently cannot be combined/or-ed in those functions (we could allow it later).
+**/
 abstract ImGuiPopupFlags(Int) from Int to Int {
 	public static inline final None:ImGuiPopupFlags = 0;
-	public static inline final MouseButtonLeft:ImGuiPopupFlags = 4;
-	public static inline final MouseButtonRight:ImGuiPopupFlags = 8;
-	public static inline final MouseButtonMiddle:ImGuiPopupFlags = 12;
-	public static inline final NoReopen:ImGuiPopupFlags = 32;
-	public static inline final NoOpenOverExistingPopup:ImGuiPopupFlags = 128;
-	public static inline final NoOpenOverItems:ImGuiPopupFlags = 256;
-	public static inline final AnyPopupId:ImGuiPopupFlags = 1024;
-	public static inline final AnyPopupLevel:ImGuiPopupFlags = 2048;
-	public static inline final AnyPopup:ImGuiPopupFlags = 3072;
+
+	/**
+		For BeginPopupContext*(): open on Left Mouse release. Only one button allowed!
+	**/
+	public static inline final MouseButtonLeft:ImGuiPopupFlags = 1 << 2;
+
+	/**
+		For BeginPopupContext*(): open on Right Mouse release. Only one button allowed! (default)
+	**/
+	public static inline final MouseButtonRight:ImGuiPopupFlags = 2 << 2;
+
+	/**
+		For BeginPopupContext*(): open on Middle Mouse release. Only one button allowed!
+	**/
+	public static inline final MouseButtonMiddle:ImGuiPopupFlags = 3 << 2;
+
+	/**
+		For OpenPopup*(), BeginPopupContext*(): don't reopen same popup if already open (won't reposition, won't reinitialize navigation)
+	**/
+	public static inline final NoReopen:ImGuiPopupFlags = 1 << 5;
+
+	/**
+		For OpenPopup*(), BeginPopupContext*(): don't open if there's already a popup at the same level of the popup stack
+	**/
+	public static inline final NoOpenOverExistingPopup:ImGuiPopupFlags = 1 << 7;
+
+	/**
+		For BeginPopupContextWindow(): don't return true when hovering items, only when hovering empty space
+	**/
+	public static inline final NoOpenOverItems:ImGuiPopupFlags = 1 << 8;
+
+	/**
+		For IsPopupOpen(): ignore the ImGuiID parameter and test for any popup.
+	**/
+	public static inline final AnyPopupId:ImGuiPopupFlags = 1 << 10;
+
+	/**
+		For IsPopupOpen(): search/test at any level of the popup stack (default test in the current level)
+	**/
+	public static inline final AnyPopupLevel:ImGuiPopupFlags = 1 << 11;
+	public static inline final AnyPopup:ImGuiPopupFlags = AnyPopupId | AnyPopupLevel;
 }
 
+/**
+	Flags for ImGui::Selectable()
+**/
 abstract ImGuiSelectableFlags(Int) from Int to Int {
 	public static inline final None:ImGuiSelectableFlags = 0;
-	public static inline final NoAutoClosePopups:ImGuiSelectableFlags = 1;
-	public static inline final SpanAllColumns:ImGuiSelectableFlags = 2;
-	public static inline final AllowDoubleClick:ImGuiSelectableFlags = 4;
-	public static inline final Disabled:ImGuiSelectableFlags = 8;
-	public static inline final AllowOverlap:ImGuiSelectableFlags = 16;
-	public static inline final Highlight:ImGuiSelectableFlags = 32;
-	public static inline final SelectOnNav:ImGuiSelectableFlags = 64;
+
+	/**
+		Clicking this doesn't close parent popup window (overrides ImGuiItemFlags_AutoClosePopups)
+	**/
+	public static inline final NoAutoClosePopups:ImGuiSelectableFlags = 1 << 0;
+
+	/**
+		Frame will span all columns of its container table (text will still fit in current column)
+	**/
+	public static inline final SpanAllColumns:ImGuiSelectableFlags = 1 << 1;
+
+	/**
+		Generate press events on double clicks too
+	**/
+	public static inline final AllowDoubleClick:ImGuiSelectableFlags = 1 << 2;
+
+	/**
+		Cannot be selected, display grayed out text
+	**/
+	public static inline final Disabled:ImGuiSelectableFlags = 1 << 3;
+
+	/**
+		Hit testing will allow subsequent widgets to overlap this one. Require previous frame HoveredId to match before being usable. Shortcut to calling SetNextItemAllowOverlap().
+	**/
+	public static inline final AllowOverlap:ImGuiSelectableFlags = 1 << 4;
+
+	/**
+		Make the item be displayed as if it is hovered
+	**/
+	public static inline final Highlight:ImGuiSelectableFlags = 1 << 5;
+
+	/**
+		Auto-select when moved into, unless Ctrl is held. Automatic when in a BeginMultiSelect() block.
+	**/
+	public static inline final SelectOnNav:ImGuiSelectableFlags = 1 << 6;
 }
 
+/**
+	Flags for ImGui::BeginCombo()
+**/
 abstract ImGuiComboFlags(Int) from Int to Int {
 	public static inline final None:ImGuiComboFlags = 0;
-	public static inline final PopupAlignLeft:ImGuiComboFlags = 1;
-	public static inline final HeightSmall:ImGuiComboFlags = 2;
-	public static inline final HeightRegular:ImGuiComboFlags = 4;
-	public static inline final HeightLarge:ImGuiComboFlags = 8;
-	public static inline final HeightLargest:ImGuiComboFlags = 16;
-	public static inline final NoArrowButton:ImGuiComboFlags = 32;
-	public static inline final NoPreview:ImGuiComboFlags = 64;
-	public static inline final WidthFitPreview:ImGuiComboFlags = 128;
+
+	/**
+		Align the popup toward the left by default
+	**/
+	public static inline final PopupAlignLeft:ImGuiComboFlags = 1 << 0;
+
+	/**
+		Max ~4 items visible. Tip: If you want your combo popup to be a specific size you can use SetNextWindowSizeConstraints() prior to calling BeginCombo()
+	**/
+	public static inline final HeightSmall:ImGuiComboFlags = 1 << 1;
+
+	/**
+		Max ~8 items visible (default)
+	**/
+	public static inline final HeightRegular:ImGuiComboFlags = 1 << 2;
+
+	/**
+		Max ~20 items visible
+	**/
+	public static inline final HeightLarge:ImGuiComboFlags = 1 << 3;
+
+	/**
+		As many fitting items as possible
+	**/
+	public static inline final HeightLargest:ImGuiComboFlags = 1 << 4;
+
+	/**
+		Display on the preview box without the square arrow button
+	**/
+	public static inline final NoArrowButton:ImGuiComboFlags = 1 << 5;
+
+	/**
+		Display only a square arrow button
+	**/
+	public static inline final NoPreview:ImGuiComboFlags = 1 << 6;
+
+	/**
+		Width dynamically calculated from preview contents
+	**/
+	public static inline final WidthFitPreview:ImGuiComboFlags = 1 << 7;
 }
 
+/**
+	Flags for ImGui::BeginTabBar()
+**/
 abstract ImGuiTabBarFlags(Int) from Int to Int {
 	public static inline final None:ImGuiTabBarFlags = 0;
-	public static inline final Reorderable:ImGuiTabBarFlags = 1;
-	public static inline final AutoSelectNewTabs:ImGuiTabBarFlags = 2;
-	public static inline final TabListPopupButton:ImGuiTabBarFlags = 4;
-	public static inline final NoCloseWithMiddleMouseButton:ImGuiTabBarFlags = 8;
-	public static inline final NoTabListScrollingButtons:ImGuiTabBarFlags = 16;
-	public static inline final NoTooltip:ImGuiTabBarFlags = 32;
-	public static inline final DrawSelectedOverline:ImGuiTabBarFlags = 64;
-	public static inline final FittingPolicyMixed:ImGuiTabBarFlags = 128;
-	public static inline final FittingPolicyShrink:ImGuiTabBarFlags = 256;
-	public static inline final FittingPolicyScroll:ImGuiTabBarFlags = 512;
+
+	/**
+		Allow manually dragging tabs to re-order them + New tabs are appended at the end of list
+	**/
+	public static inline final Reorderable:ImGuiTabBarFlags = 1 << 0;
+
+	/**
+		Automatically select new tabs when they appear
+	**/
+	public static inline final AutoSelectNewTabs:ImGuiTabBarFlags = 1 << 1;
+
+	/**
+		Disable buttons to open the tab list popup
+	**/
+	public static inline final TabListPopupButton:ImGuiTabBarFlags = 1 << 2;
+
+	/**
+		Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
+	**/
+	public static inline final NoCloseWithMiddleMouseButton:ImGuiTabBarFlags = 1 << 3;
+
+	/**
+		Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll)
+	**/
+	public static inline final NoTabListScrollingButtons:ImGuiTabBarFlags = 1 << 4;
+
+	/**
+		Disable tooltips when hovering a tab
+	**/
+	public static inline final NoTooltip:ImGuiTabBarFlags = 1 << 5;
+
+	/**
+		Draw selected overline markers over selected tab
+	**/
+	public static inline final DrawSelectedOverline:ImGuiTabBarFlags = 1 << 6;
+
+	/**
+		Shrink down tabs when they don't fit, until width is style.TabMinWidthShrink, then enable scrolling. Setting TabMinWidthShrink to FLT_MAX makes this behave like ImGuiTabBarFlags_FittingPolicyScroll.
+	**/
+	public static inline final FittingPolicyMixed:ImGuiTabBarFlags = 1 << 7;
+
+	/**
+		Shrink down tabs when they don't fit
+	**/
+	public static inline final FittingPolicyShrink:ImGuiTabBarFlags = 1 << 8;
+
+	/**
+		Enable scrolling buttons when tabs don't fit
+	**/
+	public static inline final FittingPolicyScroll:ImGuiTabBarFlags = 1 << 9;
 }
 
+/**
+	Flags for ImGui::BeginTabItem()
+**/
 abstract ImGuiTabItemFlags(Int) from Int to Int {
 	public static inline final None:ImGuiTabItemFlags = 0;
-	public static inline final UnsavedDocument:ImGuiTabItemFlags = 1;
-	public static inline final SetSelected:ImGuiTabItemFlags = 2;
-	public static inline final NoCloseWithMiddleMouseButton:ImGuiTabItemFlags = 4;
-	public static inline final NoPushId:ImGuiTabItemFlags = 8;
-	public static inline final NoTooltip:ImGuiTabItemFlags = 16;
-	public static inline final NoReorder:ImGuiTabItemFlags = 32;
-	public static inline final Leading:ImGuiTabItemFlags = 64;
-	public static inline final Trailing:ImGuiTabItemFlags = 128;
-	public static inline final NoAssumedClosure:ImGuiTabItemFlags = 256;
+
+	/**
+		Display a dot next to the title + set ImGuiTabItemFlags_NoAssumedClosure.
+	**/
+	public static inline final UnsavedDocument:ImGuiTabItemFlags = 1 << 0;
+
+	/**
+		Trigger flag to programmatically make the tab selected when calling BeginTabItem()
+	**/
+	public static inline final SetSelected:ImGuiTabItemFlags = 1 << 1;
+
+	/**
+		Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
+	**/
+	public static inline final NoCloseWithMiddleMouseButton:ImGuiTabItemFlags = 1 << 2;
+
+	/**
+		Don't call PushID()/PopID() on BeginTabItem()/EndTabItem()
+	**/
+	public static inline final NoPushId:ImGuiTabItemFlags = 1 << 3;
+
+	/**
+		Disable tooltip for the given tab
+	**/
+	public static inline final NoTooltip:ImGuiTabItemFlags = 1 << 4;
+
+	/**
+		Disable reordering this tab or having another tab cross over this tab
+	**/
+	public static inline final NoReorder:ImGuiTabItemFlags = 1 << 5;
+
+	/**
+		Enforce the tab position to the left of the tab bar (after the tab list popup button)
+	**/
+	public static inline final Leading:ImGuiTabItemFlags = 1 << 6;
+
+	/**
+		Enforce the tab position to the right of the tab bar (before the scrolling buttons)
+	**/
+	public static inline final Trailing:ImGuiTabItemFlags = 1 << 7;
+
+	/**
+		Tab is selected when trying to close + closure is not immediately assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
+	**/
+	public static inline final NoAssumedClosure:ImGuiTabItemFlags = 1 << 8;
 }
 
+/**
+	Flags for ImGui::IsWindowFocused()
+**/
 abstract ImGuiFocusedFlags(Int) from Int to Int {
 	public static inline final None:ImGuiFocusedFlags = 0;
-	public static inline final ChildWindows:ImGuiFocusedFlags = 1;
-	public static inline final RootWindow:ImGuiFocusedFlags = 2;
-	public static inline final AnyWindow:ImGuiFocusedFlags = 4;
-	public static inline final NoPopupHierarchy:ImGuiFocusedFlags = 8;
-	public static inline final DockHierarchy:ImGuiFocusedFlags = 16;
-	public static inline final RootAndChildWindows:ImGuiFocusedFlags = 3;
+
+	/**
+		Return true if any children of the window is focused
+	**/
+	public static inline final ChildWindows:ImGuiFocusedFlags = 1 << 0;
+
+	/**
+		Test from root window (top most parent of the current hierarchy)
+	**/
+	public static inline final RootWindow:ImGuiFocusedFlags = 1 << 1;
+
+	/**
+		Return true if any window is focused. Important: If you are trying to tell how to dispatch your low-level inputs, do NOT use this. Use 'io.WantCaptureMouse' instead! Please read the FAQ!
+	**/
+	public static inline final AnyWindow:ImGuiFocusedFlags = 1 << 2;
+
+	/**
+		Do not consider popup hierarchy (do not treat popup emitter as parent of popup) (when used with _ChildWindows or _RootWindow)
+	**/
+	public static inline final NoPopupHierarchy:ImGuiFocusedFlags = 1 << 3;
+
+	/**
+		Consider docking hierarchy (treat dockspace host as parent of docked window) (when used with _ChildWindows or _RootWindow)
+	**/
+	public static inline final DockHierarchy:ImGuiFocusedFlags = 1 << 4;
+	public static inline final RootAndChildWindows:ImGuiFocusedFlags = RootWindow | ChildWindows;
 }
 
+/**
+	Flags for ImGui::IsItemHovered(), ImGui::IsWindowHovered()
+	Note: if you are trying to check whether your mouse should be dispatched to Dear ImGui or to your app, you should use 'io.WantCaptureMouse' instead! Please read the FAQ!
+	Note: windows with the ImGuiWindowFlags_NoInputs flag are ignored by IsWindowHovered() calls.
+**/
 abstract ImGuiHoveredFlags(Int) from Int to Int {
+	/**
+		Return true if directly over the item/window, not obstructed by another window, not obstructed by an active popup or modal blocking inputs under them.
+	**/
 	public static inline final None:ImGuiHoveredFlags = 0;
-	public static inline final ChildWindows:ImGuiHoveredFlags = 1;
-	public static inline final RootWindow:ImGuiHoveredFlags = 2;
-	public static inline final AnyWindow:ImGuiHoveredFlags = 4;
-	public static inline final NoPopupHierarchy:ImGuiHoveredFlags = 8;
-	public static inline final DockHierarchy:ImGuiHoveredFlags = 16;
-	public static inline final AllowWhenBlockedByPopup:ImGuiHoveredFlags = 32;
-	public static inline final AllowWhenBlockedByActiveItem:ImGuiHoveredFlags = 128;
-	public static inline final AllowWhenOverlappedByItem:ImGuiHoveredFlags = 256;
-	public static inline final AllowWhenOverlappedByWindow:ImGuiHoveredFlags = 512;
-	public static inline final AllowWhenDisabled:ImGuiHoveredFlags = 1024;
-	public static inline final NoNavOverride:ImGuiHoveredFlags = 2048;
-	public static inline final AllowWhenOverlapped:ImGuiHoveredFlags = 768;
-	public static inline final RectOnly:ImGuiHoveredFlags = 928;
-	public static inline final RootAndChildWindows:ImGuiHoveredFlags = 3;
-	public static inline final ForTooltip:ImGuiHoveredFlags = 4096;
-	public static inline final Stationary:ImGuiHoveredFlags = 8192;
-	public static inline final DelayNone:ImGuiHoveredFlags = 16384;
-	public static inline final DelayShort:ImGuiHoveredFlags = 32768;
-	public static inline final DelayNormal:ImGuiHoveredFlags = 65536;
-	public static inline final NoSharedDelay:ImGuiHoveredFlags = 131072;
+
+	/**
+		IsWindowHovered() only: Return true if any children of the window is hovered
+	**/
+	public static inline final ChildWindows:ImGuiHoveredFlags = 1 << 0;
+
+	/**
+		IsWindowHovered() only: Test from root window (top most parent of the current hierarchy)
+	**/
+	public static inline final RootWindow:ImGuiHoveredFlags = 1 << 1;
+
+	/**
+		IsWindowHovered() only: Return true if any window is hovered
+	**/
+	public static inline final AnyWindow:ImGuiHoveredFlags = 1 << 2;
+
+	/**
+		IsWindowHovered() only: Do not consider popup hierarchy (do not treat popup emitter as parent of popup) (when used with _ChildWindows or _RootWindow)
+	**/
+	public static inline final NoPopupHierarchy:ImGuiHoveredFlags = 1 << 3;
+
+	/**
+		IsWindowHovered() only: Consider docking hierarchy (treat dockspace host as parent of docked window) (when used with _ChildWindows or _RootWindow)
+	**/
+	public static inline final DockHierarchy:ImGuiHoveredFlags = 1 << 4;
+
+	/**
+		Return true even if a popup window is normally blocking access to this item/window
+	**/
+	public static inline final AllowWhenBlockedByPopup:ImGuiHoveredFlags = 1 << 5;
+
+	/**
+		Return true even if an active item is blocking access to this item/window. Useful for Drag and Drop patterns.
+	**/
+	public static inline final AllowWhenBlockedByActiveItem:ImGuiHoveredFlags = 1 << 7;
+
+	/**
+		IsItemHovered() only: Return true even if the item uses AllowOverlap mode and is overlapped by another hoverable item.
+	**/
+	public static inline final AllowWhenOverlappedByItem:ImGuiHoveredFlags = 1 << 8;
+
+	/**
+		IsItemHovered() only: Return true even if the position is obstructed or overlapped by another window.
+	**/
+	public static inline final AllowWhenOverlappedByWindow:ImGuiHoveredFlags = 1 << 9;
+
+	/**
+		IsItemHovered() only: Return true even if the item is disabled
+	**/
+	public static inline final AllowWhenDisabled:ImGuiHoveredFlags = 1 << 10;
+
+	/**
+		IsItemHovered() only: Disable using keyboard/gamepad navigation state when active, always query mouse
+	**/
+	public static inline final NoNavOverride:ImGuiHoveredFlags = 1 << 11;
+	public static inline final AllowWhenOverlapped:ImGuiHoveredFlags = AllowWhenOverlappedByItem | AllowWhenOverlappedByWindow;
+	public static inline final RectOnly:ImGuiHoveredFlags = AllowWhenBlockedByPopup | AllowWhenBlockedByActiveItem | AllowWhenOverlapped;
+	public static inline final RootAndChildWindows:ImGuiHoveredFlags = RootWindow | ChildWindows;
+
+	/**
+		Shortcut for standard flags when using IsItemHovered() + SetTooltip() sequence.
+	**/
+	public static inline final ForTooltip:ImGuiHoveredFlags = 1 << 12;
+
+	/**
+		Require mouse to be stationary for style.HoverStationaryDelay (~0.15 sec) _at least one time_. After this, can move on same item/window. Using the stationary test tends to reduces the need for a long delay.
+	**/
+	public static inline final Stationary:ImGuiHoveredFlags = 1 << 13;
+
+	/**
+		IsItemHovered() only: Return true immediately (default). As this is the default you generally ignore this.
+	**/
+	public static inline final DelayNone:ImGuiHoveredFlags = 1 << 14;
+
+	/**
+		IsItemHovered() only: Return true after style.HoverDelayShort elapsed (~0.15 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
+	**/
+	public static inline final DelayShort:ImGuiHoveredFlags = 1 << 15;
+
+	/**
+		IsItemHovered() only: Return true after style.HoverDelayNormal elapsed (~0.40 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
+	**/
+	public static inline final DelayNormal:ImGuiHoveredFlags = 1 << 16;
+
+	/**
+		IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
+	**/
+	public static inline final NoSharedDelay:ImGuiHoveredFlags = 1 << 17;
 }
 
+/**
+	Flags for ImGui::DockSpace(), shared/inherited by child nodes.
+	(Some flags can be applied to individual nodes directly)
+	FIXME-DOCK: Also see ImGuiDockNodeFlagsPrivate_ which may involve using the WIP and internal DockBuilder api.
+**/
 abstract ImGuiDockNodeFlags(Int) from Int to Int {
 	public static inline final None:ImGuiDockNodeFlags = 0;
-	public static inline final KeepAliveOnly:ImGuiDockNodeFlags = 1;
-	public static inline final NoDockingOverCentralNode:ImGuiDockNodeFlags = 4;
-	public static inline final PassthruCentralNode:ImGuiDockNodeFlags = 8;
-	public static inline final NoDockingSplit:ImGuiDockNodeFlags = 16;
-	public static inline final NoResize:ImGuiDockNodeFlags = 32;
-	public static inline final AutoHideTabBar:ImGuiDockNodeFlags = 64;
-	public static inline final NoUndocking:ImGuiDockNodeFlags = 128;
+
+	/**
+		      // Don't display the dockspace node but keep it alive. Windows docked into this dockspace node won't be undocked.
+	**/
+	public static inline final KeepAliveOnly:ImGuiDockNodeFlags = 1 << 0;
+
+	/**
+		      // Disable docking over the Central Node, which will be always kept empty.
+	**/
+	public static inline final NoDockingOverCentralNode:ImGuiDockNodeFlags = 1 << 2;
+
+	/**
+		      // Enable passthru dockspace: 1) DockSpace() will render a ImGuiCol_WindowBg background covering everything excepted the Central Node when empty. Meaning the host window should probably use SetNextWindowBgAlpha(0.0f) prior to Begin() when using this. 2) When Central Node is empty: let inputs pass-through + won't display a DockingEmptyBg background. See demo for details.
+	**/
+	public static inline final PassthruCentralNode:ImGuiDockNodeFlags = 1 << 3;
+
+	/**
+		      // Disable other windows/nodes from splitting this node.
+	**/
+	public static inline final NoDockingSplit:ImGuiDockNodeFlags = 1 << 4;
+
+	/**
+		Saved // Disable resizing node using the splitter/separators. Useful with programmatically setup dockspaces.
+	**/
+	public static inline final NoResize:ImGuiDockNodeFlags = 1 << 5;
+
+	/**
+		      // Tab bar will automatically hide when there is a single window in the dock node.
+	**/
+	public static inline final AutoHideTabBar:ImGuiDockNodeFlags = 1 << 6;
+
+	/**
+		      // Disable undocking this node.
+	**/
+	public static inline final NoUndocking:ImGuiDockNodeFlags = 1 << 7;
 }
 
+/**
+	Flags for ImGui::BeginDragDropSource(), ImGui::AcceptDragDropPayload()
+**/
 abstract ImGuiDragDropFlags(Int) from Int to Int {
 	public static inline final None:ImGuiDragDropFlags = 0;
-	public static inline final SourceNoPreviewTooltip:ImGuiDragDropFlags = 1;
-	public static inline final SourceNoDisableHover:ImGuiDragDropFlags = 2;
-	public static inline final SourceNoHoldToOpenOthers:ImGuiDragDropFlags = 4;
-	public static inline final SourceAllowNullID:ImGuiDragDropFlags = 8;
-	public static inline final SourceExtern:ImGuiDragDropFlags = 16;
-	public static inline final PayloadAutoExpire:ImGuiDragDropFlags = 32;
-	public static inline final PayloadNoCrossContext:ImGuiDragDropFlags = 64;
-	public static inline final PayloadNoCrossProcess:ImGuiDragDropFlags = 128;
-	public static inline final AcceptBeforeDelivery:ImGuiDragDropFlags = 1024;
-	public static inline final AcceptNoDrawDefaultRect:ImGuiDragDropFlags = 2048;
-	public static inline final AcceptNoPreviewTooltip:ImGuiDragDropFlags = 4096;
-	public static inline final AcceptDrawAsHovered:ImGuiDragDropFlags = 8192;
-	public static inline final AcceptPeekOnly:ImGuiDragDropFlags = 3072;
+
+	/**
+		Disable preview tooltip. By default, a successful call to BeginDragDropSource opens a tooltip so you can display a preview or description of the source contents. This flag disables this behavior.
+	**/
+	public static inline final SourceNoPreviewTooltip:ImGuiDragDropFlags = 1 << 0;
+
+	/**
+		By default, when dragging we clear data so that IsItemHovered() will return false, to avoid subsequent user code submitting tooltips. This flag disables this behavior so you can still call IsItemHovered() on the source item.
+	**/
+	public static inline final SourceNoDisableHover:ImGuiDragDropFlags = 1 << 1;
+
+	/**
+		Disable the behavior that allows to open tree nodes and collapsing header by holding over them while dragging a source item.
+	**/
+	public static inline final SourceNoHoldToOpenOthers:ImGuiDragDropFlags = 1 << 2;
+
+	/**
+		Allow items such as Text(), Image() that have no unique identifier to be used as drag source, by manufacturing a temporary identifier based on their window-relative position. This is extremely unusual within the dear imgui ecosystem and so we made it explicit.
+	**/
+	public static inline final SourceAllowNullID:ImGuiDragDropFlags = 1 << 3;
+
+	/**
+		External source (from outside of dear imgui), won't attempt to read current item/window info. Will always return true. Only one Extern source can be active simultaneously.
+	**/
+	public static inline final SourceExtern:ImGuiDragDropFlags = 1 << 4;
+
+	/**
+		Automatically expire the payload if the source cease to be submitted (otherwise payloads are persisting while being dragged)
+	**/
+	public static inline final PayloadAutoExpire:ImGuiDragDropFlags = 1 << 5;
+
+	/**
+		Hint to specify that the payload may not be copied outside current dear imgui context.
+	**/
+	public static inline final PayloadNoCrossContext:ImGuiDragDropFlags = 1 << 6;
+
+	/**
+		Hint to specify that the payload may not be copied outside current process.
+	**/
+	public static inline final PayloadNoCrossProcess:ImGuiDragDropFlags = 1 << 7;
+
+	/**
+		AcceptDragDropPayload() will returns true even before the mouse button is released. You can then call IsDelivery() to test if the payload needs to be delivered.
+	**/
+	public static inline final AcceptBeforeDelivery:ImGuiDragDropFlags = 1 << 10;
+
+	/**
+		Do not draw the default highlight rectangle when hovering over target.
+	**/
+	public static inline final AcceptNoDrawDefaultRect:ImGuiDragDropFlags = 1 << 11;
+
+	/**
+		Request hiding the BeginDragDropSource tooltip from the BeginDragDropTarget site.
+	**/
+	public static inline final AcceptNoPreviewTooltip:ImGuiDragDropFlags = 1 << 12;
+
+	/**
+		Accepting item will render as if hovered. Useful for e.g. a Button() used as a drop target.
+	**/
+	public static inline final AcceptDrawAsHovered:ImGuiDragDropFlags = 1 << 13;
+
+	/**
+		For peeking ahead and inspecting the payload before delivery.
+	**/
+	public static inline final AcceptPeekOnly:ImGuiDragDropFlags = AcceptBeforeDelivery | AcceptNoDrawDefaultRect;
 }
 
+/**
+	A primary data type
+**/
 abstract ImGuiDataType(Int) from Int to Int {
+	/**
+		signed char / char (with sensible compilers)
+	**/
 	public static inline final S8:ImGuiDataType = 0;
+
+	/**
+		unsigned char
+	**/
 	public static inline final U8:ImGuiDataType = 1;
+
+	/**
+		short
+	**/
 	public static inline final S16:ImGuiDataType = 2;
+
+	/**
+		unsigned short
+	**/
 	public static inline final U16:ImGuiDataType = 3;
+
+	/**
+		int
+	**/
 	public static inline final S32:ImGuiDataType = 4;
+
+	/**
+		unsigned int
+	**/
 	public static inline final U32:ImGuiDataType = 5;
+
+	/**
+		long long / __int64
+	**/
 	public static inline final S64:ImGuiDataType = 6;
+
+	/**
+		unsigned long long / unsigned __int64
+	**/
 	public static inline final U64:ImGuiDataType = 7;
+
+	/**
+		float
+	**/
 	public static inline final Float:ImGuiDataType = 8;
+
+	/**
+		double
+	**/
 	public static inline final Double:ImGuiDataType = 9;
+
+	/**
+		bool (provided for user convenience, not supported by scalar widgets)
+	**/
 	public static inline final Bool:ImGuiDataType = 10;
+
+	/**
+		char* (provided for user convenience, not supported by scalar widgets)
+	**/
 	public static inline final String:ImGuiDataType = 11;
 	public static inline final COUNT:ImGuiDataType = 12;
 }
 
+/**
+	Forward declared enum type ImGuiDir
+**/
 abstract ImGuiDir(Int) from Int to Int {
 	public static inline final _None:ImGuiDir = -1;
 	public static inline final _Left:ImGuiDir = 0;
@@ -284,15 +1076,40 @@ abstract ImGuiDir(Int) from Int to Int {
 	public static inline final _COUNT:ImGuiDir = 4;
 }
 
+/**
+	Forward declared enum type ImGuiSortDirection
+**/
 abstract ImGuiSortDirection(Int) from Int to Int {
 	public static inline final _None:ImGuiSortDirection = 0;
+
+	/**
+		Ascending = 0->9, A->Z etc.
+	**/
 	public static inline final _Ascending:ImGuiSortDirection = 1;
+
+	/**
+		Descending = 9->0, Z->A etc.
+	**/
 	public static inline final _Descending:ImGuiSortDirection = 2;
 }
 
+/**
+	Forward declared enum type ImGuiKey
+**/
 abstract ImGuiKey(Int) from Int to Int {
+	/**
+		Keyboard
+	**/
 	public static inline final _None:ImGuiKey = 0;
+
+	/**
+		First valid key value (other than 0)
+	**/
 	public static inline final _NamedKey_BEGIN:ImGuiKey = 512;
+
+	/**
+		== ImGuiKey_NamedKey_BEGIN
+	**/
 	public static inline final _Tab:ImGuiKey = 512;
 	public static inline final _LeftArrow:ImGuiKey = 513;
 	public static inline final _RightArrow:ImGuiKey = 514;
@@ -311,6 +1128,10 @@ abstract ImGuiKey(Int) from Int to Int {
 	public static inline final _LeftCtrl:ImGuiKey = 527;
 	public static inline final _LeftShift:ImGuiKey = 528;
 	public static inline final _LeftAlt:ImGuiKey = 529;
+
+	/**
+		Also see ImGuiMod_Ctrl, ImGuiMod_Shift, ImGuiMod_Alt, ImGuiMod_Super below!
+	**/
 	public static inline final _LeftSuper:ImGuiKey = 530;
 	public static inline final _RightCtrl:ImGuiKey = 531;
 	public static inline final _RightShift:ImGuiKey = 532;
@@ -377,16 +1198,60 @@ abstract ImGuiKey(Int) from Int to Int {
 	public static inline final _F22:ImGuiKey = 593;
 	public static inline final _F23:ImGuiKey = 594;
 	public static inline final _F24:ImGuiKey = 595;
+
+	/**
+		'
+	**/
 	public static inline final _Apostrophe:ImGuiKey = 596;
+
+	/**
+		,
+	**/
 	public static inline final _Comma:ImGuiKey = 597;
+
+	/**
+		-
+	**/
 	public static inline final _Minus:ImGuiKey = 598;
+
+	/**
+		.
+	**/
 	public static inline final _Period:ImGuiKey = 599;
+
+	/**
+		/
+	**/
 	public static inline final _Slash:ImGuiKey = 600;
+
+	/**
+		;
+	**/
 	public static inline final _Semicolon:ImGuiKey = 601;
+
+	/**
+		=
+	**/
 	public static inline final _Equal:ImGuiKey = 602;
+
+	/**
+		[
+	**/
 	public static inline final _LeftBracket:ImGuiKey = 603;
+
+	/**
+		\ (this text inhibit multiline comment caused by backslash)
+	**/
 	public static inline final _Backslash:ImGuiKey = 604;
+
+	/**
+		]
+	**/
 	public static inline final _RightBracket:ImGuiKey = 605;
+
+	/**
+		`
+	**/
 	public static inline final _GraveAccent:ImGuiKey = 606;
 	public static inline final _CapsLock:ImGuiKey = 607;
 	public static inline final _ScrollLock:ImGuiKey = 608;
@@ -410,33 +1275,142 @@ abstract ImGuiKey(Int) from Int to Int {
 	public static inline final _KeypadAdd:ImGuiKey = 626;
 	public static inline final _KeypadEnter:ImGuiKey = 627;
 	public static inline final _KeypadEqual:ImGuiKey = 628;
+
+	/**
+		Available on some keyboard/mouses. Often referred as "Browser Back"
+	**/
 	public static inline final _AppBack:ImGuiKey = 629;
 	public static inline final _AppForward:ImGuiKey = 630;
+
+	/**
+		Non-US backslash.
+	**/
 	public static inline final _Oem102:ImGuiKey = 631;
+
+	/**
+		Menu        | +       | Options  |
+	**/
 	public static inline final _GamepadStart:ImGuiKey = 632;
+
+	/**
+		View        | -       | Share    |
+	**/
 	public static inline final _GamepadBack:ImGuiKey = 633;
+
+	/**
+		X           | Y       | Square   | Toggle Menu. Hold for Windowing mode (Focus/Move/Resize windows)
+	**/
 	public static inline final _GamepadFaceLeft:ImGuiKey = 634;
+
+	/**
+		B           | A       | Circle   | Cancel / Close / Exit
+	**/
 	public static inline final _GamepadFaceRight:ImGuiKey = 635;
+
+	/**
+		Y           | X       | Triangle | Open Context Menu
+	**/
 	public static inline final _GamepadFaceUp:ImGuiKey = 636;
+
+	/**
+		A           | B       | Cross    | Activate / Open / Toggle. Hold for 0.60f to Activate in Text Input mode (e.g. wired to an on-screen keyboard).
+	**/
 	public static inline final _GamepadFaceDown:ImGuiKey = 637;
+
+	/**
+		D-pad Left  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+	**/
 	public static inline final _GamepadDpadLeft:ImGuiKey = 638;
+
+	/**
+		D-pad Right | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+	**/
 	public static inline final _GamepadDpadRight:ImGuiKey = 639;
+
+	/**
+		D-pad Up    | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+	**/
 	public static inline final _GamepadDpadUp:ImGuiKey = 640;
+
+	/**
+		D-pad Down  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+	**/
 	public static inline final _GamepadDpadDown:ImGuiKey = 641;
+
+	/**
+		L Bumper    | L       | L1       | Tweak Slower / Focus Previous (in Windowing mode)
+	**/
 	public static inline final _GamepadL1:ImGuiKey = 642;
+
+	/**
+		R Bumper    | R       | R1       | Tweak Faster / Focus Next (in Windowing mode)
+	**/
 	public static inline final _GamepadR1:ImGuiKey = 643;
+
+	/**
+		L Trigger   | ZL      | L2       | [Analog]
+	**/
 	public static inline final _GamepadL2:ImGuiKey = 644;
+
+	/**
+		R Trigger   | ZR      | R2       | [Analog]
+	**/
 	public static inline final _GamepadR2:ImGuiKey = 645;
+
+	/**
+		L Stick     | L3      | L3       |
+	**/
 	public static inline final _GamepadL3:ImGuiKey = 646;
+
+	/**
+		R Stick     | R3      | R3       |
+	**/
 	public static inline final _GamepadR3:ImGuiKey = 647;
+
+	/**
+		            |         |          | [Analog] Move Window (in Windowing mode)
+	**/
 	public static inline final _GamepadLStickLeft:ImGuiKey = 648;
+
+	/**
+		            |         |          | [Analog] Move Window (in Windowing mode)
+	**/
 	public static inline final _GamepadLStickRight:ImGuiKey = 649;
+
+	/**
+		            |         |          | [Analog] Move Window (in Windowing mode)
+	**/
 	public static inline final _GamepadLStickUp:ImGuiKey = 650;
+
+	/**
+		            |         |          | [Analog] Move Window (in Windowing mode)
+	**/
 	public static inline final _GamepadLStickDown:ImGuiKey = 651;
+
+	/**
+		            |         |          | [Analog]
+	**/
 	public static inline final _GamepadRStickLeft:ImGuiKey = 652;
+
+	/**
+		            |         |          | [Analog]
+	**/
 	public static inline final _GamepadRStickRight:ImGuiKey = 653;
+
+	/**
+		            |         |          | [Analog]
+	**/
 	public static inline final _GamepadRStickUp:ImGuiKey = 654;
+
+	/**
+		            |         |          | [Analog]
+	**/
 	public static inline final _GamepadRStickDown:ImGuiKey = 655;
+
+	/**
+		Aliases: Mouse Buttons (auto-submitted from AddMouseButtonEvent() calls)
+		- This is mirroring the data also written to io.MouseDown[], io.MouseWheel, in a format allowing them to be accessed via standard key API.
+	**/
 	public static inline final _MouseLeft:ImGuiKey = 656;
 	public static inline final _MouseRight:ImGuiKey = 657;
 	public static inline final _MouseMiddle:ImGuiKey = 658;
@@ -444,216 +1418,881 @@ abstract ImGuiKey(Int) from Int to Int {
 	public static inline final _MouseX2:ImGuiKey = 660;
 	public static inline final _MouseWheelX:ImGuiKey = 661;
 	public static inline final _MouseWheelY:ImGuiKey = 662;
+
+	/**
+		Keyboard Modifiers (explicitly submitted by backend via AddKeyEvent() calls)
+		- Any functions taking a ImGuiKeyChord parameter can binary-or those with regular keys, e.g. Shortcut(ImGuiMod_Ctrl | ImGuiKey_S).
+		- Those are written back into io.KeyCtrl, io.KeyShift, io.KeyAlt, io.KeySuper for convenience,
+		  but may be accessed via standard key API such as IsKeyPressed(), IsKeyReleased(), querying duration etc.
+		- Code polling every key (e.g. an interface to detect a key press for input mapping) might want to ignore those
+		  and prefer using the real keys (e.g. ImGuiKey_LeftCtrl, ImGuiKey_RightCtrl instead of ImGuiMod_Ctrl).
+		- In theory the value of keyboard modifiers should be roughly equivalent to a logical or of the equivalent left/right keys.
+		  In practice: it's complicated; mods are often provided from different sources. Keyboard layout, IME, sticky keys and
+		  backends tend to interfere and break that equivalence. The safer decision is to relay that ambiguity down to the end-user...
+		- On macOS, we swap Cmd(Super) and Ctrl keys at the time of the io.AddKeyEvent() call.
+	**/
 	public static inline final ImGuiMod_None:ImGuiKey = 0;
-	public static inline final ImGuiMod_Ctrl:ImGuiKey = 4096;
-	public static inline final ImGuiMod_Shift:ImGuiKey = 8192;
-	public static inline final ImGuiMod_Alt:ImGuiKey = 16384;
-	public static inline final ImGuiMod_Super:ImGuiKey = 32768;
+
+	/**
+		Ctrl (non-macOS), Cmd (macOS)
+	**/
+	public static inline final ImGuiMod_Ctrl:ImGuiKey = 1 << 12;
+
+	/**
+		Shift
+	**/
+	public static inline final ImGuiMod_Shift:ImGuiKey = 1 << 13;
+
+	/**
+		Option/Menu
+	**/
+	public static inline final ImGuiMod_Alt:ImGuiKey = 1 << 14;
+
+	/**
+		Windows/Super (non-macOS), Ctrl (macOS)
+	**/
+	public static inline final ImGuiMod_Super:ImGuiKey = 1 << 15;
 }
 
+/**
+	Flags for Shortcut(), SetNextItemShortcut(),
+	(and for upcoming extended versions of IsKeyPressed(), IsMouseClicked(), Shortcut(), SetKeyOwner(), SetItemKeyOwner() that are still in imgui_internal.h)
+	Don't mistake with ImGuiInputTextFlags! (which is for ImGui::InputText() function)
+**/
 abstract ImGuiInputFlags(Int) from Int to Int {
 	public static inline final None:ImGuiInputFlags = 0;
-	public static inline final Repeat:ImGuiInputFlags = 1;
-	public static inline final RouteActive:ImGuiInputFlags = 1024;
-	public static inline final RouteFocused:ImGuiInputFlags = 2048;
-	public static inline final RouteGlobal:ImGuiInputFlags = 4096;
-	public static inline final RouteAlways:ImGuiInputFlags = 8192;
-	public static inline final RouteOverFocused:ImGuiInputFlags = 16384;
-	public static inline final RouteOverActive:ImGuiInputFlags = 32768;
-	public static inline final RouteUnlessBgFocused:ImGuiInputFlags = 65536;
-	public static inline final RouteFromRootWindow:ImGuiInputFlags = 131072;
-	public static inline final Tooltip:ImGuiInputFlags = 262144;
+
+	/**
+		Enable repeat. Return true on successive repeats. Default for legacy IsKeyPressed(). NOT Default for legacy IsMouseClicked(). MUST BE == 1.
+	**/
+	public static inline final Repeat:ImGuiInputFlags = 1 << 0;
+
+	/**
+		Route to active item only.
+	**/
+	public static inline final RouteActive:ImGuiInputFlags = 1 << 10;
+
+	/**
+		Route to windows in the focus stack (DEFAULT). Deep-most focused window takes inputs. Active item takes inputs over deep-most focused window.
+	**/
+	public static inline final RouteFocused:ImGuiInputFlags = 1 << 11;
+
+	/**
+		Global route (unless a focused window or active item registered the route).
+	**/
+	public static inline final RouteGlobal:ImGuiInputFlags = 1 << 12;
+
+	/**
+		Do not register route, poll keys directly.
+	**/
+	public static inline final RouteAlways:ImGuiInputFlags = 1 << 13;
+
+	/**
+		Option: global route: higher priority than focused route (unless active item in focused route).
+	**/
+	public static inline final RouteOverFocused:ImGuiInputFlags = 1 << 14;
+
+	/**
+		Option: global route: higher priority than active item. Unlikely you need to use that: will interfere with every active items, e.g. Ctrl+A registered by InputText will be overridden by this. May not be fully honored as user/internal code is likely to always assume they can access keys when active.
+	**/
+	public static inline final RouteOverActive:ImGuiInputFlags = 1 << 15;
+
+	/**
+		Option: global route: will not be applied if underlying background/void is focused (== no Dear ImGui windows are focused). Useful for overlay applications.
+	**/
+	public static inline final RouteUnlessBgFocused:ImGuiInputFlags = 1 << 16;
+
+	/**
+		Option: route evaluated from the point of view of root window rather than current window.
+	**/
+	public static inline final RouteFromRootWindow:ImGuiInputFlags = 1 << 17;
+
+	/**
+		Automatically display a tooltip when hovering item [BETA] Unsure of right api (opt-in/opt-out)
+	**/
+	public static inline final Tooltip:ImGuiInputFlags = 1 << 18;
 }
 
+/**
+	Configuration flags stored in io.ConfigFlags. Set by user/application.
+	Note that nowadays most of our configuration options are in other ImGuiIO fields, e.g. io.ConfigWindowsMoveFromTitleBarOnly.
+**/
 abstract ImGuiConfigFlags(Int) from Int to Int {
 	public static inline final None:ImGuiConfigFlags = 0;
-	public static inline final NavEnableKeyboard:ImGuiConfigFlags = 1;
-	public static inline final NavEnableGamepad:ImGuiConfigFlags = 2;
-	public static inline final NoMouse:ImGuiConfigFlags = 16;
-	public static inline final NoMouseCursorChange:ImGuiConfigFlags = 32;
-	public static inline final NoKeyboard:ImGuiConfigFlags = 64;
-	public static inline final DockingEnable:ImGuiConfigFlags = 128;
-	public static inline final ViewportsEnable:ImGuiConfigFlags = 1024;
-	public static inline final IsSRGB:ImGuiConfigFlags = 1048576;
-	public static inline final IsTouchScreen:ImGuiConfigFlags = 2097152;
+
+	/**
+		Master keyboard navigation enable flag. Enable full Tabbing + directional arrows + Space/Enter to activate. Note: some features such as basic Tabbing and CtrL+Tab are enabled by regardless of this flag (and may be disabled via other means, see #4828, #9218).
+	**/
+	public static inline final NavEnableKeyboard:ImGuiConfigFlags = 1 << 0;
+
+	/**
+		Master gamepad navigation enable flag. Backend also needs to set ImGuiBackendFlags_HasGamepad.
+	**/
+	public static inline final NavEnableGamepad:ImGuiConfigFlags = 1 << 1;
+
+	/**
+		Instruct dear imgui to disable mouse inputs and interactions.
+	**/
+	public static inline final NoMouse:ImGuiConfigFlags = 1 << 4;
+
+	/**
+		Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
+	**/
+	public static inline final NoMouseCursorChange:ImGuiConfigFlags = 1 << 5;
+
+	/**
+		Instruct dear imgui to disable keyboard inputs and interactions. This is done by ignoring keyboard events and clearing existing states.
+	**/
+	public static inline final NoKeyboard:ImGuiConfigFlags = 1 << 6;
+
+	/**
+		Docking enable flags.
+	**/
+	public static inline final DockingEnable:ImGuiConfigFlags = 1 << 7;
+
+	/**
+		Viewport enable flags (require both ImGuiBackendFlags_PlatformHasViewports + ImGuiBackendFlags_RendererHasViewports set by the respective backends)
+	**/
+	public static inline final ViewportsEnable:ImGuiConfigFlags = 1 << 10;
+
+	/**
+		Application is SRGB-aware.
+	**/
+	public static inline final IsSRGB:ImGuiConfigFlags = 1 << 20;
+
+	/**
+		Application is using a touch screen instead of a mouse.
+	**/
+	public static inline final IsTouchScreen:ImGuiConfigFlags = 1 << 21;
 }
 
+/**
+	Backend capabilities flags stored in io.BackendFlags. Set by imgui_impl_xxx or custom backend.
+**/
 abstract ImGuiBackendFlags(Int) from Int to Int {
 	public static inline final None:ImGuiBackendFlags = 0;
-	public static inline final HasGamepad:ImGuiBackendFlags = 1;
-	public static inline final HasMouseCursors:ImGuiBackendFlags = 2;
-	public static inline final HasSetMousePos:ImGuiBackendFlags = 4;
-	public static inline final RendererHasVtxOffset:ImGuiBackendFlags = 8;
-	public static inline final RendererHasTextures:ImGuiBackendFlags = 16;
-	public static inline final RendererHasViewports:ImGuiBackendFlags = 1024;
-	public static inline final PlatformHasViewports:ImGuiBackendFlags = 2048;
-	public static inline final HasMouseHoveredViewport:ImGuiBackendFlags = 4096;
-	public static inline final HasParentViewport:ImGuiBackendFlags = 8192;
+
+	/**
+		Backend Platform supports gamepad and currently has one connected.
+	**/
+	public static inline final HasGamepad:ImGuiBackendFlags = 1 << 0;
+
+	/**
+		Backend Platform supports honoring GetMouseCursor() value to change the OS cursor shape.
+	**/
+	public static inline final HasMouseCursors:ImGuiBackendFlags = 1 << 1;
+
+	/**
+		Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if io.ConfigNavMoveSetMousePos is set).
+	**/
+	public static inline final HasSetMousePos:ImGuiBackendFlags = 1 << 2;
+
+	/**
+		Backend Renderer supports ImDrawCmd::VtxOffset. This enables output of large meshes (64K+ vertices) while still using 16-bit indices.
+	**/
+	public static inline final RendererHasVtxOffset:ImGuiBackendFlags = 1 << 3;
+
+	/**
+		Backend Renderer supports ImTextureData requests to create/update/destroy textures. This enables incremental texture updates and texture reloads. See https://github.com/ocornut/imgui/blob/master/docs/BACKENDS.md for instructions on how to upgrade your custom backend.
+	**/
+	public static inline final RendererHasTextures:ImGuiBackendFlags = 1 << 4;
+
+	/**
+		Backend Renderer supports multiple viewports.
+	**/
+	public static inline final RendererHasViewports:ImGuiBackendFlags = 1 << 10;
+
+	/**
+		Backend Platform supports multiple viewports.
+	**/
+	public static inline final PlatformHasViewports:ImGuiBackendFlags = 1 << 11;
+
+	/**
+		Backend Platform supports calling io.AddMouseViewportEvent() with the viewport under the mouse. IF POSSIBLE, ignore viewports with the ImGuiViewportFlags_NoInputs flag (Win32 backend, GLFW 3.30+ backend can do this, SDL backend cannot). If this cannot be done, Dear ImGui needs to use a flawed heuristic to find the viewport under.
+	**/
+	public static inline final HasMouseHoveredViewport:ImGuiBackendFlags = 1 << 12;
+
+	/**
+		Backend Platform supports honoring viewport->ParentViewport/ParentViewportId value, by applying the corresponding parent/child relationship at the Platform level. Child windows always appear in front of their parent window.
+	**/
+	public static inline final HasParentViewport:ImGuiBackendFlags = 1 << 13;
 }
 
+/**
+	Enumeration for PushStyleColor() / PopStyleColor()
+**/
 abstract ImGuiCol(Int) from Int to Int {
 	public static inline final Text:ImGuiCol = 0;
 	public static inline final TextDisabled:ImGuiCol = 1;
+
+	/**
+		Background of normal windows
+	**/
 	public static inline final WindowBg:ImGuiCol = 2;
+
+	/**
+		Background of child windows
+	**/
 	public static inline final ChildBg:ImGuiCol = 3;
+
+	/**
+		Background of popups, menus, tooltips windows
+	**/
 	public static inline final PopupBg:ImGuiCol = 4;
 	public static inline final Border:ImGuiCol = 5;
 	public static inline final BorderShadow:ImGuiCol = 6;
+
+	/**
+		Background of checkbox, radio button, plot, slider, text input
+	**/
 	public static inline final FrameBg:ImGuiCol = 7;
 	public static inline final FrameBgHovered:ImGuiCol = 8;
 	public static inline final FrameBgActive:ImGuiCol = 9;
+
+	/**
+		Title bar
+	**/
 	public static inline final TitleBg:ImGuiCol = 10;
+
+	/**
+		Title bar when focused
+	**/
 	public static inline final TitleBgActive:ImGuiCol = 11;
+
+	/**
+		Title bar when collapsed
+	**/
 	public static inline final TitleBgCollapsed:ImGuiCol = 12;
 	public static inline final MenuBarBg:ImGuiCol = 13;
 	public static inline final ScrollbarBg:ImGuiCol = 14;
 	public static inline final ScrollbarGrab:ImGuiCol = 15;
 	public static inline final ScrollbarGrabHovered:ImGuiCol = 16;
 	public static inline final ScrollbarGrabActive:ImGuiCol = 17;
+
+	/**
+		Checkbox tick and RadioButton circle
+	**/
 	public static inline final CheckMark:ImGuiCol = 18;
-	public static inline final SliderGrab:ImGuiCol = 19;
-	public static inline final SliderGrabActive:ImGuiCol = 20;
-	public static inline final Button:ImGuiCol = 21;
-	public static inline final ButtonHovered:ImGuiCol = 22;
-	public static inline final ButtonActive:ImGuiCol = 23;
-	public static inline final Header:ImGuiCol = 24;
-	public static inline final HeaderHovered:ImGuiCol = 25;
-	public static inline final HeaderActive:ImGuiCol = 26;
-	public static inline final Separator:ImGuiCol = 27;
-	public static inline final SeparatorHovered:ImGuiCol = 28;
-	public static inline final SeparatorActive:ImGuiCol = 29;
-	public static inline final ResizeGrip:ImGuiCol = 30;
-	public static inline final ResizeGripHovered:ImGuiCol = 31;
-	public static inline final ResizeGripActive:ImGuiCol = 32;
-	public static inline final InputTextCursor:ImGuiCol = 33;
-	public static inline final TabHovered:ImGuiCol = 34;
-	public static inline final Tab:ImGuiCol = 35;
-	public static inline final TabSelected:ImGuiCol = 36;
-	public static inline final TabSelectedOverline:ImGuiCol = 37;
-	public static inline final TabDimmed:ImGuiCol = 38;
-	public static inline final TabDimmedSelected:ImGuiCol = 39;
-	public static inline final TabDimmedSelectedOverline:ImGuiCol = 40;
-	public static inline final DockingPreview:ImGuiCol = 41;
-	public static inline final DockingEmptyBg:ImGuiCol = 42;
-	public static inline final PlotLines:ImGuiCol = 43;
-	public static inline final PlotLinesHovered:ImGuiCol = 44;
-	public static inline final PlotHistogram:ImGuiCol = 45;
-	public static inline final PlotHistogramHovered:ImGuiCol = 46;
-	public static inline final TableHeaderBg:ImGuiCol = 47;
-	public static inline final TableBorderStrong:ImGuiCol = 48;
-	public static inline final TableBorderLight:ImGuiCol = 49;
-	public static inline final TableRowBg:ImGuiCol = 50;
-	public static inline final TableRowBgAlt:ImGuiCol = 51;
-	public static inline final TextLink:ImGuiCol = 52;
-	public static inline final TextSelectedBg:ImGuiCol = 53;
-	public static inline final TreeLines:ImGuiCol = 54;
-	public static inline final DragDropTarget:ImGuiCol = 55;
-	public static inline final DragDropTargetBg:ImGuiCol = 56;
-	public static inline final UnsavedMarker:ImGuiCol = 57;
-	public static inline final NavCursor:ImGuiCol = 58;
-	public static inline final NavWindowingHighlight:ImGuiCol = 59;
-	public static inline final NavWindowingDimBg:ImGuiCol = 60;
-	public static inline final ModalWindowDimBg:ImGuiCol = 61;
-	public static inline final COUNT:ImGuiCol = 62;
+
+	/**
+		Checkbox background when Selected, otherwise use FrameBg
+	**/
+	public static inline final CheckboxSelectedBg:ImGuiCol = 19;
+	public static inline final SliderGrab:ImGuiCol = 20;
+	public static inline final SliderGrabActive:ImGuiCol = 21;
+	public static inline final Button:ImGuiCol = 22;
+	public static inline final ButtonHovered:ImGuiCol = 23;
+	public static inline final ButtonActive:ImGuiCol = 24;
+
+	/**
+		Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
+	**/
+	public static inline final Header:ImGuiCol = 25;
+	public static inline final HeaderHovered:ImGuiCol = 26;
+	public static inline final HeaderActive:ImGuiCol = 27;
+	public static inline final Separator:ImGuiCol = 28;
+	public static inline final SeparatorHovered:ImGuiCol = 29;
+	public static inline final SeparatorActive:ImGuiCol = 30;
+
+	/**
+		Resize grip in lower-right and lower-left corners of windows.
+	**/
+	public static inline final ResizeGrip:ImGuiCol = 31;
+	public static inline final ResizeGripHovered:ImGuiCol = 32;
+	public static inline final ResizeGripActive:ImGuiCol = 33;
+
+	/**
+		InputText cursor/caret
+	**/
+	public static inline final InputTextCursor:ImGuiCol = 34;
+
+	/**
+		Tab background, when hovered
+	**/
+	public static inline final TabHovered:ImGuiCol = 35;
+
+	/**
+		Tab background, when tab-bar is focused & tab is unselected
+	**/
+	public static inline final Tab:ImGuiCol = 36;
+
+	/**
+		Tab background, when tab-bar is focused & tab is selected
+	**/
+	public static inline final TabSelected:ImGuiCol = 37;
+
+	/**
+		Tab horizontal overline, when tab-bar is focused & tab is selected
+	**/
+	public static inline final TabSelectedOverline:ImGuiCol = 38;
+
+	/**
+		Tab background, when tab-bar is unfocused & tab is unselected
+	**/
+	public static inline final TabDimmed:ImGuiCol = 39;
+
+	/**
+		Tab background, when tab-bar is unfocused & tab is selected
+	**/
+	public static inline final TabDimmedSelected:ImGuiCol = 40;
+
+	/**
+		..horizontal overline, when tab-bar is unfocused & tab is selected
+	**/
+	public static inline final TabDimmedSelectedOverline:ImGuiCol = 41;
+
+	/**
+		Preview overlay color when about to docking something
+	**/
+	public static inline final DockingPreview:ImGuiCol = 42;
+
+	/**
+		Background color for empty node (e.g. CentralNode with no window docked into it)
+	**/
+	public static inline final DockingEmptyBg:ImGuiCol = 43;
+	public static inline final PlotLines:ImGuiCol = 44;
+	public static inline final PlotLinesHovered:ImGuiCol = 45;
+	public static inline final PlotHistogram:ImGuiCol = 46;
+	public static inline final PlotHistogramHovered:ImGuiCol = 47;
+
+	/**
+		Table header background
+	**/
+	public static inline final TableHeaderBg:ImGuiCol = 48;
+
+	/**
+		Table outer and header borders (prefer using Alpha=1.0 here)
+	**/
+	public static inline final TableBorderStrong:ImGuiCol = 49;
+
+	/**
+		Table inner borders (prefer using Alpha=1.0 here)
+	**/
+	public static inline final TableBorderLight:ImGuiCol = 50;
+
+	/**
+		Table row background (even rows)
+	**/
+	public static inline final TableRowBg:ImGuiCol = 51;
+
+	/**
+		Table row background (odd rows)
+	**/
+	public static inline final TableRowBgAlt:ImGuiCol = 52;
+
+	/**
+		Hyperlink color
+	**/
+	public static inline final TextLink:ImGuiCol = 53;
+
+	/**
+		Selected text inside an InputText
+	**/
+	public static inline final TextSelectedBg:ImGuiCol = 54;
+
+	/**
+		Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
+	**/
+	public static inline final TreeLines:ImGuiCol = 55;
+
+	/**
+		Rectangle border highlighting a drop target
+	**/
+	public static inline final DragDropTarget:ImGuiCol = 56;
+
+	/**
+		Rectangle background highlighting a drop target
+	**/
+	public static inline final DragDropTargetBg:ImGuiCol = 57;
+
+	/**
+		Unsaved Document marker (in window title and tabs)
+	**/
+	public static inline final UnsavedMarker:ImGuiCol = 58;
+
+	/**
+		Color of keyboard/gamepad navigation cursor/rectangle, when visible
+	**/
+	public static inline final NavCursor:ImGuiCol = 59;
+
+	/**
+		Highlight window when using Ctrl+Tab
+	**/
+	public static inline final NavWindowingHighlight:ImGuiCol = 60;
+
+	/**
+		Darken/colorize entire screen behind the Ctrl+Tab window list, when active
+	**/
+	public static inline final NavWindowingDimBg:ImGuiCol = 61;
+
+	/**
+		Darken/colorize entire screen behind a modal window, when one is active
+	**/
+	public static inline final ModalWindowDimBg:ImGuiCol = 62;
+	public static inline final COUNT:ImGuiCol = 63;
 }
 
+/**
+	Enumeration for PushStyleVar() / PopStyleVar() to temporarily modify the ImGuiStyle structure.
+	- The enum only refers to fields of ImGuiStyle which makes sense to be pushed/popped inside UI code.
+	  During initialization or between frames, feel free to just poke into ImGuiStyle directly.
+	- Tip: Use your programming IDE navigation facilities on the names in the _second column_ below to find the actual members and their description.
+	  - In Visual Studio: Ctrl+Comma ("Edit.GoToAll") can follow symbols inside comments, whereas Ctrl+F12 ("Edit.GoToImplementation") cannot.
+	  - In Visual Studio w/ Visual Assist installed: Alt+G ("VAssistX.GoToImplementation") can also follow symbols inside comments.
+	  - In VS Code, CLion, etc.: Ctrl+Click can follow symbols inside comments.
+	- When changing this enum, you need to update the associated internal table GStyleVarInfo[] accordingly. This is where we link enum values to members offset/type.
+**/
 abstract ImGuiStyleVar(Int) from Int to Int {
+	/**
+		float     Alpha
+	**/
 	public static inline final Alpha:ImGuiStyleVar = 0;
+
+	/**
+		float     DisabledAlpha
+	**/
 	public static inline final DisabledAlpha:ImGuiStyleVar = 1;
+
+	/**
+		ImVec2    WindowPadding
+	**/
 	public static inline final WindowPadding:ImGuiStyleVar = 2;
+
+	/**
+		float     WindowRounding
+	**/
 	public static inline final WindowRounding:ImGuiStyleVar = 3;
+
+	/**
+		float     WindowBorderSize
+	**/
 	public static inline final WindowBorderSize:ImGuiStyleVar = 4;
+
+	/**
+		ImVec2    WindowMinSize
+	**/
 	public static inline final WindowMinSize:ImGuiStyleVar = 5;
+
+	/**
+		ImVec2    WindowTitleAlign
+	**/
 	public static inline final WindowTitleAlign:ImGuiStyleVar = 6;
+
+	/**
+		float     ChildRounding
+	**/
 	public static inline final ChildRounding:ImGuiStyleVar = 7;
+
+	/**
+		float     ChildBorderSize
+	**/
 	public static inline final ChildBorderSize:ImGuiStyleVar = 8;
+
+	/**
+		float     PopupRounding
+	**/
 	public static inline final PopupRounding:ImGuiStyleVar = 9;
+
+	/**
+		float     PopupBorderSize
+	**/
 	public static inline final PopupBorderSize:ImGuiStyleVar = 10;
+
+	/**
+		ImVec2    FramePadding
+	**/
 	public static inline final FramePadding:ImGuiStyleVar = 11;
+
+	/**
+		float     FrameRounding
+	**/
 	public static inline final FrameRounding:ImGuiStyleVar = 12;
+
+	/**
+		float     FrameBorderSize
+	**/
 	public static inline final FrameBorderSize:ImGuiStyleVar = 13;
+
+	/**
+		ImVec2    ItemSpacing
+	**/
 	public static inline final ItemSpacing:ImGuiStyleVar = 14;
+
+	/**
+		ImVec2    ItemInnerSpacing
+	**/
 	public static inline final ItemInnerSpacing:ImGuiStyleVar = 15;
+
+	/**
+		float     IndentSpacing
+	**/
 	public static inline final IndentSpacing:ImGuiStyleVar = 16;
+
+	/**
+		ImVec2    CellPadding
+	**/
 	public static inline final CellPadding:ImGuiStyleVar = 17;
+
+	/**
+		float     ScrollbarSize
+	**/
 	public static inline final ScrollbarSize:ImGuiStyleVar = 18;
+
+	/**
+		float     ScrollbarRounding
+	**/
 	public static inline final ScrollbarRounding:ImGuiStyleVar = 19;
+
+	/**
+		float     ScrollbarPadding
+	**/
 	public static inline final ScrollbarPadding:ImGuiStyleVar = 20;
+
+	/**
+		float     GrabMinSize
+	**/
 	public static inline final GrabMinSize:ImGuiStyleVar = 21;
+
+	/**
+		float     GrabRounding
+	**/
 	public static inline final GrabRounding:ImGuiStyleVar = 22;
+
+	/**
+		float     ImageRounding
+	**/
 	public static inline final ImageRounding:ImGuiStyleVar = 23;
+
+	/**
+		float     ImageBorderSize
+	**/
 	public static inline final ImageBorderSize:ImGuiStyleVar = 24;
+
+	/**
+		float     TabRounding
+	**/
 	public static inline final TabRounding:ImGuiStyleVar = 25;
+
+	/**
+		float     TabBorderSize
+	**/
 	public static inline final TabBorderSize:ImGuiStyleVar = 26;
+
+	/**
+		float     TabMinWidthBase
+	**/
 	public static inline final TabMinWidthBase:ImGuiStyleVar = 27;
+
+	/**
+		float     TabMinWidthShrink
+	**/
 	public static inline final TabMinWidthShrink:ImGuiStyleVar = 28;
+
+	/**
+		float     TabBarBorderSize
+	**/
 	public static inline final TabBarBorderSize:ImGuiStyleVar = 29;
+
+	/**
+		float     TabBarOverlineSize
+	**/
 	public static inline final TabBarOverlineSize:ImGuiStyleVar = 30;
+
+	/**
+		float     TableAngledHeadersAngle
+	**/
 	public static inline final TableAngledHeadersAngle:ImGuiStyleVar = 31;
+
+	/**
+		ImVec2  TableAngledHeadersTextAlign
+	**/
 	public static inline final TableAngledHeadersTextAlign:ImGuiStyleVar = 32;
+
+	/**
+		float     TreeLinesSize
+	**/
 	public static inline final TreeLinesSize:ImGuiStyleVar = 33;
+
+	/**
+		float     TreeLinesRounding
+	**/
 	public static inline final TreeLinesRounding:ImGuiStyleVar = 34;
-	public static inline final ButtonTextAlign:ImGuiStyleVar = 35;
-	public static inline final SelectableTextAlign:ImGuiStyleVar = 36;
-	public static inline final SeparatorSize:ImGuiStyleVar = 37;
-	public static inline final SeparatorTextBorderSize:ImGuiStyleVar = 38;
-	public static inline final SeparatorTextAlign:ImGuiStyleVar = 39;
-	public static inline final SeparatorTextPadding:ImGuiStyleVar = 40;
-	public static inline final DockingSeparatorSize:ImGuiStyleVar = 41;
-	public static inline final COUNT:ImGuiStyleVar = 42;
+
+	/**
+		float     MenuItemRounding
+	**/
+	public static inline final MenuItemRounding:ImGuiStyleVar = 35;
+
+	/**
+		float     SelectableRounding
+	**/
+	public static inline final SelectableRounding:ImGuiStyleVar = 36;
+
+	/**
+		float     DragDropTargetRounding
+	**/
+	public static inline final DragDropTargetRounding:ImGuiStyleVar = 37;
+
+	/**
+		ImVec2    ButtonTextAlign
+	**/
+	public static inline final ButtonTextAlign:ImGuiStyleVar = 38;
+
+	/**
+		ImVec2    SelectableTextAlign
+	**/
+	public static inline final SelectableTextAlign:ImGuiStyleVar = 39;
+
+	/**
+		float     SeparatorSize
+	**/
+	public static inline final SeparatorSize:ImGuiStyleVar = 40;
+
+	/**
+		float     SeparatorTextBorderSize
+	**/
+	public static inline final SeparatorTextBorderSize:ImGuiStyleVar = 41;
+
+	/**
+		ImVec2    SeparatorTextAlign
+	**/
+	public static inline final SeparatorTextAlign:ImGuiStyleVar = 42;
+
+	/**
+		ImVec2    SeparatorTextPadding
+	**/
+	public static inline final SeparatorTextPadding:ImGuiStyleVar = 43;
+
+	/**
+		float     DockingSeparatorSize
+	**/
+	public static inline final DockingSeparatorSize:ImGuiStyleVar = 44;
+	public static inline final COUNT:ImGuiStyleVar = 45;
 }
 
+/**
+	Flags for InvisibleButton() [extended in imgui_internal.h]
+**/
 abstract ImGuiButtonFlags(Int) from Int to Int {
 	public static inline final None:ImGuiButtonFlags = 0;
-	public static inline final MouseButtonLeft:ImGuiButtonFlags = 1;
-	public static inline final MouseButtonRight:ImGuiButtonFlags = 2;
-	public static inline final MouseButtonMiddle:ImGuiButtonFlags = 4;
-	public static inline final EnableNav:ImGuiButtonFlags = 8;
-	public static inline final AllowOverlap:ImGuiButtonFlags = 4096;
+
+	/**
+		React on left mouse button (default)
+	**/
+	public static inline final MouseButtonLeft:ImGuiButtonFlags = 1 << 0;
+
+	/**
+		React on right mouse button
+	**/
+	public static inline final MouseButtonRight:ImGuiButtonFlags = 1 << 1;
+
+	/**
+		React on center mouse button
+	**/
+	public static inline final MouseButtonMiddle:ImGuiButtonFlags = 1 << 2;
+
+	/**
+		InvisibleButton(): do not disable navigation/tabbing. Otherwise disabled by default.
+	**/
+	public static inline final EnableNav:ImGuiButtonFlags = 1 << 3;
+
+	/**
+		Hit testing will allow subsequent widgets to overlap this one. Require previous frame HoveredId to match before being usable. Shortcut to calling SetNextItemAllowOverlap().
+	**/
+	public static inline final AllowOverlap:ImGuiButtonFlags = 1 << 12;
 }
 
+/**
+	Flags for ColorEdit3() / ColorEdit4() / ColorPicker3() / ColorPicker4() / ColorButton()
+**/
 abstract ImGuiColorEditFlags(Int) from Int to Int {
 	public static inline final None:ImGuiColorEditFlags = 0;
-	public static inline final NoAlpha:ImGuiColorEditFlags = 2;
-	public static inline final NoPicker:ImGuiColorEditFlags = 4;
-	public static inline final NoOptions:ImGuiColorEditFlags = 8;
-	public static inline final NoSmallPreview:ImGuiColorEditFlags = 16;
-	public static inline final NoInputs:ImGuiColorEditFlags = 32;
-	public static inline final NoTooltip:ImGuiColorEditFlags = 64;
-	public static inline final NoLabel:ImGuiColorEditFlags = 128;
-	public static inline final NoSidePreview:ImGuiColorEditFlags = 256;
-	public static inline final NoDragDrop:ImGuiColorEditFlags = 512;
-	public static inline final NoBorder:ImGuiColorEditFlags = 1024;
-	public static inline final NoColorMarkers:ImGuiColorEditFlags = 2048;
-	public static inline final AlphaOpaque:ImGuiColorEditFlags = 4096;
-	public static inline final AlphaNoBg:ImGuiColorEditFlags = 8192;
-	public static inline final AlphaPreviewHalf:ImGuiColorEditFlags = 16384;
-	public static inline final AlphaBar:ImGuiColorEditFlags = 262144;
-	public static inline final HDR:ImGuiColorEditFlags = 524288;
-	public static inline final DisplayRGB:ImGuiColorEditFlags = 1048576;
-	public static inline final DisplayHSV:ImGuiColorEditFlags = 2097152;
-	public static inline final DisplayHex:ImGuiColorEditFlags = 4194304;
-	public static inline final Uint8:ImGuiColorEditFlags = 8388608;
-	public static inline final Float:ImGuiColorEditFlags = 16777216;
-	public static inline final PickerHueBar:ImGuiColorEditFlags = 33554432;
-	public static inline final PickerHueWheel:ImGuiColorEditFlags = 67108864;
-	public static inline final InputRGB:ImGuiColorEditFlags = 134217728;
-	public static inline final InputHSV:ImGuiColorEditFlags = 268435456;
+
+	/**
+		             // ColorEdit, ColorPicker, ColorButton: ignore Alpha component (will only read 3 components from the input pointer).
+	**/
+	public static inline final NoAlpha:ImGuiColorEditFlags = 1 << 1;
+
+	/**
+		             // ColorEdit: disable picker when clicking on color square.
+	**/
+	public static inline final NoPicker:ImGuiColorEditFlags = 1 << 2;
+
+	/**
+		             // ColorEdit: disable toggling options menu when right-clicking on inputs/small preview.
+	**/
+	public static inline final NoOptions:ImGuiColorEditFlags = 1 << 3;
+
+	/**
+		             // ColorEdit, ColorPicker: disable color square preview next to the inputs. (e.g. to show only the inputs)
+	**/
+	public static inline final NoSmallPreview:ImGuiColorEditFlags = 1 << 4;
+
+	/**
+		             // ColorEdit, ColorPicker: disable inputs sliders/text widgets (e.g. to show only the small preview color square).
+	**/
+	public static inline final NoInputs:ImGuiColorEditFlags = 1 << 5;
+
+	/**
+		             // ColorEdit, ColorPicker, ColorButton: disable tooltip when hovering the preview.
+	**/
+	public static inline final NoTooltip:ImGuiColorEditFlags = 1 << 6;
+
+	/**
+		             // ColorEdit, ColorPicker: disable display of inline text label (the label is still forwarded to the tooltip and picker).
+	**/
+	public static inline final NoLabel:ImGuiColorEditFlags = 1 << 7;
+
+	/**
+		             // ColorPicker: disable bigger color preview on right side of the picker, use small color square preview instead.
+	**/
+	public static inline final NoSidePreview:ImGuiColorEditFlags = 1 << 8;
+
+	/**
+		             // ColorEdit: disable drag and drop target/source. ColorButton: disable drag and drop source.
+	**/
+	public static inline final NoDragDrop:ImGuiColorEditFlags = 1 << 9;
+
+	/**
+		             // ColorButton: disable border (which is enforced by default)
+	**/
+	public static inline final NoBorder:ImGuiColorEditFlags = 1 << 10;
+
+	/**
+		             // ColorEdit: disable rendering R/G/B/A color marker. May also be disabled globally by setting style.ColorMarkerSize = 0.
+	**/
+	public static inline final NoColorMarkers:ImGuiColorEditFlags = 1 << 11;
+
+	/**
+		             // ColorEdit, ColorPicker, ColorButton: disable alpha in the preview,. Contrary to _NoAlpha it may still be edited when calling ColorEdit4()/ColorPicker4(). For ColorButton() this does the same as _NoAlpha.
+	**/
+	public static inline final AlphaOpaque:ImGuiColorEditFlags = 1 << 12;
+
+	/**
+		             // ColorEdit, ColorPicker, ColorButton: disable rendering a checkerboard background behind transparent color.
+	**/
+	public static inline final AlphaNoBg:ImGuiColorEditFlags = 1 << 13;
+
+	/**
+		             // ColorEdit, ColorPicker, ColorButton: display half opaque / half transparent preview.
+	**/
+	public static inline final AlphaPreviewHalf:ImGuiColorEditFlags = 1 << 14;
+
+	/**
+		             // ColorEdit, ColorPicker: show vertical alpha bar/gradient in picker.
+	**/
+	public static inline final AlphaBar:ImGuiColorEditFlags = 1 << 18;
+
+	/**
+		             // (WIP) ColorEdit: Currently only disable 0.0f..1.0f limits in RGBA edition (note: you probably want to use ImGuiColorEditFlags_Float flag as well).
+	**/
+	public static inline final HDR:ImGuiColorEditFlags = 1 << 19;
+
+	/**
+		[Display]    // ColorEdit: override _display_ type among RGB/HSV/Hex. ColorPicker: select any combination using one or more of RGB/HSV/Hex.
+	**/
+	public static inline final DisplayRGB:ImGuiColorEditFlags = 1 << 20;
+
+	/**
+		[Display]    // "
+	**/
+	public static inline final DisplayHSV:ImGuiColorEditFlags = 1 << 21;
+
+	/**
+		[Display]    // "
+	**/
+	public static inline final DisplayHex:ImGuiColorEditFlags = 1 << 22;
+
+	/**
+		[DataType]   // ColorEdit, ColorPicker, ColorButton: _display_ values formatted as 0..255.
+	**/
+	public static inline final Uint8:ImGuiColorEditFlags = 1 << 23;
+
+	/**
+		[DataType]   // ColorEdit, ColorPicker, ColorButton: _display_ values formatted as 0.0f..1.0f floats instead of 0..255 integers. No round-trip of value via integers.
+	**/
+	public static inline final Float:ImGuiColorEditFlags = 1 << 24;
+
+	/**
+		[Picker]     // ColorPicker: bar for Hue, rectangle for Sat/Value.
+	**/
+	public static inline final PickerHueBar:ImGuiColorEditFlags = 1 << 25;
+
+	/**
+		[Picker]     // ColorPicker: wheel for Hue, triangle for Sat/Value.
+	**/
+	public static inline final PickerHueWheel:ImGuiColorEditFlags = 1 << 26;
+
+	/**
+		[Picker]     // ColorPicker: disable rotating Sat/Value triangle. Best set in io.ConfigColorEditFlags once.
+	**/
+	public static inline final PickerNoRotate:ImGuiColorEditFlags = 1 << 27;
+
+	/**
+		[Input]      // ColorEdit, ColorPicker: input and output data in RGB format.
+	**/
+	public static inline final InputRGB:ImGuiColorEditFlags = 1 << 28;
+
+	/**
+		[Input]      // ColorEdit, ColorPicker: input and output data in HSV format.
+	**/
+	public static inline final InputHSV:ImGuiColorEditFlags = 1 << 29;
 }
 
+/**
+	Flags for DragFloat(), DragInt(), SliderFloat(), SliderInt() etc.
+	We use the same sets of flags for DragXXX() and SliderXXX() functions as the features are the same and it makes it easier to swap them.
+	(Those are per-item flags. There is shared behavior flag too: ImGuiIO: io.ConfigDragClickToInputText)
+**/
 abstract ImGuiSliderFlags(Int) from Int to Int {
 	public static inline final None:ImGuiSliderFlags = 0;
-	public static inline final Logarithmic:ImGuiSliderFlags = 32;
-	public static inline final NoRoundToFormat:ImGuiSliderFlags = 64;
-	public static inline final NoInput:ImGuiSliderFlags = 128;
-	public static inline final WrapAround:ImGuiSliderFlags = 256;
-	public static inline final ClampOnInput:ImGuiSliderFlags = 512;
-	public static inline final ClampZeroRange:ImGuiSliderFlags = 1024;
-	public static inline final NoSpeedTweaks:ImGuiSliderFlags = 2048;
-	public static inline final ColorMarkers:ImGuiSliderFlags = 4096;
-	public static inline final AlwaysClamp:ImGuiSliderFlags = 1536;
+
+	/**
+		Make the widget logarithmic (linear otherwise). Consider using ImGuiSliderFlags_NoRoundToFormat with this if using a format-string with small amount of digits.
+	**/
+	public static inline final Logarithmic:ImGuiSliderFlags = 1 << 5;
+
+	/**
+		Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits).
+	**/
+	public static inline final NoRoundToFormat:ImGuiSliderFlags = 1 << 6;
+
+	/**
+		Disable Ctrl+Click or Enter key allowing to input text directly into the widget.
+	**/
+	public static inline final NoInput:ImGuiSliderFlags = 1 << 7;
+
+	/**
+		Enable wrapping around from max to min and from min to max. Only supported by DragXXX() functions for now.
+	**/
+	public static inline final WrapAround:ImGuiSliderFlags = 1 << 8;
+
+	/**
+		Clamp value to min/max bounds when input manually with Ctrl+Click. By default Ctrl+Click allows going out of bounds.
+	**/
+	public static inline final ClampOnInput:ImGuiSliderFlags = 1 << 9;
+
+	/**
+		Clamp even if min==max==0.0f. Otherwise due to legacy reason DragXXX functions don't clamp with those values. When your clamping limits are dynamic you almost always want to use it.
+	**/
+	public static inline final ClampZeroRange:ImGuiSliderFlags = 1 << 10;
+
+	/**
+		Disable keyboard modifiers altering tweak speed. Useful if you want to alter tweak speed yourself based on your own logic.
+	**/
+	public static inline final NoSpeedTweaks:ImGuiSliderFlags = 1 << 11;
+
+	/**
+		DragScalarN(), SliderScalarN(): Draw R/G/B/A color markers on each component.
+	**/
+	public static inline final ColorMarkers:ImGuiSliderFlags = 1 << 12;
+	public static inline final AlwaysClamp:ImGuiSliderFlags = ClampOnInput | ClampZeroRange;
 }
 
+/**
+	Identify a mouse button.
+	Those values are guaranteed to be stable and we frequently use 0/1 directly. Named enums provided for convenience.
+**/
 abstract ImGuiMouseButton(Int) from Int to Int {
 	public static inline final Left:ImGuiMouseButton = 0;
 	public static inline final Right:ImGuiMouseButton = 1;
@@ -661,214 +2300,864 @@ abstract ImGuiMouseButton(Int) from Int to Int {
 	public static inline final COUNT:ImGuiMouseButton = 5;
 }
 
+/**
+	Enumeration for GetMouseCursor()
+	User code may request backend to display given cursor by calling SetMouseCursor(), which is why we have some cursors that are marked unused here
+**/
 abstract ImGuiMouseCursor(Int) from Int to Int {
 	public static inline final None:ImGuiMouseCursor = -1;
 	public static inline final Arrow:ImGuiMouseCursor = 0;
+
+	/**
+		When hovering over InputText, etc.
+	**/
 	public static inline final TextInput:ImGuiMouseCursor = 1;
+
+	/**
+		(Unused by Dear ImGui functions)
+	**/
 	public static inline final ResizeAll:ImGuiMouseCursor = 2;
+
+	/**
+		When hovering over a horizontal border
+	**/
 	public static inline final ResizeNS:ImGuiMouseCursor = 3;
+
+	/**
+		When hovering over a vertical border or a column
+	**/
 	public static inline final ResizeEW:ImGuiMouseCursor = 4;
+
+	/**
+		When hovering over the bottom-left corner of a window
+	**/
 	public static inline final ResizeNESW:ImGuiMouseCursor = 5;
+
+	/**
+		When hovering over the bottom-right corner of a window
+	**/
 	public static inline final ResizeNWSE:ImGuiMouseCursor = 6;
+
+	/**
+		(Unused by Dear ImGui functions. Use for e.g. hyperlinks)
+	**/
 	public static inline final Hand:ImGuiMouseCursor = 7;
+
+	/**
+		When waiting for something to process/load.
+	**/
 	public static inline final Wait:ImGuiMouseCursor = 8;
+
+	/**
+		When waiting for something to process/load, but application is still interactive.
+	**/
 	public static inline final Progress:ImGuiMouseCursor = 9;
+
+	/**
+		When hovering something with disallowed interaction. Usually a crossed circle.
+	**/
 	public static inline final NotAllowed:ImGuiMouseCursor = 10;
 	public static inline final COUNT:ImGuiMouseCursor = 11;
 }
 
+/**
+	Forward declared enum type ImGuiMouseSource
+**/
 abstract ImGuiMouseSource(Int) from Int to Int {
+	/**
+		Input is coming from an actual mouse.
+	**/
 	public static inline final _Mouse:ImGuiMouseSource = 0;
+
+	/**
+		Input is coming from a touch screen (no hovering prior to initial press, less precise initial press aiming, dual-axis wheeling possible).
+	**/
 	public static inline final _TouchScreen:ImGuiMouseSource = 1;
+
+	/**
+		Input is coming from a pressure/magnetic pen (often used in conjunction with high-sampling rates).
+	**/
 	public static inline final _Pen:ImGuiMouseSource = 2;
 	public static inline final _COUNT:ImGuiMouseSource = 3;
 }
 
+/**
+	Enumeration for ImGui::SetNextWindow***(), SetWindow***(), SetNextItem***() functions
+	Represent a condition.
+	Important: Treat as a regular enum! Do NOT combine multiple values using binary operators! All the functions above treat 0 as a shortcut to ImGuiCond_Always.
+**/
 abstract ImGuiCond(Int) from Int to Int {
+	/**
+		No condition (always set the variable), same as _Always
+	**/
 	public static inline final None:ImGuiCond = 0;
-	public static inline final Always:ImGuiCond = 1;
-	public static inline final Once:ImGuiCond = 2;
-	public static inline final FirstUseEver:ImGuiCond = 4;
-	public static inline final Appearing:ImGuiCond = 8;
+
+	/**
+		No condition (always set the variable), same as _None
+	**/
+	public static inline final Always:ImGuiCond = 1 << 0;
+
+	/**
+		Set the variable once per runtime session (only the first call will succeed)
+	**/
+	public static inline final Once:ImGuiCond = 1 << 1;
+
+	/**
+		Set the variable if the object/window has no persistently saved data (no entry in .ini file)
+	**/
+	public static inline final FirstUseEver:ImGuiCond = 1 << 2;
+
+	/**
+		Set the variable if the object/window is appearing after being hidden/inactive (or the first time)
+	**/
+	public static inline final Appearing:ImGuiCond = 1 << 3;
 }
 
+/**
+	Flags for ImGui::BeginTable()
+	- Important! Sizing policies have complex and subtle side effects, much more so than you would expect.
+	  Read comments/demos carefully + experiment with live demos to get acquainted with them.
+	- The DEFAULT sizing policies are:
+	   - Default to ImGuiTableFlags_SizingFixedFit    if ScrollX is on, or if host window has ImGuiWindowFlags_AlwaysAutoResize.
+	   - Default to ImGuiTableFlags_SizingStretchSame if ScrollX is off.
+	- When ScrollX is off:
+	   - Table defaults to ImGuiTableFlags_SizingStretchSame -> all Columns defaults to ImGuiTableColumnFlags_WidthStretch with same weight.
+	   - Columns sizing policy allowed: Stretch (default), Fixed/Auto.
+	   - Fixed Columns (if any) will generally obtain their requested width (unless the table cannot fit them all).
+	   - Stretch Columns will share the remaining width according to their respective weight.
+	   - Mixed Fixed/Stretch columns is possible but has various side-effects on resizing behaviors.
+	     The typical use of mixing sizing policies is: any number of LEADING Fixed columns, followed by one or two TRAILING Stretch columns.
+	     (this is because the visible order of columns have subtle but necessary effects on how they react to manual resizing).
+	- When ScrollX is on:
+	   - Table defaults to ImGuiTableFlags_SizingFixedFit -> all Columns defaults to ImGuiTableColumnFlags_WidthFixed
+	   - Columns sizing policy allowed: Fixed/Auto mostly.
+	   - Fixed Columns can be enlarged as needed. Table will show a horizontal scrollbar if needed.
+	   - When using auto-resizing (non-resizable) fixed columns, querying the content width to use item right-alignment e.g. SetNextItemWidth(-FLT_MIN) doesn't make sense, would create a feedback loop.
+	   - Using Stretch columns OFTEN DOES NOT MAKE SENSE if ScrollX is on, UNLESS you have specified a value for 'inner_width' in BeginTable().
+	     If you specify a value for 'inner_width' then effectively the scrolling space is known and Stretch or mixed Fixed/Stretch columns become meaningful again.
+	- Read on documentation at the top of imgui_tables.cpp for details.
+**/
 abstract ImGuiTableFlags(Int) from Int to Int {
+	/**
+		Features
+	**/
 	public static inline final None:ImGuiTableFlags = 0;
-	public static inline final Resizable:ImGuiTableFlags = 1;
-	public static inline final Reorderable:ImGuiTableFlags = 2;
-	public static inline final Hideable:ImGuiTableFlags = 4;
-	public static inline final Sortable:ImGuiTableFlags = 8;
-	public static inline final NoSavedSettings:ImGuiTableFlags = 16;
-	public static inline final ContextMenuInBody:ImGuiTableFlags = 32;
-	public static inline final RowBg:ImGuiTableFlags = 64;
-	public static inline final BordersInnerH:ImGuiTableFlags = 128;
-	public static inline final BordersOuterH:ImGuiTableFlags = 256;
-	public static inline final BordersInnerV:ImGuiTableFlags = 512;
-	public static inline final BordersOuterV:ImGuiTableFlags = 1024;
-	public static inline final BordersH:ImGuiTableFlags = 384;
-	public static inline final BordersV:ImGuiTableFlags = 1536;
-	public static inline final BordersInner:ImGuiTableFlags = 640;
-	public static inline final BordersOuter:ImGuiTableFlags = 1280;
-	public static inline final Borders:ImGuiTableFlags = 1920;
-	public static inline final NoBordersInBody:ImGuiTableFlags = 2048;
-	public static inline final NoBordersInBodyUntilResize:ImGuiTableFlags = 4096;
-	public static inline final SizingFixedFit:ImGuiTableFlags = 8192;
-	public static inline final SizingFixedSame:ImGuiTableFlags = 16384;
-	public static inline final SizingStretchProp:ImGuiTableFlags = 24576;
-	public static inline final SizingStretchSame:ImGuiTableFlags = 32768;
-	public static inline final NoHostExtendX:ImGuiTableFlags = 65536;
-	public static inline final NoHostExtendY:ImGuiTableFlags = 131072;
-	public static inline final NoKeepColumnsVisible:ImGuiTableFlags = 262144;
-	public static inline final PreciseWidths:ImGuiTableFlags = 524288;
-	public static inline final NoClip:ImGuiTableFlags = 1048576;
-	public static inline final PadOuterX:ImGuiTableFlags = 2097152;
-	public static inline final NoPadOuterX:ImGuiTableFlags = 4194304;
-	public static inline final NoPadInnerX:ImGuiTableFlags = 8388608;
-	public static inline final ScrollX:ImGuiTableFlags = 16777216;
-	public static inline final ScrollY:ImGuiTableFlags = 33554432;
-	public static inline final SortMulti:ImGuiTableFlags = 67108864;
-	public static inline final SortTristate:ImGuiTableFlags = 134217728;
-	public static inline final HighlightHoveredColumn:ImGuiTableFlags = 268435456;
+
+	/**
+		Enable resizing columns.
+	**/
+	public static inline final Resizable:ImGuiTableFlags = 1 << 0;
+
+	/**
+		Enable reordering columns in header row. (Need calling TableSetupColumn() + TableHeadersRow() to display headers, or using ImGuiTableFlags_ContextMenuInBody to access context-menu without headers).
+	**/
+	public static inline final Reorderable:ImGuiTableFlags = 1 << 1;
+
+	/**
+		Enable hiding/disabling columns in context menu.
+	**/
+	public static inline final Hideable:ImGuiTableFlags = 1 << 2;
+
+	/**
+		Enable sorting. Call TableGetSortSpecs() to obtain sort specs. Also see ImGuiTableFlags_SortMulti and ImGuiTableFlags_SortTristate.
+	**/
+	public static inline final Sortable:ImGuiTableFlags = 1 << 3;
+
+	/**
+		Disable persisting columns order, width, visibility and sort settings in the .ini file.
+	**/
+	public static inline final NoSavedSettings:ImGuiTableFlags = 1 << 4;
+
+	/**
+		Right-click on columns body/contents will also display table context menu. By default it is available in TableHeadersRow().
+	**/
+	public static inline final ContextMenuInBody:ImGuiTableFlags = 1 << 5;
+
+	/**
+		Set each RowBg color with ImGuiCol_TableRowBg or ImGuiCol_TableRowBgAlt (equivalent of calling TableSetBgColor with ImGuiTableBgFlags_RowBg0 on each row manually)
+	**/
+	public static inline final RowBg:ImGuiTableFlags = 1 << 6;
+
+	/**
+		Draw horizontal borders between rows.
+	**/
+	public static inline final BordersInnerH:ImGuiTableFlags = 1 << 7;
+
+	/**
+		Draw horizontal borders at the top and bottom.
+	**/
+	public static inline final BordersOuterH:ImGuiTableFlags = 1 << 8;
+
+	/**
+		Draw vertical borders between columns.
+	**/
+	public static inline final BordersInnerV:ImGuiTableFlags = 1 << 9;
+
+	/**
+		Draw vertical borders on the left and right sides.
+	**/
+	public static inline final BordersOuterV:ImGuiTableFlags = 1 << 10;
+
+	/**
+		Draw horizontal borders.
+	**/
+	public static inline final BordersH:ImGuiTableFlags = BordersInnerH | BordersOuterH;
+
+	/**
+		Draw vertical borders.
+	**/
+	public static inline final BordersV:ImGuiTableFlags = BordersInnerV | BordersOuterV;
+
+	/**
+		Draw inner borders.
+	**/
+	public static inline final BordersInner:ImGuiTableFlags = BordersInnerV | BordersInnerH;
+
+	/**
+		Draw outer borders.
+	**/
+	public static inline final BordersOuter:ImGuiTableFlags = BordersOuterV | BordersOuterH;
+
+	/**
+		Draw all borders.
+	**/
+	public static inline final Borders:ImGuiTableFlags = BordersInner | BordersOuter;
+
+	/**
+		[ALPHA] Disable vertical borders in columns Body (borders will always appear in Headers). -> May move to style
+	**/
+	public static inline final NoBordersInBody:ImGuiTableFlags = 1 << 11;
+
+	/**
+		[ALPHA] Disable vertical borders in columns Body until hovered for resize (borders will always appear in Headers). -> May move to style
+	**/
+	public static inline final NoBordersInBodyUntilResize:ImGuiTableFlags = 1 << 12;
+
+	/**
+		Columns default to _WidthFixed or _WidthAuto (if resizable or not resizable), matching contents width.
+	**/
+	public static inline final SizingFixedFit:ImGuiTableFlags = 1 << 13;
+
+	/**
+		Columns default to _WidthFixed or _WidthAuto (if resizable or not resizable), matching the maximum contents width of all columns. Implicitly enable ImGuiTableFlags_NoKeepColumnsVisible.
+	**/
+	public static inline final SizingFixedSame:ImGuiTableFlags = 2 << 13;
+
+	/**
+		Columns default to _WidthStretch with default weights proportional to each columns contents widths.
+	**/
+	public static inline final SizingStretchProp:ImGuiTableFlags = 3 << 13;
+
+	/**
+		Columns default to _WidthStretch with default weights all equal, unless overridden by TableSetupColumn().
+	**/
+	public static inline final SizingStretchSame:ImGuiTableFlags = 4 << 13;
+
+	/**
+		Make outer width auto-fit to columns, overriding outer_size.x value. Only available when ScrollX/ScrollY are disabled and Stretch columns are not used.
+	**/
+	public static inline final NoHostExtendX:ImGuiTableFlags = 1 << 16;
+
+	/**
+		Make outer height stop exactly at outer_size.y (prevent auto-extending table past the limit). Only available when ScrollX/ScrollY are disabled. Data below the limit will be clipped and not visible.
+	**/
+	public static inline final NoHostExtendY:ImGuiTableFlags = 1 << 17;
+
+	/**
+		Disable keeping column always minimally visible when ScrollX is off and table gets too small. Not recommended if columns are resizable.
+	**/
+	public static inline final NoKeepColumnsVisible:ImGuiTableFlags = 1 << 18;
+
+	/**
+		Disable distributing remainder width to stretched columns (width allocation on a 100-wide table with 3 columns: Without this flag: 33,33,34. With this flag: 33,33,33). With larger number of columns, resizing will appear to be less smooth.
+	**/
+	public static inline final PreciseWidths:ImGuiTableFlags = 1 << 19;
+
+	/**
+		Disable clipping rectangle for every individual columns (reduce draw command count, items will be able to overflow into other columns). Generally incompatible with TableSetupScrollFreeze().
+	**/
+	public static inline final NoClip:ImGuiTableFlags = 1 << 20;
+
+	/**
+		Default if BordersOuterV is on. Enable outermost padding. Generally desirable if you have headers.
+	**/
+	public static inline final PadOuterX:ImGuiTableFlags = 1 << 21;
+
+	/**
+		Default if BordersOuterV is off. Disable outermost padding.
+	**/
+	public static inline final NoPadOuterX:ImGuiTableFlags = 1 << 22;
+
+	/**
+		Disable inner padding between columns (double inner padding if BordersOuterV is on, single inner padding if BordersOuterV is off).
+	**/
+	public static inline final NoPadInnerX:ImGuiTableFlags = 1 << 23;
+
+	/**
+		Enable horizontal scrolling. Require 'outer_size' parameter of BeginTable() to specify the container size. Changes default sizing policy. Because this creates a child window, ScrollY is currently generally recommended when using ScrollX.
+	**/
+	public static inline final ScrollX:ImGuiTableFlags = 1 << 24;
+
+	/**
+		Enable vertical scrolling. Require 'outer_size' parameter of BeginTable() to specify the container size.
+	**/
+	public static inline final ScrollY:ImGuiTableFlags = 1 << 25;
+
+	/**
+		Hold shift when clicking headers to sort on multiple column. TableGetSortSpecs() may return specs where (SpecsCount > 1).
+	**/
+	public static inline final SortMulti:ImGuiTableFlags = 1 << 26;
+
+	/**
+		Allow no sorting, disable default sorting. TableGetSortSpecs() may return specs where (SpecsCount == 0).
+	**/
+	public static inline final SortTristate:ImGuiTableFlags = 1 << 27;
+
+	/**
+		Highlight column headers when hovered (may evolve into a fuller highlight)
+	**/
+	public static inline final HighlightHoveredColumn:ImGuiTableFlags = 1 << 28;
 }
 
+/**
+	Flags for ImGui::TableSetupColumn()
+**/
 abstract ImGuiTableColumnFlags(Int) from Int to Int {
+	/**
+		Input configuration flags
+	**/
 	public static inline final None:ImGuiTableColumnFlags = 0;
-	public static inline final Disabled:ImGuiTableColumnFlags = 1;
-	public static inline final DefaultHide:ImGuiTableColumnFlags = 2;
-	public static inline final DefaultSort:ImGuiTableColumnFlags = 4;
-	public static inline final WidthStretch:ImGuiTableColumnFlags = 8;
-	public static inline final WidthFixed:ImGuiTableColumnFlags = 16;
-	public static inline final NoResize:ImGuiTableColumnFlags = 32;
-	public static inline final NoReorder:ImGuiTableColumnFlags = 64;
-	public static inline final NoHide:ImGuiTableColumnFlags = 128;
-	public static inline final NoClip:ImGuiTableColumnFlags = 256;
-	public static inline final NoSort:ImGuiTableColumnFlags = 512;
-	public static inline final NoSortAscending:ImGuiTableColumnFlags = 1024;
-	public static inline final NoSortDescending:ImGuiTableColumnFlags = 2048;
-	public static inline final NoHeaderLabel:ImGuiTableColumnFlags = 4096;
-	public static inline final NoHeaderWidth:ImGuiTableColumnFlags = 8192;
-	public static inline final PreferSortAscending:ImGuiTableColumnFlags = 16384;
-	public static inline final PreferSortDescending:ImGuiTableColumnFlags = 32768;
-	public static inline final IndentEnable:ImGuiTableColumnFlags = 65536;
-	public static inline final IndentDisable:ImGuiTableColumnFlags = 131072;
-	public static inline final AngledHeader:ImGuiTableColumnFlags = 262144;
-	public static inline final IsEnabled:ImGuiTableColumnFlags = 16777216;
-	public static inline final IsVisible:ImGuiTableColumnFlags = 33554432;
-	public static inline final IsSorted:ImGuiTableColumnFlags = 67108864;
-	public static inline final IsHovered:ImGuiTableColumnFlags = 134217728;
+
+	/**
+		Overriding/master disable flag: hide column, won't show in context menu (unlike calling TableSetColumnEnabled() which manipulates the user accessible state)
+	**/
+	public static inline final Disabled:ImGuiTableColumnFlags = 1 << 0;
+
+	/**
+		Default as a hidden/disabled column.
+	**/
+	public static inline final DefaultHide:ImGuiTableColumnFlags = 1 << 1;
+
+	/**
+		Default as a sorting column.
+	**/
+	public static inline final DefaultSort:ImGuiTableColumnFlags = 1 << 2;
+
+	/**
+		Column will stretch. Preferable with horizontal scrolling disabled (default if table sizing policy is _SizingStretchSame or _SizingStretchProp).
+	**/
+	public static inline final WidthStretch:ImGuiTableColumnFlags = 1 << 3;
+
+	/**
+		Column will not stretch. Preferable with horizontal scrolling enabled (default if table sizing policy is _SizingFixedFit and table is resizable).
+	**/
+	public static inline final WidthFixed:ImGuiTableColumnFlags = 1 << 4;
+
+	/**
+		Disable manual resizing.
+	**/
+	public static inline final NoResize:ImGuiTableColumnFlags = 1 << 5;
+
+	/**
+		Disable manual reordering this column, this will also prevent other columns from crossing over this column.
+	**/
+	public static inline final NoReorder:ImGuiTableColumnFlags = 1 << 6;
+
+	/**
+		Disable ability to hide/disable this column.
+	**/
+	public static inline final NoHide:ImGuiTableColumnFlags = 1 << 7;
+
+	/**
+		Disable clipping for this column (all NoClip columns will render in a same draw command).
+	**/
+	public static inline final NoClip:ImGuiTableColumnFlags = 1 << 8;
+
+	/**
+		Disable ability to sort on this field (even if ImGuiTableFlags_Sortable is set on the table).
+	**/
+	public static inline final NoSort:ImGuiTableColumnFlags = 1 << 9;
+
+	/**
+		Disable ability to sort in the ascending direction.
+	**/
+	public static inline final NoSortAscending:ImGuiTableColumnFlags = 1 << 10;
+
+	/**
+		Disable ability to sort in the descending direction.
+	**/
+	public static inline final NoSortDescending:ImGuiTableColumnFlags = 1 << 11;
+
+	/**
+		TableHeadersRow() will submit an empty label for this column. Convenient for some small columns. Name will still appear in context menu or in angled headers. You may append into this cell by calling TableSetColumnIndex() right after the TableHeadersRow() call.
+	**/
+	public static inline final NoHeaderLabel:ImGuiTableColumnFlags = 1 << 12;
+
+	/**
+		Disable header text width contribution to automatic column width.
+	**/
+	public static inline final NoHeaderWidth:ImGuiTableColumnFlags = 1 << 13;
+
+	/**
+		Make the initial sort direction Ascending when first sorting on this column (default).
+	**/
+	public static inline final PreferSortAscending:ImGuiTableColumnFlags = 1 << 14;
+
+	/**
+		Make the initial sort direction Descending when first sorting on this column.
+	**/
+	public static inline final PreferSortDescending:ImGuiTableColumnFlags = 1 << 15;
+
+	/**
+		Use current Indent value when entering cell (default for column 0).
+	**/
+	public static inline final IndentEnable:ImGuiTableColumnFlags = 1 << 16;
+
+	/**
+		Ignore current Indent value when entering cell (default for columns > 0). Indentation changes _within_ the cell will still be honored.
+	**/
+	public static inline final IndentDisable:ImGuiTableColumnFlags = 1 << 17;
+
+	/**
+		TableHeadersRow() will submit an angled header row for this column. Note this will add an extra row.
+	**/
+	public static inline final AngledHeader:ImGuiTableColumnFlags = 1 << 18;
+
+	/**
+		Status: is enabled == not hidden by user/api (referred to as "Hide" in _DefaultHide and _NoHide) flags.
+	**/
+	public static inline final IsEnabled:ImGuiTableColumnFlags = 1 << 24;
+
+	/**
+		Status: is visible == is enabled AND not clipped by scrolling.
+	**/
+	public static inline final IsVisible:ImGuiTableColumnFlags = 1 << 25;
+
+	/**
+		Status: is currently part of the sort specs
+	**/
+	public static inline final IsSorted:ImGuiTableColumnFlags = 1 << 26;
+
+	/**
+		Status: is hovered by mouse
+	**/
+	public static inline final IsHovered:ImGuiTableColumnFlags = 1 << 27;
 }
 
+/**
+	Flags for ImGui::TableNextRow()
+**/
 abstract ImGuiTableRowFlags(Int) from Int to Int {
 	public static inline final None:ImGuiTableRowFlags = 0;
-	public static inline final Headers:ImGuiTableRowFlags = 1;
+
+	/**
+		Identify header row (set default background color + width of its contents accounted differently for auto column width)
+	**/
+	public static inline final Headers:ImGuiTableRowFlags = 1 << 0;
 }
 
+/**
+	Enum for ImGui::TableSetBgColor()
+	Background colors are rendering in 3 layers:
+	 - Layer 0: draw with RowBg0 color if set, otherwise draw with ColumnBg0 if set.
+	 - Layer 1: draw with RowBg1 color if set, otherwise draw with ColumnBg1 if set.
+	 - Layer 2: draw with CellBg color if set.
+	The purpose of the two row/columns layers is to let you decide if a background color change should override or blend with the existing color.
+	When using ImGuiTableFlags_RowBg on the table, each row has the RowBg0 color automatically set for odd/even rows.
+	If you set the color of RowBg0 target, your color will override the existing RowBg0 color.
+	If you set the color of RowBg1 or ColumnBg1 target, your color will blend over the RowBg0 color.
+**/
 abstract ImGuiTableBgTarget(Int) from Int to Int {
 	public static inline final None:ImGuiTableBgTarget = 0;
+
+	/**
+		Set row background color 0 (generally used for background, automatically set when ImGuiTableFlags_RowBg is used)
+	**/
 	public static inline final RowBg0:ImGuiTableBgTarget = 1;
+
+	/**
+		Set row background color 1 (generally used for selection marking)
+	**/
 	public static inline final RowBg1:ImGuiTableBgTarget = 2;
+
+	/**
+		Set cell background color (top-most color)
+	**/
 	public static inline final CellBg:ImGuiTableBgTarget = 3;
 }
 
+/**
+	Flags for ImGuiListClipper (currently not fully exposed in function calls: a future refactor will likely add this to ImGuiListClipper::Begin function equivalent)
+**/
 abstract ImGuiListClipperFlags(Int) from Int to Int {
 	public static inline final None:ImGuiListClipperFlags = 0;
-	public static inline final NoSetTableRowCounters:ImGuiListClipperFlags = 1;
+
+	/**
+		[Internal] Disabled modifying table row counters. Avoid assumption that 1 clipper item == 1 table row.
+	**/
+	public static inline final NoSetTableRowCounters:ImGuiListClipperFlags = 1 << 0;
 }
 
+/**
+	Flags for BeginMultiSelect()
+**/
 abstract ImGuiMultiSelectFlags(Int) from Int to Int {
 	public static inline final None:ImGuiMultiSelectFlags = 0;
-	public static inline final SingleSelect:ImGuiMultiSelectFlags = 1;
-	public static inline final NoSelectAll:ImGuiMultiSelectFlags = 2;
-	public static inline final NoRangeSelect:ImGuiMultiSelectFlags = 4;
-	public static inline final NoAutoSelect:ImGuiMultiSelectFlags = 8;
-	public static inline final NoAutoClear:ImGuiMultiSelectFlags = 16;
-	public static inline final NoAutoClearOnReselect:ImGuiMultiSelectFlags = 32;
-	public static inline final BoxSelect1d:ImGuiMultiSelectFlags = 64;
-	public static inline final BoxSelect2d:ImGuiMultiSelectFlags = 128;
-	public static inline final BoxSelectNoScroll:ImGuiMultiSelectFlags = 256;
-	public static inline final ClearOnEscape:ImGuiMultiSelectFlags = 512;
-	public static inline final ClearOnClickVoid:ImGuiMultiSelectFlags = 1024;
-	public static inline final ScopeWindow:ImGuiMultiSelectFlags = 2048;
-	public static inline final ScopeRect:ImGuiMultiSelectFlags = 4096;
-	public static inline final SelectOnAuto:ImGuiMultiSelectFlags = 8192;
-	public static inline final SelectOnClickAlways:ImGuiMultiSelectFlags = 16384;
-	public static inline final SelectOnClickRelease:ImGuiMultiSelectFlags = 32768;
-	public static inline final NavWrapX:ImGuiMultiSelectFlags = 65536;
-	public static inline final NoSelectOnRightClick:ImGuiMultiSelectFlags = 131072;
+
+	/**
+		Disable selecting more than one item. This is available to allow single-selection code to share same code/logic if desired. It essentially disables the main purpose of BeginMultiSelect() tho!
+	**/
+	public static inline final SingleSelect:ImGuiMultiSelectFlags = 1 << 0;
+
+	/**
+		Disable Ctrl+A shortcut to select all.
+	**/
+	public static inline final NoSelectAll:ImGuiMultiSelectFlags = 1 << 1;
+
+	/**
+		Disable Shift+selection mouse/keyboard support (useful for unordered 2D selection). With BoxSelect is also ensure contiguous SetRange requests are not combined into one. This allows not handling interpolation in SetRange requests.
+	**/
+	public static inline final NoRangeSelect:ImGuiMultiSelectFlags = 1 << 2;
+
+	/**
+		Disable selecting items when navigating (useful for e.g. supporting range-select in a list of checkboxes).
+	**/
+	public static inline final NoAutoSelect:ImGuiMultiSelectFlags = 1 << 3;
+
+	/**
+		Disable clearing selection when navigating or selecting another one (generally used with ImGuiMultiSelectFlags_NoAutoSelect. useful for e.g. supporting range-select in a list of checkboxes).
+	**/
+	public static inline final NoAutoClear:ImGuiMultiSelectFlags = 1 << 4;
+
+	/**
+		Disable clearing selection when clicking/selecting an already selected item.
+	**/
+	public static inline final NoAutoClearOnReselect:ImGuiMultiSelectFlags = 1 << 5;
+
+	/**
+		Enable box-selection with same width and same x pos items (e.g. full row Selectable()). Box-selection works better with little bit of spacing between items hit-box in order to be able to aim at empty space.
+	**/
+	public static inline final BoxSelect1d:ImGuiMultiSelectFlags = 1 << 6;
+
+	/**
+		Enable box-selection with varying width or varying x pos items support (e.g. different width labels, or 2D layout/grid). This is slower: alters clipping logic so that e.g. horizontal movements will update selection of normally clipped items.
+	**/
+	public static inline final BoxSelect2d:ImGuiMultiSelectFlags = 1 << 7;
+
+	/**
+		Disable scrolling when box-selecting and moving mouse near edges of scope.
+	**/
+	public static inline final BoxSelectNoScroll:ImGuiMultiSelectFlags = 1 << 8;
+
+	/**
+		Clear selection when pressing Escape while scope is focused.
+	**/
+	public static inline final ClearOnEscape:ImGuiMultiSelectFlags = 1 << 9;
+
+	/**
+		Clear selection when clicking on empty location within scope.
+	**/
+	public static inline final ClearOnClickVoid:ImGuiMultiSelectFlags = 1 << 10;
+
+	/**
+		Scope for _BoxSelect and _ClearOnClickVoid is whole window (Default). Use if BeginMultiSelect() covers a whole window or used a single time in same window.
+	**/
+	public static inline final ScopeWindow:ImGuiMultiSelectFlags = 1 << 11;
+
+	/**
+		Scope for _BoxSelect and _ClearOnClickVoid is rectangle encompassing BeginMultiSelect()/EndMultiSelect(). Use if BeginMultiSelect() is called multiple times in same window.
+	**/
+	public static inline final ScopeRect:ImGuiMultiSelectFlags = 1 << 12;
+
+	/**
+		Apply selection on mouse down when clicking on unselected item, on mouse up when clicking on selected item. (Default)
+	**/
+	public static inline final SelectOnAuto:ImGuiMultiSelectFlags = 1 << 13;
+
+	/**
+		Apply selection on mouse down when clicking on any items. Prevents Drag and Drop from being used on multiple-selection, but allows e.g. BoxSelect to always reselect even when clicking inside an existing selection. (Excel style behavior)
+	**/
+	public static inline final SelectOnClickAlways:ImGuiMultiSelectFlags = 1 << 14;
+
+	/**
+		Apply selection on mouse release when clicking an unselected item. Allow dragging an unselected item without altering selection.
+	**/
+	public static inline final SelectOnClickRelease:ImGuiMultiSelectFlags = 1 << 15;
+
+	/**
+		[Temporary] Enable navigation wrapping on X axis. Provided as a convenience because we don't have a design for the general Nav API for this yet. When the more general feature be public we may obsolete this flag in favor of new one.
+	**/
+	public static inline final NavWrapX:ImGuiMultiSelectFlags = 1 << 16;
+
+	/**
+		Disable default right-click processing, which selects item on mouse down, and is designed for context-menus.
+	**/
+	public static inline final NoSelectOnRightClick:ImGuiMultiSelectFlags = 1 << 17;
 }
 
+/**
+	Selection request type
+**/
 abstract ImGuiSelectionRequestType(Int) from Int to Int {
 	public static inline final _None:ImGuiSelectionRequestType = 0;
+
+	/**
+		Request app to clear selection (if Selected==false) or select all items (if Selected==true). We cannot set RangeFirstItem/RangeLastItem as its contents is entirely up to user (not necessarily an index)
+	**/
 	public static inline final _SetAll:ImGuiSelectionRequestType = 1;
+
+	/**
+		Request app to select/unselect [RangeFirstItem..RangeLastItem] items (inclusive) based on value of Selected. Only EndMultiSelect() request this, app code can read after BeginMultiSelect() and it will always be false.
+	**/
 	public static inline final _SetRange:ImGuiSelectionRequestType = 2;
 }
 
+/**
+	Flags for ImDrawList functions
+**/
 abstract ImDrawFlags(Int) from Int to Int {
 	public static inline final None:ImDrawFlags = 0;
-	public static inline final Closed:ImDrawFlags = 1;
-	public static inline final RoundCornersTopLeft:ImDrawFlags = 16;
-	public static inline final RoundCornersTopRight:ImDrawFlags = 32;
-	public static inline final RoundCornersBottomLeft:ImDrawFlags = 64;
-	public static inline final RoundCornersBottomRight:ImDrawFlags = 128;
-	public static inline final RoundCornersNone:ImDrawFlags = 256;
-	public static inline final RoundCornersTop:ImDrawFlags = 48;
-	public static inline final RoundCornersBottom:ImDrawFlags = 192;
-	public static inline final RoundCornersLeft:ImDrawFlags = 80;
-	public static inline final RoundCornersRight:ImDrawFlags = 160;
-	public static inline final RoundCornersAll:ImDrawFlags = 240;
+
+	/**
+		Round top-left corner only (when rounding > 0.0f, we default to all corners).
+	**/
+	public static inline final RoundCornersTopLeft:ImDrawFlags = 1 << 4;
+
+	/**
+		Round top-right corner only (when rounding > 0.0f, we default to all corners).
+	**/
+	public static inline final RoundCornersTopRight:ImDrawFlags = 1 << 5;
+
+	/**
+		Round bottom-left corner only (when rounding > 0.0f, we default to all corners).
+	**/
+	public static inline final RoundCornersBottomLeft:ImDrawFlags = 1 << 6;
+
+	/**
+		Round bottom-right corner only (when rounding > 0.0f, we default to all corners).
+	**/
+	public static inline final RoundCornersBottomRight:ImDrawFlags = 1 << 7;
+
+	/**
+		Disable rounding even if `float rounding > 0.0f`. This is NOT zero, NOT an implicit flag!
+	**/
+	public static inline final RoundCornersNone:ImDrawFlags = 1 << 8;
+
+	/**
+		(Default!!)
+	**/
+	public static inline final RoundCornersAll:ImDrawFlags = RoundCornersTopLeft | RoundCornersTopRight | RoundCornersBottomLeft | RoundCornersBottomRight;
+	public static inline final RoundCornersTop:ImDrawFlags = RoundCornersTopLeft | RoundCornersTopRight;
+	public static inline final RoundCornersBottom:ImDrawFlags = RoundCornersBottomLeft | RoundCornersBottomRight;
+	public static inline final RoundCornersLeft:ImDrawFlags = RoundCornersBottomLeft | RoundCornersTopLeft;
+	public static inline final RoundCornersRight:ImDrawFlags = RoundCornersBottomRight | RoundCornersTopRight;
+
+	/**
+		PathStroke(), AddPolyline(): specify that shape should be closed.
+	**/
+	public static inline final Closed:ImDrawFlags = 1 << 9;
 }
 
+/**
+	Flags for ImDrawList instance. Those are set automatically by ImGui:: functions from ImGuiIO settings, and generally not manipulated directly.
+	It is however possible to temporarily alter flags between calls to ImDrawList:: functions.
+**/
 abstract ImDrawListFlags(Int) from Int to Int {
 	public static inline final None:ImDrawListFlags = 0;
-	public static inline final AntiAliasedLines:ImDrawListFlags = 1;
-	public static inline final AntiAliasedLinesUseTex:ImDrawListFlags = 2;
-	public static inline final AntiAliasedFill:ImDrawListFlags = 4;
-	public static inline final AllowVtxOffset:ImDrawListFlags = 8;
+
+	/**
+		Enable anti-aliased lines/borders (*2 the number of triangles for 1.0f wide line or lines thin enough to be drawn using textures, otherwise *3 the number of triangles)
+	**/
+	public static inline final AntiAliasedLines:ImDrawListFlags = 1 << 0;
+
+	/**
+		Enable anti-aliased lines/borders using textures when possible. Require backend to render with bilinear filtering (NOT point/nearest filtering).
+	**/
+	public static inline final AntiAliasedLinesUseTex:ImDrawListFlags = 1 << 1;
+
+	/**
+		Enable anti-aliased edge around filled shapes (rounded rectangles, circles).
+	**/
+	public static inline final AntiAliasedFill:ImDrawListFlags = 1 << 2;
+
+	/**
+		Can emit 'VtxOffset > 0' to allow large meshes. Set when 'ImGuiBackendFlags_RendererHasVtxOffset' is enabled.
+	**/
+	public static inline final AllowVtxOffset:ImDrawListFlags = 1 << 3;
+
+	/**
+		Disable automatically snapping AddText() calls to pixel boundaries.
+	**/
+	public static inline final TextNoPixelSnap:ImDrawListFlags = 1 << 4;
 }
 
+/**
+	Most standard backends only support RGBA32 but we provide a single channel option for low-resource/embedded systems.
+**/
 abstract ImTextureFormat(Int) from Int to Int {
+	/**
+		4 components per pixel, each is unsigned 8-bit. Total size = TexWidth * TexHeight * 4
+	**/
 	public static inline final _RGBA32:ImTextureFormat = 0;
+
+	/**
+		1 component per pixel, each is unsigned 8-bit. Total size = TexWidth * TexHeight
+	**/
 	public static inline final _Alpha8:ImTextureFormat = 1;
 }
 
+/**
+	Status of a texture to communicate with Renderer Backend.
+**/
 abstract ImTextureStatus(Int) from Int to Int {
 	public static inline final _OK:ImTextureStatus = 0;
+
+	/**
+		Backend destroyed the texture.
+	**/
 	public static inline final _Destroyed:ImTextureStatus = 1;
+
+	/**
+		Requesting backend to create the texture. Set status OK when done.
+	**/
 	public static inline final _WantCreate:ImTextureStatus = 2;
+
+	/**
+		Requesting backend to update specific blocks of pixels (write to texture portions which have never been used before). Set status OK when done.
+	**/
 	public static inline final _WantUpdates:ImTextureStatus = 3;
+
+	/**
+		Requesting backend to destroy the texture. Set status to Destroyed when done.
+	**/
 	public static inline final _WantDestroy:ImTextureStatus = 4;
 }
 
+/**
+	Flags for ImFontAtlas build
+**/
 abstract ImFontAtlasFlags(Int) from Int to Int {
 	public static inline final None:ImFontAtlasFlags = 0;
-	public static inline final NoPowerOfTwoHeight:ImFontAtlasFlags = 1;
-	public static inline final NoMouseCursors:ImFontAtlasFlags = 2;
-	public static inline final NoBakedLines:ImFontAtlasFlags = 4;
+
+	/**
+		Don't round the height to next power of two
+	**/
+	public static inline final NoPowerOfTwoHeight:ImFontAtlasFlags = 1 << 0;
+
+	/**
+		Don't build software mouse cursors into the atlas (save a little texture memory)
+	**/
+	public static inline final NoMouseCursors:ImFontAtlasFlags = 1 << 1;
+
+	/**
+		Don't build thick line textures into the atlas (save a little texture memory, allow support for point/nearest filtering). The AntiAliasedLinesUseTex features uses them, otherwise they will be rendered using polygons (more expensive for CPU/GPU).
+	**/
+	public static inline final NoBakedLines:ImFontAtlasFlags = 1 << 2;
 }
 
+/**
+	Font flags
+	(in future versions as we redesign font loading API, this will become more important and better documented. for now please consider this as internal/advanced use)
+**/
 abstract ImFontFlags(Int) from Int to Int {
 	public static inline final None:ImFontFlags = 0;
-	public static inline final NoLoadError:ImFontFlags = 2;
-	public static inline final NoLoadGlyphs:ImFontFlags = 4;
-	public static inline final LockBakedSizes:ImFontFlags = 8;
+
+	/**
+		Disable throwing an error/assert when calling AddFontXXX() with missing file/data. Calling code is expected to check AddFontXXX() return value.
+	**/
+	public static inline final NoLoadError:ImFontFlags = 1 << 1;
+
+	/**
+		[Internal] Disable loading new glyphs.
+	**/
+	public static inline final NoLoadGlyphs:ImFontFlags = 1 << 2;
+
+	/**
+		[Internal] Disable loading new baked sizes, disable garbage collecting current ones. e.g. if you want to lock a font to a single size. Important: if you use this to preload given sizes, consider the possibility of multiple font density used on Retina display.
+	**/
+	public static inline final LockBakedSizes:ImFontFlags = 1 << 3;
+
+	/**
+		[Internal] Reference size was not set explicitly.
+	**/
+	public static inline final ImplicitRefSize:ImFontFlags = 1 << 4;
 }
 
+/**
+	Flags stored in ImGuiViewport::Flags, giving indications to the platform backends.
+**/
 abstract ImGuiViewportFlags(Int) from Int to Int {
 	public static inline final None:ImGuiViewportFlags = 0;
-	public static inline final IsPlatformWindow:ImGuiViewportFlags = 1;
-	public static inline final IsPlatformMonitor:ImGuiViewportFlags = 2;
-	public static inline final OwnedByApp:ImGuiViewportFlags = 4;
-	public static inline final NoDecoration:ImGuiViewportFlags = 8;
-	public static inline final NoTaskBarIcon:ImGuiViewportFlags = 16;
-	public static inline final NoFocusOnAppearing:ImGuiViewportFlags = 32;
-	public static inline final NoFocusOnClick:ImGuiViewportFlags = 64;
-	public static inline final NoInputs:ImGuiViewportFlags = 128;
-	public static inline final NoRendererClear:ImGuiViewportFlags = 256;
-	public static inline final NoAutoMerge:ImGuiViewportFlags = 512;
-	public static inline final TopMost:ImGuiViewportFlags = 1024;
-	public static inline final CanHostOtherWindows:ImGuiViewportFlags = 2048;
-	public static inline final IsMinimized:ImGuiViewportFlags = 4096;
-	public static inline final IsFocused:ImGuiViewportFlags = 8192;
+
+	/**
+		Represent a Platform Window
+	**/
+	public static inline final IsPlatformWindow:ImGuiViewportFlags = 1 << 0;
+
+	/**
+		Represent a Platform Monitor (unused yet)
+	**/
+	public static inline final IsPlatformMonitor:ImGuiViewportFlags = 1 << 1;
+
+	/**
+		Platform Window: Is created/managed by the user application? (rather than our backend)
+	**/
+	public static inline final OwnedByApp:ImGuiViewportFlags = 1 << 2;
+
+	/**
+		Platform Window: Disable platform decorations: title bar, borders, etc. (generally set all windows, but if ImGuiConfigFlags_ViewportsDecoration is set we only set this on popups/tooltips)
+	**/
+	public static inline final NoDecoration:ImGuiViewportFlags = 1 << 3;
+
+	/**
+		Platform Window: Disable platform task bar icon (generally set on popups/tooltips, or all windows if ImGuiConfigFlags_ViewportsNoTaskBarIcon is set)
+	**/
+	public static inline final NoTaskBarIcon:ImGuiViewportFlags = 1 << 4;
+
+	/**
+		Platform Window: Don't take focus when created.
+	**/
+	public static inline final NoFocusOnAppearing:ImGuiViewportFlags = 1 << 5;
+
+	/**
+		Platform Window: Don't take focus when clicked on.
+	**/
+	public static inline final NoFocusOnClick:ImGuiViewportFlags = 1 << 6;
+
+	/**
+		Platform Window: Make mouse pass through so we can drag this window while peaking behind it.
+	**/
+	public static inline final NoInputs:ImGuiViewportFlags = 1 << 7;
+
+	/**
+		Platform Window: Renderer doesn't need to clear the framebuffer ahead (because we will fill it entirely).
+	**/
+	public static inline final NoRendererClear:ImGuiViewportFlags = 1 << 8;
+
+	/**
+		Platform Window: Avoid merging this window into another host window. This can only be set via ImGuiWindowClass viewport flags override (because we need to now ahead if we are going to create a viewport in the first place!).
+	**/
+	public static inline final NoAutoMerge:ImGuiViewportFlags = 1 << 9;
+
+	/**
+		Platform Window: Display on top (for tooltips only).
+	**/
+	public static inline final TopMost:ImGuiViewportFlags = 1 << 10;
+
+	/**
+		Viewport can host multiple imgui windows (secondary viewports are associated to a single window). // FIXME: In practice there's still probably code making the assumption that this is always and only on the MainViewport. Will fix once we add support for "no main viewport".
+	**/
+	public static inline final CanHostOtherWindows:ImGuiViewportFlags = 1 << 11;
+
+	/**
+		Platform Window: Window is minimized, can skip render. When minimized we tend to avoid using the viewport pos/size for clipping window or testing if they are contained in the viewport.
+	**/
+	public static inline final IsMinimized:ImGuiViewportFlags = 1 << 12;
+
+	/**
+		Platform Window: Window is focused (last call to Platform_GetWindowFocus() returned true)
+	**/
+	public static inline final IsFocused:ImGuiViewportFlags = 1 << 13;
 }
 
 abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
@@ -1040,6 +3329,10 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var treeLinesSize:Float;
 	@:native("TreeLinesRounding")
 	var treeLinesRounding:Float;
+	@:native("MenuItemRounding")
+	var menuItemRounding:Float;
+	@:native("SelectableRounding")
+	var selectableRounding:Float;
 	@:native("DragDropTargetRounding")
 	var dragDropTargetRounding:Float;
 	@:native("DragDropTargetBorderSize")
@@ -1054,6 +3347,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var buttonTextAlign:ImVec2;
 	@:native("SelectableTextAlign")
 	var selectableTextAlign:ImVec2;
+	@:native("InputTextCursorSize")
+	var inputTextCursorSize:Float;
 	@:native("SeparatorSize")
 	var separatorSize:Float;
 	@:native("SeparatorTextBorderSize")
@@ -1163,8 +3458,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configDpiScaleFonts:Bool;
 	@:native("ConfigDpiScaleViewports")
 	var configDpiScaleViewports:Bool;
-	@:native("MouseDrawCursor")
-	var mouseDrawCursor:Bool;
 	@:native("ConfigMacOSXBehaviors")
 	var configMacOSXBehaviors:Bool;
 	@:native("ConfigInputTrickleEventQueue")
@@ -1173,6 +3466,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configInputTextCursorBlink:Bool;
 	@:native("ConfigInputTextEnterKeepActive")
 	var configInputTextEnterKeepActive:Bool;
+	@:native("ConfigColorEditFlags")
+	var configColorEditFlags:ImGuiColorEditFlags;
 	@:native("ConfigDragClickToInputText")
 	var configDragClickToInputText:Bool;
 	@:native("ConfigWindowsResizeFromEdges")
@@ -1183,12 +3478,22 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configWindowsCopyContentsWithCtrlC:Bool;
 	@:native("ConfigScrollbarScrollByPage")
 	var configScrollbarScrollByPage:Bool;
+	@:native("ConfigIniSettingsSaveLastUsedDate")
+	var configIniSettingsSaveLastUsedDate:Bool;
+	@:native("ConfigIniSettingsAutoDiscardMonths")
+	var configIniSettingsAutoDiscardMonths:Float;
+	@:native("ConfigDebugIniSettings")
+	var configDebugIniSettings:Bool;
+	@:native("MouseDrawCursor")
+	var mouseDrawCursor:Bool;
 	@:native("ConfigMemoryCompactTimer")
 	var configMemoryCompactTimer:Float;
 	@:native("MouseDoubleClickTime")
 	var mouseDoubleClickTime:Float;
 	@:native("MouseDoubleClickMaxDist")
 	var mouseDoubleClickMaxDist:Float;
+	@:native("MouseSingleClickDelay")
+	var mouseSingleClickDelay:Float;
 	@:native("MouseDragThreshold")
 	var mouseDragThreshold:Float;
 	@:native("KeyRepeatDelay")
@@ -1215,8 +3520,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var configDebugBeginReturnValueLoop:Bool;
 	@:native("ConfigDebugIgnoreFocusLoss")
 	var configDebugIgnoreFocusLoss:Bool;
-	@:native("ConfigDebugIniSettings")
-	var configDebugIniSettings:Bool;
 	@:native("BackendPlatformName")
 	var backendPlatformName:String;
 	@:native("BackendRendererName")
@@ -1334,8 +3637,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var eventFlag:ImGuiInputTextFlags;
 	@:native("Flags")
 	var flags:ImGuiInputTextFlags;
-	@:native("UserData")
-	var userData:Dynamic;
 	@:native("ID")
 	var id:ImGuiID;
 	@:native("EventKey")
@@ -1361,7 +3662,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("DeleteChars")
 	function deleteChars(pos:Float, bytes_count:Float):Void;
 	@:native("InsertChars")
-	function insertChars(pos:Float, text:String, ?text_end:String = ""):Void;
+	function insertChars(pos:Float, text:String):Void;
 	@:native("SelectAll")
 	function selectAll():Void;
 	@:native("SetSelection")
@@ -1407,6 +3708,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var dockingAlwaysTabBar:Bool;
 	@:native("DockingAllowUnclassed")
 	var dockingAllowUnclassed:Bool;
+	@:native("PlatformIconData")
+	var platformIconData:Dynamic;
 }
 
 @:keep @:native("globalThis.__imguiHxJsImGui.ImGuiPayload") extern class ImGuiPayload extends ReferenceStruct {
@@ -1545,8 +3848,12 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function getClipRectMax():ImVec2;
 	@:native("AddLine")
 	function addLine(p1:ImVec2, p2:ImVec2, col:ImU32, ?thickness:Float = 1.0):Void;
+	@:native("AddLineH")
+	function addLineH(min_x:Float, max_x:Float, y:Float, col:ImU32, ?thickness:Float = 1.0):Void;
+	@:native("AddLineV")
+	function addLineV(x:Float, min_y:Float, max_y:Float, col:ImU32, ?thickness:Float = 1.0):Void;
 	@:native("AddRect")
-	function addRect(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0, ?thickness:Float = 1.0):Void;
+	function addRect(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?thickness:Float = 1.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddRectFilled")
 	function addRectFilled(p_min:ImVec2, p_max:ImVec2, col:ImU32, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddRectFilledMultiColor")
@@ -1580,7 +3887,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("AddBezierQuadratic")
 	function addBezierQuadratic(p1:ImVec2, p2:ImVec2, p3:ImVec2, col:ImU32, thickness:Float, ?num_segments:Float = 0.0):Void;
 	@:native("AddPolyline")
-	function addPolyline(points:ImVec2, num_points:Float, col:ImU32, flags:ImDrawFlags, thickness:Float):Void;
+	function addPolyline(points:ImVec2, num_points:Float, col:ImU32, thickness:Float, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddConvexPolyFilled")
 	function addConvexPolyFilled(points:ImVec2, num_points:Float, col:ImU32):Void;
 	@:native("AddConcavePolyFilled")
@@ -1602,7 +3909,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PathFillConcave")
 	function pathFillConcave(col:ImU32):Void;
 	@:native("PathStroke")
-	function pathStroke(col:ImU32, ?flags:ImDrawFlags = 0, ?thickness:Float = 1.0):Void;
+	function pathStroke(col:ImU32, ?thickness:Float = 1.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("PathArcTo")
 	function pathArcTo(center:ImVec2, radius:Float, a_min:Float, a_max:Float, ?num_segments:Float = 0.0):Void;
 	@:native("PathArcToFast")
@@ -1616,7 +3923,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("PathRect")
 	function pathRect(rect_min:ImVec2, rect_max:ImVec2, ?rounding:Float = 0.0, ?flags:ImDrawFlags = 0):Void;
 	@:native("AddCallback")
-	function addCallback(callback:ImDrawCallback, userdata:Dynamic, ?userdata_size:Float = 0.0):Void;
+	function addCallback(callback:ImDrawCallback, ?userdata:Dynamic = null, ?userdata_size:Float = 0.0):Void;
 	@:native("AddDrawCmd")
 	function addDrawCmd():Void;
 	@:native("CloneOutput")
@@ -1750,16 +4057,16 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	function addFontFromFileTTF(filename:String, ?size_pixels:Float = 0.0, ?font_cfg:ImFontConfig = null, ?glyph_ranges:Array<ImWchar> = null):ImFont;
 	@:native("RemoveFont")
 	function removeFont(font:ImFont):Void;
-	@:native("Clear")
-	function clear():Void;
 	@:native("CompactCache")
 	function compactCache():Void;
 	@:native("SetFontLoader")
 	function setFontLoader(font_loader:ImFontLoader):Void;
-	@:native("ClearInputData")
-	function clearInputData():Void;
+	@:native("Clear")
+	function clear():Void;
 	@:native("ClearFonts")
 	function clearFonts():Void;
+	@:native("ClearInputData")
+	function clearInputData():Void;
 	@:native("ClearTexData")
 	function clearTexData():Void;
 	@:native("GetGlyphRangesDefault")
@@ -1811,6 +4118,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	var rendererUserData:Dynamic;
 	@:native("PlatformUserData")
 	var platformUserData:Dynamic;
+	@:native("PlatformIconData")
+	var platformIconData:Dynamic;
 	@:native("PlatformHandle")
 	var platformHandle:Dynamic;
 	@:native("PlatformHandleRaw")
@@ -2172,11 +4481,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SliderInt4")
 	static function sliderInt4(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("InputText")
-	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputTextMultiline")
-	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputTextWithHint")
-	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputFloat")
 	static function inputFloat(label:String, v:Array<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat2")
@@ -2205,8 +4514,6 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	static function colorPicker4(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0, ?ref_col:Array<Float> = null):Bool;
 	@:native("ColorButton")
 	static function colorButton(desc_id:String, col:ImVec4, ?flags:ImGuiColorEditFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
-	@:native("SetColorEditOptions")
-	static function setColorEditOptions(flags:ImGuiColorEditFlags):Void;
 	@:native("TreeNode")
 	static function treeNode(label:String):Bool;
 	@:native("TreeNodeEx")
@@ -2280,11 +4587,11 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("EndPopup")
 	static function endPopup():Void;
 	@:native("OpenPopup")
-	static function openPopup(str_id:String, ?popup_flags:ImGuiPopupFlags = 0):Void;
+	static function openPopup(str_id:String, ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("OpenPopupID")
-	static function openPopupID(id:ImGuiID, ?popup_flags:ImGuiPopupFlags = 0):Void;
+	static function openPopupID(id:ImGuiID, ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("OpenPopupOnItemClick")
-	static function openPopupOnItemClick(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Void;
+	static function openPopupOnItemClick(?str_id:String = "", ?popup_flags:ImGuiPopupFlags = 0):Bool;
 	@:native("CloseCurrentPopup")
 	static function closeCurrentPopup():Void;
 	@:native("BeginPopupContextItem")
@@ -2306,7 +4613,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("TableSetColumnIndex")
 	static function tableSetColumnIndex(column_n:Float):Bool;
 	@:native("TableSetupColumn")
-	static function tableSetupColumn(label:String, ?flags:ImGuiTableColumnFlags = 0, ?init_width_or_weight:Float = 0.0, ?user_id:ImGuiID = 0):Void;
+	static function tableSetupColumn(label:String, ?flags:ImGuiTableColumnFlags = 0, ?init_width_or_weight:Float = 0.0, ?user_data:ImGuiID = 0):Void;
 	@:native("TableSetupScrollFreeze")
 	static function tableSetupScrollFreeze(cols:Float, rows:Float):Void;
 	@:native("TableHeader")
@@ -2451,6 +4758,8 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	static function getItemRectSize():ImVec2;
 	@:native("GetItemFlags")
 	static function getItemFlags():ImGuiItemFlags;
+	@:native("GetItemClickedCountWithSingleClickDelay")
+	static function getItemClickedCountWithSingleClickDelay(?mouse_button:ImGuiMouseButton = 0, ?delay:Float = -1.0):Float;
 	@:native("GetMainViewport")
 	static function getMainViewport():ImGuiViewport;
 	@:native("GetBackgroundDrawList")
@@ -2498,7 +4807,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("SetNextItemShortcut")
 	static function setNextItemShortcut(key_chord:ImGuiKeyChord, ?flags:ImGuiInputFlags = 0):Void;
 	@:native("SetItemKeyOwner")
-	static function setItemKeyOwner(key:ImGuiKey):Void;
+	static function setItemKeyOwner(key:ImGuiKey):Bool;
 	@:native("IsMouseDown")
 	static function isMouseDown(button:ImGuiMouseButton):Bool;
 	@:native("IsMouseClicked")
@@ -2508,7 +4817,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("IsMouseDoubleClicked")
 	static function isMouseDoubleClicked(button:ImGuiMouseButton):Bool;
 	@:native("IsMouseReleasedWithDelay")
-	static function isMouseReleasedWithDelay(button:ImGuiMouseButton, delay:Float):Bool;
+	static function isMouseReleasedWithDelay(button:ImGuiMouseButton, ?delay:Float = -1.):Bool;
 	@:native("GetMouseClickedCount")
 	static function getMouseClickedCount(button:ImGuiMouseButton):Float;
 	@:native("IsMouseHoveringRect")

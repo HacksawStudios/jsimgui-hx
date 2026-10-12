@@ -19,6 +19,9 @@ rm -rf runtime/jsimgui
 mkdir runtime
 cp -r lib/jsimgui/build/ runtime/jsimgui
 
+echo "Extracting enum metadata (original value expressions)..."
+bun tools/extract-enum-metadata.mjs
+
 echo "Generating jsimgui externs..."
 bun tools/generate-jsimgui-externs.mjs
 
