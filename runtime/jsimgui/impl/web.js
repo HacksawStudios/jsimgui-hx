@@ -260,33 +260,35 @@ const handleMouseButtonEvent = (event, isDown, io) => {
  * Sets up mouse key, wheel input and movement. Also handles cursor style changes.
  *
  * @param canvas The canvas element to set up.
+ * @param signal Removes the listeners when aborted.
  */
-const setupMouseIO = (canvas) => {
+const setupMouseIO = (canvas, signal) => {
     const io = ImGui.GetIO();
     const scrollSpeed = 0.01;
     window.addEventListener("pointermove", (e) => {
         io.AddMousePosEvent(...toDisplayPos(canvas, e.clientX, e.clientY));
         canvas.style.cursor = MOUSE_CURSOR_MAP[ImGui.GetMouseCursor()];
-    });
-    window.addEventListener("pointerdown", (e) => handleMouseButtonEvent(e, true, io));
-    window.addEventListener("pointerup", (e) => handleMouseButtonEvent(e, false, io));
-    window.addEventListener("wheel", (e) => io.AddMouseWheelEvent(-e.deltaX * scrollSpeed, -e.deltaY * scrollSpeed));
+    }, { signal });
+    window.addEventListener("pointerdown", (e) => handleMouseButtonEvent(e, true, io), { signal });
+    window.addEventListener("pointerup", (e) => handleMouseButtonEvent(e, false, io), { signal });
+    window.addEventListener("wheel", (e) => io.AddMouseWheelEvent(-e.deltaX * scrollSpeed, -e.deltaY * scrollSpeed), { signal });
 };
 /**
  * Sets up keyboard input handling. Browser keyboard events are handled by
  * {@linkcode handleKeyboardEvent}.
  *
  * @param canvas The canvas element to set up.
+ * @param signal Removes the listeners when aborted.
  */
-const setupKeyboardIO = (canvas) => {
+const setupKeyboardIO = (canvas, signal) => {
     const io = ImGui.GetIO();
     // Swap super and ctrl keys on macOS.
     if (navigator.userAgent.includes("Mac")) {
         io.ConfigMacOSXBehaviors = true;
     }
     // TODO: Fix too fast repeated inputs (Backspace, Delete...).
-    canvas.addEventListener("keydown", (e) => handleKeyboardEvent(e, true, io));
-    canvas.addEventListener("keyup", (e) => handleKeyboardEvent(e, false, io));
+    canvas.addEventListener("keydown", (e) => handleKeyboardEvent(e, true, io), { signal });
+    canvas.addEventListener("keyup", (e) => handleKeyboardEvent(e, false, io), { signal });
 };
 /**
  * Sets up touch input handling as well as showing the virtual keyboard. Note the following:
@@ -295,8 +297,9 @@ const setupKeyboardIO = (canvas) => {
  * - Two-finger touches are treated as mouse scrolls.
  *
  * @param canvas The canvas element to set up.
+ * @param signal Removes the listeners when aborted.
  */
-const setupTouchIO = (canvas) => {
+const setupTouchIO = (canvas, signal) => {
     const io = ImGui.GetIO();
     const scrollSpeed = 0.02;
     let lastPos = { x: 0, y: 0 };
@@ -344,36 +347,38 @@ const setupTouchIO = (canvas) => {
         if (io.WantTextInput) {
             document.body.appendChild(input);
             input.focus();
-            input.addEventListener("blur", blurHandler);
-            input.addEventListener("keydown", keyDownHandler);
+            input.addEventListener("blur", blurHandler, { signal });
+            input.addEventListener("keydown", keyDownHandler, { signal });
             input.addEventListener("keyup", (e) => {
                 keyUpHandler(e);
                 // Exits single-line input fields when pressing Enter.
                 if (!io.WantTextInput) {
                     blurHandler();
                 }
-            });
+            }, { signal });
         }
         else {
             blurHandler();
         }
     };
-    canvas.addEventListener("touchstart", (e) => handleTouchEvent(e, true));
-    canvas.addEventListener("touchmove", (e) => handleTouchEvent(e));
+    canvas.addEventListener("touchstart", (e) => handleTouchEvent(e, true), { signal });
+    canvas.addEventListener("touchmove", (e) => handleTouchEvent(e), { signal });
     canvas.addEventListener("touchend", (e) => {
         lastPos = { x: 0, y: 0 };
         handleTouchEvent(e, false);
         handleTextInput();
-    });
+    }, { signal });
     canvas.addEventListener("touchcancel", (e) => {
         lastPos = { x: 0, y: 0 };
         handleTouchEvent(e, false);
-    });
+    }, { signal });
 };
 /**
  * Sets up the clipboard functionality to work between the browser and Dear ImGui.
+ *
+ * @param signal Removes the listeners when aborted.
  */
-const setupClipboardIO = () => {
+const setupClipboardIO = (signal) => {
     const getClipboard = () => {
         return State.clipboardData;
     };
@@ -384,8 +389,13 @@ const setupClipboardIO = () => {
     Mod.export.SetupClipboardFunctions(getClipboard, setClipboard);
     document.addEventListener("paste", (e) => {
         State.clipboardData = e.clipboardData?.getData("text/plain") ?? "";
-    });
+    }, { signal });
 };
+/**
+ * Controls the listeners added by the last {@linkcode setupBrowserIO} call. Each listener holds
+ * the `ImGuiIO` of the context it was set up for, so they are dropped before setting up again.
+ */
+let browserIOController = null;
 /**
  * Sets up Dear ImGui for the browser. This includes:
  * - Setting up the canvas and resize events.
@@ -393,22 +403,26 @@ const setupClipboardIO = () => {
  * - Setting up keyboard input handling.
  * - Setting up touch input handling.
  *
- * This function is called by {@linkcode ImGuiImplWeb.Init}.
+ * This function is called by {@linkcode ImGuiImplWeb.Init}. Calling it again removes the
+ * listeners added by the previous call.
  *
  * @param canvas The canvas element to set up.
  */
 const setupBrowserIO = (canvas) => {
+    browserIOController?.abort();
+    browserIOController = new AbortController();
+    const { signal } = browserIOController;
     const io = ImGui.GetIO();
     io.BackendFlags = ImGui.BackendFlags.HasMouseCursors;
     canvas.tabIndex = 1;
-    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
-    canvas.addEventListener("focus", () => io.AddFocusEvent(true));
-    canvas.addEventListener("blur", () => io.AddFocusEvent(false));
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault(), { signal });
+    canvas.addEventListener("focus", () => io.AddFocusEvent(true), { signal });
+    canvas.addEventListener("blur", () => io.AddFocusEvent(false), { signal });
     setDisplayProperties(canvas);
-    setupMouseIO(canvas);
-    setupKeyboardIO(canvas);
-    setupTouchIO(canvas);
-    setupClipboardIO();
+    setupMouseIO(canvas, signal);
+    setupKeyboardIO(canvas, signal);
+    setupTouchIO(canvas, signal);
+    setupClipboardIO(signal);
     Mod.export.SetupIniSettings();
 };
 /**
