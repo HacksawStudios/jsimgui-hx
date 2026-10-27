@@ -27,6 +27,15 @@ export const Mod = {
 };
 
 /**
+ * A pointer argument given as accessors instead of an array: element `i` is read through
+ * `getters[i]` before the native call and written through `setters[i]` after it, when changed.
+ */
+export type AccessorRef<T> = {
+    getters: (() => T)[];
+    setters: ((value: T) => void)[];
+};
+
+/**
  * Base class for value structs (passed by value, no native pointer).
  */
 export class ValueStruct {}

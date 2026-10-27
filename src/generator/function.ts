@@ -63,13 +63,23 @@ function getTsName(name: string): string {
     return name === "in" ? "in_" : name;
 }
 
-function getParameters(function_: FunctionBinding, isMethod: boolean): string {
+function getParameters(
+    function_: FunctionBinding,
+    isMethod: boolean,
+    slots?: Map<string, Slot>,
+): string {
     return function_.arguments
         .filter((arg) => !(isMethod && arg.name === "self"))
         .map((arg) => {
             let type = getTsType(arg.type ?? "any");
             const defaultValue = getDefaultValue(arg);
             const name = getTsName(arg.name);
+
+            // Writable pointer arguments also take accessors, e.g. "[number, number] | AccessorRef<number>"
+            const slot = slots?.get(arg.name);
+            if (slot && !slot.readOnly) {
+                type = `${type} | AccessorRef<${slot.element === "bool" ? "boolean" : "number"}>`;
+            }
 
             // Add nullability to the type if the default value is null.
             // Used for pointer parameters.
@@ -177,8 +187,8 @@ export function getFunctionCodeTs(
     const name = function_.name.slice(prefix.length);
     const returnType = getTsType(function_.returnType);
 
-    const params = getParameters(function_, isMethod);
     const slots = isMethod ? undefined : context.slots?.functions.get(function_.name);
+    const params = getParameters(function_, isMethod, slots);
     const call = slots ? getSlotCall(function_, slots) : getCall(function_, isMethod);
 
     if (isMethod) {

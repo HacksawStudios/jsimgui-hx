@@ -1,4 +1,4 @@
-import { Mod } from "./core.js";
+import { type AccessorRef, Mod } from "./core.js";
 
 /** Typed array views over the native storage that pointer arguments of free functions travel through. */
 type SlotViews = {
@@ -22,39 +22,63 @@ export function slots(): SlotViews {
     return views;
 }
 
-/**
- * Copies a JS pointer array into its slots and the snapshot after them. Returns how many elements
- * were passed: 0 for null, non-arrays, empty arrays and arrays longer than `count`, which the
- * native side receives as a null pointer. Elements the array does not have are zero.
- */
-export function slotsIn(
-    view: SlotView,
-    offset: number,
-    count: number,
-    v: ArrayLike<unknown> | null,
-): number {
-    if (!Array.isArray(v) || v.length === 0 || v.length > count) {
-        return 0;
-    }
+function isAccessorRef<T>(v: ArrayLike<T> | AccessorRef<T> | null): v is AccessorRef<T> {
+    return typeof v === "object" && v !== null && Array.isArray((v as AccessorRef<T>).getters);
+}
 
-    const length = v.length;
-    for (let i = 0; i < count; i++) {
-        const value = i < length ? Number(v[i]) : 0;
-        view[offset + i] = value;
-        view[offset + count + i] = value;
-    }
-    return length;
+function fill(view: SlotView, offset: number, count: number, i: number, element: unknown): void {
+    const value = Number(element);
+    view[offset + i] = value;
+    view[offset + count + i] = value;
 }
 
 /**
- * Writes back the slots the native call changed, plus those `v` did not have, so unchanged values
- * keep their full JS precision and JS-side setters only see real edits.
+ * Copies a pointer argument (array or AccessorRef) into its slots and the snapshot after them.
+ * Returns how many elements were passed: 0 for null, other values, empty ones and ones longer
+ * than `count`, which the native side receives as a null pointer. Missing elements are zero.
+ */
+export function slotsIn<T>(
+    view: SlotView,
+    offset: number,
+    count: number,
+    v: ArrayLike<T> | AccessorRef<T> | null,
+): number {
+    if (Array.isArray(v)) {
+        const length = v.length;
+        if (length === 0 || length > count) {
+            return 0;
+        }
+        for (let i = 0; i < count; i++) {
+            fill(view, offset, count, i, i < length ? v[i] : 0);
+        }
+        return length;
+    }
+
+    if (isAccessorRef(v)) {
+        const getters = v.getters;
+        const length = getters.length;
+        if (length === 0 || length > count) {
+            return 0;
+        }
+        for (let i = 0; i < count; i++) {
+            fill(view, offset, count, i, i < length ? getters[i]() : 0);
+        }
+        return length;
+    }
+
+    return 0;
+}
+
+/**
+ * Writes back the slots the native call changed, so unchanged values keep their full JS precision
+ * and setters only see real edits. Arrays also get the elements they did not have; an AccessorRef
+ * has no setter for those.
  */
 export function slotsOut(
     view: SlotView,
     offset: number,
     count: number,
-    v: number[] | null,
+    v: number[] | AccessorRef<number> | null,
     length: number,
 ): void {
     if (v === null || length === 0) {
@@ -63,8 +87,13 @@ export function slotsOut(
 
     for (let i = 0; i < count; i++) {
         const value = view[offset + i];
-        if (i >= length || value !== view[offset + count + i]) {
+        if (i < length && value === view[offset + count + i]) {
+            continue;
+        }
+        if (Array.isArray(v)) {
             v[i] = value;
+        } else if (i < length) {
+            v.setters[i](value);
         }
     }
 }
@@ -74,7 +103,7 @@ export function slotsOutBool(
     view: Uint8Array,
     offset: number,
     count: number,
-    v: boolean[] | null,
+    v: boolean[] | AccessorRef<boolean> | null,
     length: number,
 ): void {
     if (v === null || length === 0) {
@@ -83,8 +112,13 @@ export function slotsOutBool(
 
     for (let i = 0; i < count; i++) {
         const value = view[offset + i];
-        if (i >= length || value !== view[offset + count + i]) {
+        if (i < length && value === view[offset + count + i]) {
+            continue;
+        }
+        if (Array.isArray(v)) {
             v[i] = value !== 0;
+        } else if (i < length) {
+            v.setters[i](value !== 0);
         }
     }
 }
