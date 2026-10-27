@@ -19,6 +19,9 @@ rm -rf runtime/jsimgui
 mkdir runtime
 cp -r lib/jsimgui/build/ runtime/jsimgui
 
+echo "Generating third-party notices..."
+bun tools/generate-third-party-notices.mjs
+
 echo "Extracting enum metadata (original value expressions)..."
 bun tools/extract-enum-metadata.mjs
 
