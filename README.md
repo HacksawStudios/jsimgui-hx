@@ -41,6 +41,7 @@ runtime/jsimgui/
   mod.js / mod.d.ts
   core.js / core.d.ts
   imgui.js / imgui.d.ts
+  slots.js / slots.d.ts
   impl/
     web.js / web.d.ts
     webgl.js / webgl.d.ts
