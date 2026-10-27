@@ -75,6 +75,20 @@ if (someFloatValue[0] == 1.0) {
 ImGui.end();
 ```
 
+### Pointer Arguments and `Ref`
+
+Pointer parameters (`float* v`, `float v[3]`, `bool* p_open`, `char* buf`) are typed `imgui.Ref<T>`, or `Ref2<T>`/`Ref3<T>`/`Ref4<T>` for fixed-size arrays. The count in `RefN` is documentation only. A `Ref` is either a plain array, as above, or accessors from `Ref.of`, which read and write your variables directly:
+
+```haxe
+import imgui.Ref;
+
+ImGui.dragFloat("Alpha", Ref.of(alpha));
+ImGui.dragFloat3("Position", Ref.of(pos.x, pos.y, pos.z));
+ImGui.inputText("Name", Ref.of(name), 64);
+```
+
+Values are only written back when the widget changes them, so setters only see real edits. A `Ref` reads its first element with `ref.value`, any element with `ref[i]`, and its size with `ref.length`.
+
 
 ## Building From Source
 

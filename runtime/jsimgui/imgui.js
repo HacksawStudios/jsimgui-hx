@@ -3541,28 +3541,35 @@ export class ImGuiPlatformIO extends ReferenceStruct {
  * Makes an InputText*() native call with `callback` wrapped for the native side, which passes it
  * a raw ImGuiInputTextCallbackData. An error thrown by `callback` is rethrown once the native
  * call has returned, as unwinding through it would leave ImGui halfway through the widget.
+ * An AccessorRef `buf` is boxed for the native call and its setter called if the text changed.
  */
-function callInputText(flags, callback, call) {
+function callInputText(buf, flags, callback, call) {
     if (flags & ImGui.InputTextFlags.CallbackResize) {
         throw new Error("ImGuiInputTextFlags.CallbackResize is not supported: buf_size is fixed");
     }
-    if (!callback)
-        return call(null);
+    const box = Array.isArray(buf) ? buf : [buf.getters[0]()];
+    const text = box[0];
     let failed = false;
     let error;
-    const ret = call((data) => {
-        if (failed)
-            return 0;
-        try {
-            // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0
-            return callback(ImGuiInputTextCallbackData.From(data)) | 0;
+    const native = callback
+        ? (data) => {
+            if (failed)
+                return 0;
+            try {
+                // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0
+                return callback(ImGuiInputTextCallbackData.From(data)) | 0;
+            }
+            catch (e) {
+                failed = true;
+                error = e;
+                return 0;
+            }
         }
-        catch (e) {
-            failed = true;
-            error = e;
-            return 0;
-        }
-    });
+        : null;
+    const ret = call(box, native);
+    if (!Array.isArray(buf) && box[0] !== text) {
+        buf.setters[0](box[0]);
+    }
     if (failed)
         throw error;
     return ret;
@@ -7315,13 +7322,13 @@ export const ImGui = {
         return ret;
     },
     InputText(label, buf, buf_size, flags = 0, callback = null) {
-        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputText(label, buf, buf_size, flags, native));
+        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputText(label, box, buf_size, flags, native));
     },
     InputTextMultiline(label, buf, buf_size, size = new ImVec2(0, 0), flags = 0, callback = null) {
-        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags, native));
+        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputTextMultiline(label, box, buf_size, size, flags, native));
     },
     InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = null) {
-        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags, native));
+        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputTextWithHint(label, hint, box, buf_size, flags, native));
     },
     InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0) {
         const vLength = slotsIn(slots().double, 42, 1, v);

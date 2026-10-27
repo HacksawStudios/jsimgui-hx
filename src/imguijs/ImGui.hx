@@ -4169,15 +4169,15 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("GetDrawData")
 	static function getDrawData():ImDrawData;
 	@:native("ShowDemoWindow")
-	static function showDemoWindow(?p_open:Array<Bool> = null):Void;
+	static function showDemoWindow(?p_open:imgui.Ref<Bool> = null):Void;
 	@:native("ShowMetricsWindow")
-	static function showMetricsWindow(?p_open:Array<Bool> = null):Void;
+	static function showMetricsWindow(?p_open:imgui.Ref<Bool> = null):Void;
 	@:native("ShowDebugLogWindow")
-	static function showDebugLogWindow(?p_open:Array<Bool> = null):Void;
+	static function showDebugLogWindow(?p_open:imgui.Ref<Bool> = null):Void;
 	@:native("ShowIDStackToolWindow")
-	static function showIDStackToolWindow(?p_open:Array<Bool> = null):Void;
+	static function showIDStackToolWindow(?p_open:imgui.Ref<Bool> = null):Void;
 	@:native("ShowAboutWindow")
-	static function showAboutWindow(?p_open:Array<Bool> = null):Void;
+	static function showAboutWindow(?p_open:imgui.Ref<Bool> = null):Void;
 	@:native("ShowStyleEditor")
 	static function showStyleEditor(?ref:ImGuiStyle = null):Void;
 	@:native("ShowStyleSelector")
@@ -4195,7 +4195,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("StyleColorsClassic")
 	static function styleColorsClassic(?dst:ImGuiStyle = null):Void;
 	@:native("Begin")
-	static function begin(name:String, ?p_open:Array<Bool> = null, ?flags:ImGuiWindowFlags = 0):Bool;
+	static function begin(name:String, ?p_open:imgui.Ref<Bool> = null, ?flags:ImGuiWindowFlags = 0):Bool;
 	@:native("End")
 	static function end():Void;
 	@:native("BeginChild")
@@ -4413,15 +4413,15 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("ArrowButton")
 	static function arrowButton(str_id:String, dir:ImGuiDir):Bool;
 	@:native("Checkbox")
-	static function checkbox(label:String, v:Array<Bool>):Bool;
+	static function checkbox(label:String, v:imgui.Ref<Bool>):Bool;
 	@:native("CheckboxFlagsIntPtr")
-	static function checkboxFlagsIntPtr(label:String, flags:Array<Int>, flags_value:Int):Bool;
+	static function checkboxFlagsIntPtr(label:String, flags:imgui.Ref<Int>, flags_value:Int):Bool;
 	@:native("CheckboxFlagsUintPtr")
-	static function checkboxFlagsUintPtr(label:String, flags:Array<Float>, flags_value:Float):Bool;
+	static function checkboxFlagsUintPtr(label:String, flags:imgui.Ref<Float>, flags_value:Float):Bool;
 	@:native("RadioButton")
 	static function radioButton(label:String, active:Bool):Bool;
 	@:native("RadioButtonIntPtr")
-	static function radioButtonIntPtr(label:String, v:Array<Int>, v_button:Int):Bool;
+	static function radioButtonIntPtr(label:String, v:imgui.Ref<Int>, v_button:Int):Bool;
 	@:native("ProgressBar")
 	static function progressBar(fraction:Float, ?size_arg:ImVec2 /* JS default: new ImVec2(-Number.MIN_VALUE, 0) */, ?overlay:String = ""):Void;
 	@:native("Bullet")
@@ -4441,77 +4441,77 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("EndCombo")
 	static function endCombo():Void;
 	@:native("Combo")
-	static function combo(label:String, current_item:Array<Float>, items_separated_by_zeros:String, ?popup_max_height_in_items:Float = -1.0):Bool;
+	static function combo(label:String, current_item:imgui.Ref<Float>, items_separated_by_zeros:String, ?popup_max_height_in_items:Float = -1.0):Bool;
 	@:native("DragFloat")
-	static function dragFloat(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragFloat(label:String, v:imgui.Ref<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloat2")
-	static function dragFloat2(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragFloat2(label:String, v:imgui.Ref.Ref2<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloat3")
-	static function dragFloat3(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragFloat3(label:String, v:imgui.Ref.Ref3<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloat4")
-	static function dragFloat4(label:String, v:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragFloat4(label:String, v:imgui.Ref.Ref4<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragFloatRange2")
-	static function dragFloatRange2(label:String, v_current_min:Array<Float>, v_current_max:Array<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?format_max:String = "", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragFloatRange2(label:String, v_current_min:imgui.Ref<Float>, v_current_max:imgui.Ref<Float>, ?v_speed:Float = 1.0, ?v_min:Float = 0.0, ?v_max:Float = 0.0, ?format:String = "%.3f", ?format_max:String = "", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt")
-	static function dragInt(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragInt(label:String, v:imgui.Ref<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt2")
-	static function dragInt2(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragInt2(label:String, v:imgui.Ref.Ref2<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt3")
-	static function dragInt3(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragInt3(label:String, v:imgui.Ref.Ref3<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragInt4")
-	static function dragInt4(label:String, v:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragInt4(label:String, v:imgui.Ref.Ref4<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("DragIntRange2")
-	static function dragIntRange2(label:String, v_current_min:Array<Int>, v_current_max:Array<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?format_max:String = "", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function dragIntRange2(label:String, v_current_min:imgui.Ref<Int>, v_current_max:imgui.Ref<Int>, ?v_speed:Float = 1.0, ?v_min:Int = 0, ?v_max:Int = 0, ?format:String = "%d", ?format_max:String = "", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat")
-	static function sliderFloat(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderFloat(label:String, v:imgui.Ref<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat2")
-	static function sliderFloat2(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderFloat2(label:String, v:imgui.Ref.Ref2<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat3")
-	static function sliderFloat3(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderFloat3(label:String, v:imgui.Ref.Ref3<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderFloat4")
-	static function sliderFloat4(label:String, v:Array<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderFloat4(label:String, v:imgui.Ref.Ref4<Float>, v_min:Float, v_max:Float, ?format:String = "%.3f", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderAngle")
-	static function sliderAngle(label:String, v_rad:Array<Float>, ?v_degrees_min:Float = -360.0, ?v_degrees_max:Float = 360.0, ?format:String = "%.0f deg", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderAngle(label:String, v_rad:imgui.Ref<Float>, ?v_degrees_min:Float = -360.0, ?v_degrees_max:Float = 360.0, ?format:String = "%.0f deg", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt")
-	static function sliderInt(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderInt(label:String, v:imgui.Ref<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt2")
-	static function sliderInt2(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderInt2(label:String, v:imgui.Ref.Ref2<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt3")
-	static function sliderInt3(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderInt3(label:String, v:imgui.Ref.Ref3<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("SliderInt4")
-	static function sliderInt4(label:String, v:Array<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
+	static function sliderInt4(label:String, v:imgui.Ref.Ref4<Int>, v_min:Int, v_max:Int, ?format:String = "%d", ?flags:ImGuiSliderFlags = 0):Bool;
 	@:native("InputText")
-	static function inputText(label:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
+	static function inputText(label:String, buf:imgui.Ref<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputTextMultiline")
-	static function inputTextMultiline(label:String, buf:Array<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
+	static function inputTextMultiline(label:String, buf:imgui.Ref<String>, buf_size:Float, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputTextWithHint")
-	static function inputTextWithHint(label:String, hint:String, buf:Array<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
+	static function inputTextWithHint(label:String, hint:String, buf:imgui.Ref<String>, buf_size:Float, ?flags:ImGuiInputTextFlags = 0, ?callback:ImGuiInputTextCallback = null):Bool;
 	@:native("InputFloat")
-	static function inputFloat(label:String, v:Array<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputFloat(label:String, v:imgui.Ref<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat2")
-	static function inputFloat2(label:String, v:Array<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputFloat2(label:String, v:imgui.Ref.Ref2<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat3")
-	static function inputFloat3(label:String, v:Array<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputFloat3(label:String, v:imgui.Ref.Ref3<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputFloat4")
-	static function inputFloat4(label:String, v:Array<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputFloat4(label:String, v:imgui.Ref.Ref4<Float>, ?format:String = "%.3f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt")
-	static function inputInt(label:String, v:Array<Int>, ?step:Int = 1, ?step_fast:Int = 100, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputInt(label:String, v:imgui.Ref<Int>, ?step:Int = 1, ?step_fast:Int = 100, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt2")
-	static function inputInt2(label:String, v:Array<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputInt2(label:String, v:imgui.Ref.Ref2<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt3")
-	static function inputInt3(label:String, v:Array<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputInt3(label:String, v:imgui.Ref.Ref3<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputInt4")
-	static function inputInt4(label:String, v:Array<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputInt4(label:String, v:imgui.Ref.Ref4<Int>, ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("InputDouble")
-	static function inputDouble(label:String, v:Array<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.6f", ?flags:ImGuiInputTextFlags = 0):Bool;
+	static function inputDouble(label:String, v:imgui.Ref<Float>, ?step:Float = 0.0, ?step_fast:Float = 0.0, ?format:String = "%.6f", ?flags:ImGuiInputTextFlags = 0):Bool;
 	@:native("ColorEdit3")
-	static function colorEdit3(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
+	static function colorEdit3(label:String, col:imgui.Ref.Ref3<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
 	@:native("ColorEdit4")
-	static function colorEdit4(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
+	static function colorEdit4(label:String, col:imgui.Ref.Ref4<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
 	@:native("ColorPicker3")
-	static function colorPicker3(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
+	static function colorPicker3(label:String, col:imgui.Ref.Ref3<Float>, ?flags:ImGuiColorEditFlags = 0):Bool;
 	@:native("ColorPicker4")
-	static function colorPicker4(label:String, col:Array<Float>, ?flags:ImGuiColorEditFlags = 0, ?ref_col:Array<Float> = null):Bool;
+	static function colorPicker4(label:String, col:imgui.Ref.Ref4<Float>, ?flags:ImGuiColorEditFlags = 0, ?ref_col:Array<Float> = null):Bool;
 	@:native("ColorButton")
 	static function colorButton(desc_id:String, col:ImVec4, ?flags:ImGuiColorEditFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("TreeNode")
@@ -4527,7 +4527,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("CollapsingHeader")
 	static function collapsingHeader(label:String, ?flags:ImGuiTreeNodeFlags = 0):Bool;
 	@:native("CollapsingHeaderBoolPtr")
-	static function collapsingHeaderBoolPtr(label:String, p_visible:Array<Bool>, ?flags:ImGuiTreeNodeFlags = 0):Bool;
+	static function collapsingHeaderBoolPtr(label:String, p_visible:imgui.Ref<Bool>, ?flags:ImGuiTreeNodeFlags = 0):Bool;
 	@:native("SetNextItemOpen")
 	static function setNextItemOpen(is_open:Bool, ?cond:ImGuiCond = 0):Void;
 	@:native("SetNextItemStorageID")
@@ -4537,7 +4537,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("Selectable")
 	static function selectable(label:String, ?selected:Bool = false, ?flags:ImGuiSelectableFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("SelectableBoolPtr")
-	static function selectableBoolPtr(label:String, p_selected:Array<Bool>, ?flags:ImGuiSelectableFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
+	static function selectableBoolPtr(label:String, p_selected:imgui.Ref<Bool>, ?flags:ImGuiSelectableFlags = 0, ?size:ImVec2 /* JS default: new ImVec2(0, 0) */):Bool;
 	@:native("BeginMultiSelect")
 	static function beginMultiSelect(flags:ImGuiMultiSelectFlags, ?selection_size:Float = -1.0, ?items_count:Float = -1.0):ImGuiMultiSelectIO;
 	@:native("EndMultiSelect")
@@ -4569,7 +4569,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("MenuItem")
 	static function menuItem(label:String, ?shortcut:String = "", ?selected:Bool = false, ?enabled:Bool = true):Bool;
 	@:native("MenuItemBoolPtr")
-	static function menuItemBoolPtr(label:String, shortcut:String, p_selected:Array<Bool>, ?enabled:Bool = true):Bool;
+	static function menuItemBoolPtr(label:String, shortcut:String, p_selected:imgui.Ref<Bool>, ?enabled:Bool = true):Bool;
 	@:native("BeginTooltip")
 	static function beginTooltip():Bool;
 	@:native("EndTooltip")
@@ -4583,7 +4583,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("BeginPopup")
 	static function beginPopup(str_id:String, ?flags:ImGuiWindowFlags = 0):Bool;
 	@:native("BeginPopupModal")
-	static function beginPopupModal(name:String, ?p_open:Array<Bool> = null, ?flags:ImGuiWindowFlags = 0):Bool;
+	static function beginPopupModal(name:String, ?p_open:imgui.Ref<Bool> = null, ?flags:ImGuiWindowFlags = 0):Bool;
 	@:native("EndPopup")
 	static function endPopup():Void;
 	@:native("OpenPopup")
@@ -4661,7 +4661,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("EndTabBar")
 	static function endTabBar():Void;
 	@:native("BeginTabItem")
-	static function beginTabItem(label:String, ?p_open:Array<Bool> = null, ?flags:ImGuiTabItemFlags = 0):Bool;
+	static function beginTabItem(label:String, ?p_open:imgui.Ref<Bool> = null, ?flags:ImGuiTabItemFlags = 0):Bool;
 	@:native("EndTabItem")
 	static function endTabItem():Void;
 	@:native("TabItemButton")
@@ -4785,9 +4785,9 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("ColorConvertFloat4ToU32")
 	static function colorConvertFloat4ToU32(in_:ImVec4):ImU32;
 	@:native("ColorConvertRGBtoHSV")
-	static function colorConvertRGBtoHSV(r:Float, g:Float, b:Float, out_h:Array<Float>, out_s:Array<Float>, out_v:Array<Float>):Void;
+	static function colorConvertRGBtoHSV(r:Float, g:Float, b:Float, out_h:imgui.Ref<Float>, out_s:imgui.Ref<Float>, out_v:imgui.Ref<Float>):Void;
 	@:native("ColorConvertHSVtoRGB")
-	static function colorConvertHSVtoRGB(h:Float, s:Float, v:Float, out_r:Array<Float>, out_g:Array<Float>, out_b:Array<Float>):Void;
+	static function colorConvertHSVtoRGB(h:Float, s:Float, v:Float, out_r:imgui.Ref<Float>, out_g:imgui.Ref<Float>, out_b:imgui.Ref<Float>):Void;
 	@:native("IsKeyDown")
 	static function isKeyDown(key:ImGuiKey):Bool;
 	@:native("IsKeyPressed")
@@ -4849,7 +4849,7 @@ abstract ImGuiFreeTypeLoaderFlags(Int) from Int to Int {
 	@:native("LoadIniSettingsFromMemory")
 	static function loadIniSettingsFromMemory(ini_data:String, ?ini_size:Float = 0.0):Void;
 	@:native("SaveIniSettingsToMemory")
-	static function saveIniSettingsToMemory(?out_ini_size:Array<Float> = null):String;
+	static function saveIniSettingsToMemory(?out_ini_size:imgui.Ref<Float> = null):String;
 	@:native("DebugTextEncoding")
 	static function debugTextEncoding(text:String):Void;
 	@:native("DebugFlashStyleColor")
