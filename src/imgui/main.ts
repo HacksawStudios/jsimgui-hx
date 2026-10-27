@@ -10,6 +10,7 @@ import {
     mapStructs,
     mapTypedefs,
 } from "../generator/provider/dear-bindings.ts";
+import { getSlotLayout, getSlotStorageCpp, getSlotViewsCpp } from "../generator/slots.ts";
 import { getStructCodeTs } from "../generator/struct.ts";
 import { getStructCodeCpp } from "../generator/struct-cpp.ts";
 import { getTypedefCodeTs } from "../generator/typedef.ts";
@@ -152,18 +153,23 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
     const typedefs = mapTypedefs(data.typedefs);
     const enums = mapEnums(data.enums);
     const structs = mapStructs(data.structs, data.functions);
-    const functions = mapFunctions(data.functions);
+    const functions = mapFunctions(data.functions).filter((function_) =>
+        function_.name.startsWith("ImGui_"),
+    );
+
+    // Computed once so the TS and C++ sides agree on every slot offset.
+    context.slots = getSlotLayout(context, functions);
 
     const typedefCodeTs = typedefs.map((typedef) => getTypedefCodeTs(context, typedef)).join("");
     const enumsCodeTs = enums.map((enum_) => getEnumCodeTs(context, enum_, "ImGui")).join("");
     const structsCodeTs = structs.map((struct) => getStructCodeTs(context, struct)).join("");
     const functionsCodeTs = functions
-        .filter((function_) => function_.name.startsWith("ImGui_"))
         .map((function_) => getFunctionCodeTs(context, function_, "ImGui_", false))
         .join("");
 
     const ts = [
         "import { Mod, ValueStruct, ReferenceStruct } from './core.js';\n",
+        "import { slots, slotsIn, slotsOut, slotsOutBool } from './slots.js';\n",
         typedefCodeTs,
         "export type ImWchar = number;\n",
         "const IM_COL32_WHITE = 0xFFFFFFFF;\n",
@@ -180,7 +186,6 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
 
     const structsCodeCpp = structs.map((struct) => getStructCodeCpp(context, struct)).join("");
     const functionsCodeCpp = functions
-        .filter((function_) => function_.name.startsWith("ImGui_"))
         .map((function_) => getFunctionCodeCpp(context, function_, false))
         .join("");
 
@@ -190,11 +195,13 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
         "#include <dcimgui.h>\n",
         "#include <dcimgui_internal.h>\n",
         "\n",
+        getSlotStorageCpp(context.slots),
         "static auto const IMGUI = bindings([]() {\n",
         getValueStructsCpp(),
         "\n",
         structsCodeCpp,
         "\n",
+        getSlotViewsCpp(context.slots),
         functionsCodeCpp,
         "});\n",
         "\n",

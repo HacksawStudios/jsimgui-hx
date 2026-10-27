@@ -778,164 +778,153 @@
             "exclude": true
         },
         "ImGui_DragFloat": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_DragFloat\", [](std::string label, js_val v, float v_speed, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 1>(v);\n",
-                    "    auto const ret = ImGui_DragScalar(label.c_str(), ImGuiDataType_Double, param_v.ptr, v_speed, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalar(label.c_str(), ImGuiDataType_Double, v, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_DragFloat2": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_DragFloat2\", [](std::string label, js_val v, float v_speed, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 2>(v);\n",
-                    "    auto const ret = ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 2, v_speed, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, v, 2, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_DragFloat3": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_DragFloat3\", [](std::string label, js_val v, float v_speed, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 3>(v);\n",
-                    "    auto const ret = ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 3, v_speed, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, v, 3, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_DragFloat4": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_DragFloat4\", [](std::string label, js_val v, float v_speed, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 4>(v);\n",
-                    "    auto const ret = ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 4, v_speed, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, v, 4, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_SliderFloat": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_SliderFloat\", [](std::string label, js_val v, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 1>(v);\n",
-                    "    auto const ret = ImGui_SliderScalar(label.c_str(), ImGuiDataType_Double, param_v.ptr, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalar(label.c_str(), ImGuiDataType_Double, v, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_SliderFloat2": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_SliderFloat2\", [](std::string label, js_val v, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 2>(v);\n",
-                    "    auto const ret = ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 2, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, v, 2, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_SliderFloat3": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_SliderFloat3\", [](std::string label, js_val v, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 3>(v);\n",
-                    "    auto const ret = ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 3, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, v, 3, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_SliderFloat4": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_SliderFloat4\", [](std::string label, js_val v, double v_min, double v_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 4>(v);\n",
-                    "    auto const ret = ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 4, &v_min, &v_max, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, v, 4, &v_min, &v_max, format.c_str(), flags);"
+            ]
         },
         "ImGui_InputFloat": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_InputFloat\", [](std::string label, js_val v, double step, double step_fast, std::string format, ImGuiInputTextFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 1>(v);\n",
-                    "    auto const ret = ImGui_InputScalar(label.c_str(), ImGuiDataType_Double, param_v.ptr, step > 0.0 ? &step : nullptr, step_fast > 0.0 ? &step_fast : nullptr, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "step": "double",
+                "step_fast": "double"
+            },
+            "body": [
+                "return ImGui_InputScalar(label.c_str(), ImGuiDataType_Double, v, step > 0.0 ? &step : nullptr, step_fast > 0.0 ? &step_fast : nullptr, format.c_str(), flags);"
+            ]
         },
         "ImGui_InputFloat2": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_InputFloat2\", [](std::string label, js_val v, std::string format, ImGuiInputTextFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 2>(v);\n",
-                    "    auto const ret = ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 2, nullptr, nullptr, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "body": [
+                "return ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, v, 2, nullptr, nullptr, format.c_str(), flags);"
+            ]
         },
         "ImGui_InputFloat3": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_InputFloat3\", [](std::string label, js_val v, std::string format, ImGuiInputTextFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 3>(v);\n",
-                    "    auto const ret = ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 3, nullptr, nullptr, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "body": [
+                "return ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, v, 3, nullptr, nullptr, format.c_str(), flags);"
+            ]
         },
         "ImGui_InputFloat4": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_InputFloat4\", [](std::string label, js_val v, std::string format, ImGuiInputTextFlags flags) -> bool {\n",
-                    "    auto param_v = get_array_param<double, 4>(v);\n",
-                    "    auto const ret = ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, param_v.ptr, 4, nullptr, nullptr, format.c_str(), flags);\n",
-                    "    write_back_array_param(param_v, v);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v": "double"
+            },
+            "body": [
+                "return ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, v, 4, nullptr, nullptr, format.c_str(), flags);"
+            ]
         },
         "ImGui_SliderAngle": {
-            "override": {
-                "cpp": [
-                    "bind_fn(\"ImGui_SliderAngle\", [](std::string label, js_val v_rad, double v_degrees_min, double v_degrees_max, std::string format, ImGuiSliderFlags flags) -> bool {\n",
-                    "    auto param_v_rad = get_array_param<double, 1>(v_rad);\n",
-                    "    double v_deg = *param_v_rad.ptr * 360.0 / (2 * std::numbers::pi);\n",
-                    "    auto const ret = ImGui_SliderScalar(label.c_str(), ImGuiDataType_Double, &v_deg, &v_degrees_min, &v_degrees_max, format.c_str(), flags);\n",
-                    "    if (ret) {\n",
-                    "        *param_v_rad.ptr = v_deg * (2 * std::numbers::pi) / 360.0;\n",
-                    "    }\n",
-                    "    write_back_array_param(param_v_rad, v_rad);\n",
-                    "    return ret;\n",
-                    "}, allow_raw_ptrs{});\n"
-                ]
-            }
+            "pointerTypes": {
+                "v_rad": "double"
+            },
+            "parameterTypes": {
+                "v_degrees_min": "double",
+                "v_degrees_max": "double"
+            },
+            "body": [
+                "double v_deg = *v_rad * 360.0 / (2 * std::numbers::pi);",
+                "auto const ret = ImGui_SliderScalar(label.c_str(), ImGuiDataType_Double, &v_deg, &v_degrees_min, &v_degrees_max, format.c_str(), flags);",
+                "if (ret) {",
+                "    *v_rad = v_deg * (2 * std::numbers::pi) / 360.0;",
+                "}",
+                "return ret;"
+            ]
         },
         "ImGui_DragScalar": {
             "exclude": true

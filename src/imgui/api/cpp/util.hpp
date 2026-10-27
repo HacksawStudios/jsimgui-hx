@@ -4,7 +4,6 @@
 #include <emscripten/val.h>
 #include <emscripten/wire.h>
 
-#include <array>
 #include <cstddef>
 #include <numbers>
 #include <stdexcept>
@@ -53,49 +52,6 @@ template <typename Data>
 auto call_js_user_data(Data* data) -> int {
     auto const& fn = *static_cast<js_val const*>(data->UserData);
     return fn(data, allow_raw_ptrs{}).template as<int>();
-}
-
-template <typename T, size_t N>
-struct array_param {
-    std::array<T, N> arr = {};
-    std::array<T, N> original = {};
-    size_t len = 0;
-    T* ptr = nullptr;
-};
-
-template <typename T, size_t N>
-inline auto get_array_param(js_val const& v) -> array_param<T, N> {
-    array_param<T, N> out{};
-
-    if (v.isNull() || v.isUndefined() || !v.isArray())
-        return out;
-
-    auto const len = v["length"].as<size_t>();
-    if (len <= 0 || len > N)
-        return out;
-
-    for (auto const i : std::views::iota(0uz, len)) {
-        out.arr[i] = v[i].as<T>();
-    }
-
-    out.original = out.arr;
-    out.len = len;
-    out.ptr = out.arr.data();
-    return out;
-}
-
-// Only writes slots the native call changed (or that the JS array did not have), so unchanged
-// values keep their full JS precision and JS-side setters only see real edits.
-template <typename T, size_t N>
-inline auto write_back_array_param(array_param<T, N> const& out, js_val& v) -> void {
-    if (!out.ptr)
-        return;
-
-    for (auto const i : std::views::iota(0uz, N)) {
-        if (i >= out.len || out.arr[i] != out.original[i]) {
-            v.set(i, out.arr[i]);
-        }
-    }
 }
 
 template <typename T>
@@ -162,7 +118,8 @@ inline auto get_vector_param(
     return out;
 }
 
-// Only writes slots the native call changed, see write_back_array_param.
+// Only writes elements the native call changed, so unchanged values keep their full JS precision
+// and JS-side setters only see real edits.
 template <typename T>
 inline auto write_back_vector_param(vector_param<T> const& out, js_val& v) -> void {
     if (!out.ptr)
