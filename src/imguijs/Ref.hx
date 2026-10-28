@@ -3,9 +3,11 @@ package imguijs;
 import haxe.macro.Expr;
 
 /**
-	A pointer argument (`float* v`, `float v[3]`, `bool* p_open`, ...): a plain array, or accessors
-	from `Ref.of` that the bindings read before the native call and write after it when changed.
-	At runtime it is either an `Array<T>` or a jsimgui `AccessorRef` (`{getters, setters}`).
+	Value wrapper for pointer emulation.
+	Usually constructed explicitly through `Ref.of`, and allows comfortable write-back behaviour for ImGui externs.
+
+	At runtime, either an `Array<T>` or a jsimgui `AccessorRef` (`{getters, setters}`),
+	depending on if it was constructed with an array, or through `Ref.of`/`Ref.make`.
 **/
 abstract Ref<T>(Dynamic) from Array<T> {
 	#if !macro
@@ -49,7 +51,8 @@ abstract Ref<T>(Dynamic) from Array<T> {
 	}
 
 	/**
-		Builds a ref from one getter and setter per element.
+		Builds a ref from one getter and setter per element.  
+		Useful if value transformations are needed on get/set.
 	**/
 	public static inline function make<T>(getters:Array<() -> T>, setters:Array<(newValue:T) -> Void>):Ref<T> {
 		return cast {getters: getters, setters: setters};
@@ -57,8 +60,8 @@ abstract Ref<T>(Dynamic) from Array<T> {
 	#end
 
 	/**
-		Refers to assignable `values` as consecutive elements, e.g.
-		`ImGui.dragFloat3('Position', Ref.of(pos.x, pos.y, pos.z))`.
+		Constructs a Ref for the provided variables.  
+		Edits to the ref's values are synced back to the corresponding input variable.
 	**/
 	public static macro function of(...values:Expr):Expr {
 		if (values.length == 0) {
