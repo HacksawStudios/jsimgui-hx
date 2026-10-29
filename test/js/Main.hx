@@ -33,6 +33,7 @@ class Main {
 		JsRuntime.load('/runtime/jsimgui/mod.js')
 			.then(_ -> ImGuiImplWeb.init({
 				canvas: canvas,
+				fontLoader: 'freetype',
 				extensions: true,
 			}))
 			.then(_ -> {
