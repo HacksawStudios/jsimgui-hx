@@ -587,17 +587,21 @@
         "ImGui_InputText": {
             "override": {
                 "ts": [
-                    "    InputText(label: string, buf: [string], buf_size: number, flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
-                    "        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputText(label, buf, buf_size, flags, native));\n",
+                    "    InputText(label: string, buf: [string] | AccessorRef<string>, buf_size: number, flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
+                    "        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputText(label, box, buf_size, flags, native));\n",
                     "    },\n"
                 ],
                 "cpp": [
                     "bind_fn(\"ImGui_InputText\", [](std::string label, js_val buf, size_t buf_size, ImGuiInputTextFlags flags, js_val callback){\n",
                     "    auto _bind_buf = buf[0].as<std::string>();\n",
+                    "    auto const original = _bind_buf;\n",
                     "    _bind_buf.reserve(buf_size);\n",
                     "    auto const has_callback = !callback.isNull();\n",
                     "    auto const ret = ImGui_InputText(label.c_str(), _bind_buf.data(), buf_size, flags, has_callback ? call_js_user_data<ImGuiInputTextCallbackData> : nullptr, has_callback ? &callback : nullptr);\n",
-                    "    buf.set(0, std::string(_bind_buf.data()));\n",
+                    "    auto const edited = std::string(_bind_buf.data());\n",
+                    "    if (edited != original) {\n",
+                    "        buf.set(0, edited);\n",
+                    "    }\n",
                     "    return ret;\n",
                     "});\n"
                 ]
@@ -606,17 +610,21 @@
         "ImGui_InputTextMultiline": {
             "override": {
                 "ts": [
-                    "    InputTextMultiline(label: string, buf: [string], buf_size: number, size: ImVec2 = new ImVec2(0, 0), flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
-                    "        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags, native));\n",
+                    "    InputTextMultiline(label: string, buf: [string] | AccessorRef<string>, buf_size: number, size: ImVec2 = new ImVec2(0, 0), flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
+                    "        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputTextMultiline(label, box, buf_size, size, flags, native));\n",
                     "    },\n"
                 ],
                 "cpp": [
                     "bind_fn(\"ImGui_InputTextMultiline\", [](std::string label, js_val buf, size_t buf_size, ImVec2 size, ImGuiInputTextFlags flags, js_val callback){\n",
                     "    auto _bind_buf = buf[0].as<std::string>();\n",
+                    "    auto const original = _bind_buf;\n",
                     "    _bind_buf.reserve(buf_size);\n",
                     "    auto const has_callback = !callback.isNull();\n",
                     "    auto const ret = ImGui_InputTextMultiline(label.c_str(), _bind_buf.data(), buf_size, size, flags, has_callback ? call_js_user_data<ImGuiInputTextCallbackData> : nullptr, has_callback ? &callback : nullptr);\n",
-                    "    buf.set(0, std::string(_bind_buf.data()));\n",
+                    "    auto const edited = std::string(_bind_buf.data());\n",
+                    "    if (edited != original) {\n",
+                    "        buf.set(0, edited);\n",
+                    "    }\n",
                     "    return ret;\n",
                     "});\n"
                 ]
@@ -625,17 +633,21 @@
         "ImGui_InputTextWithHint": {
             "override": {
                 "ts": [
-                    "    InputTextWithHint(label: string, hint: string, buf: [string], buf_size: number, flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
-                    "        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags, native));\n",
+                    "    InputTextWithHint(label: string, hint: string, buf: [string] | AccessorRef<string>, buf_size: number, flags: ImGuiInputTextFlags = 0, callback: ImGuiInputTextCallback | null = null): boolean {\n",
+                    "        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputTextWithHint(label, hint, box, buf_size, flags, native));\n",
                     "    },\n"
                 ],
                 "cpp": [
                     "bind_fn(\"ImGui_InputTextWithHint\", [](std::string label, std::string hint, js_val buf, size_t buf_size, ImGuiInputTextFlags flags, js_val callback){\n",
                     "    auto _bind_buf = buf[0].as<std::string>();\n",
+                    "    auto const original = _bind_buf;\n",
                     "    _bind_buf.reserve(buf_size);\n",
                     "    auto const has_callback = !callback.isNull();\n",
                     "    auto const ret = ImGui_InputTextWithHint(label.c_str(), hint.c_str(), _bind_buf.data(), buf_size, flags, has_callback ? call_js_user_data<ImGuiInputTextCallbackData> : nullptr, has_callback ? &callback : nullptr);\n",
-                    "    buf.set(0, std::string(_bind_buf.data()));\n",
+                    "    auto const edited = std::string(_bind_buf.data());\n",
+                    "    if (edited != original) {\n",
+                    "        buf.set(0, edited);\n",
+                    "    }\n",
                     "    return ret;\n",
                     "});\n"
                 ]
@@ -764,6 +776,155 @@
         },
         "ImGui_GetIDPtr": {
             "exclude": true
+        },
+        "ImGui_DragFloat": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalar(label.c_str(), ImGuiDataType_Double, v, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_DragFloat2": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, v, 2, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_DragFloat3": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, v, 3, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_DragFloat4": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_DragScalarN(label.c_str(), ImGuiDataType_Double, v, 4, v_speed, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_SliderFloat": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalar(label.c_str(), ImGuiDataType_Double, v, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_SliderFloat2": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, v, 2, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_SliderFloat3": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, v, 3, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_SliderFloat4": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "v_min": "double",
+                "v_max": "double"
+            },
+            "body": [
+                "return ImGui_SliderScalarN(label.c_str(), ImGuiDataType_Double, v, 4, &v_min, &v_max, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_InputFloat": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "parameterTypes": {
+                "step": "double",
+                "step_fast": "double"
+            },
+            "body": [
+                "return ImGui_InputScalar(label.c_str(), ImGuiDataType_Double, v, step > 0.0 ? &step : nullptr, step_fast > 0.0 ? &step_fast : nullptr, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_InputFloat2": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "body": [
+                "return ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, v, 2, nullptr, nullptr, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_InputFloat3": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "body": [
+                "return ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, v, 3, nullptr, nullptr, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_InputFloat4": {
+            "pointerTypes": {
+                "v": "double"
+            },
+            "body": [
+                "return ImGui_InputScalarN(label.c_str(), ImGuiDataType_Double, v, 4, nullptr, nullptr, format.c_str(), flags);"
+            ]
+        },
+        "ImGui_SliderAngle": {
+            "pointerTypes": {
+                "v_rad": "double"
+            },
+            "parameterTypes": {
+                "v_degrees_min": "double",
+                "v_degrees_max": "double"
+            },
+            "body": [
+                "double v_deg = *v_rad * 360.0 / (2 * std::numbers::pi);",
+                "auto const ret = ImGui_SliderScalar(label.c_str(), ImGuiDataType_Double, &v_deg, &v_degrees_min, &v_degrees_max, format.c_str(), flags);",
+                "if (ret) {",
+                "    *v_rad = v_deg * (2 * std::numbers::pi) / 360.0;",
+                "}",
+                "return ret;"
+            ]
         },
         "ImGui_DragScalar": {
             "exclude": true

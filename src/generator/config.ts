@@ -1,3 +1,5 @@
+import type { SlotLayout } from "./slots.ts";
+
 export interface TypedefConfig {
     exclude?: boolean;
     override?: {
@@ -46,6 +48,12 @@ export interface FunctionConfig {
         ts?: string[];
         cpp?: string[];
     };
+    /** Native storage type per pointer argument, replacing its declared element type (e.g. "double" for float widgets). */
+    pointerTypes?: Record<string, string>;
+    /** C++ glue parameter type per argument, replacing its declared type. */
+    parameterTypes?: Record<string, string>;
+    /** C++ glue body, replacing the generated call. Pointer arguments are in scope as native pointers (null when JS passed none). */
+    body?: string[];
 }
 
 export interface GeneratorConfig {
@@ -57,4 +65,6 @@ export interface GeneratorConfig {
 
 export interface GeneratorContext {
     config: GeneratorConfig;
+    /** Native slots of free-function pointer arguments, see slots.ts. */
+    slots?: SlotLayout;
 }

@@ -243,7 +243,7 @@ const buildWasm = (cfg: BuildConfig) => {
         "-flto",
         "-sMALLOC=emmalloc",
         "-sALLOW_MEMORY_GROWTH=1",
-        "-sASSERTIONS=1",
+        "-sASSERTIONS=0",
     ] as const;
 
     const buildCmd = (): string[] => {

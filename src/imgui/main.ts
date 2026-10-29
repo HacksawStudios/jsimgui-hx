@@ -10,6 +10,7 @@ import {
     mapStructs,
     mapTypedefs,
 } from "../generator/provider/dear-bindings.ts";
+import { getSlotLayout, getSlotStorageCpp, getSlotViewsCpp } from "../generator/slots.ts";
 import { getStructCodeTs } from "../generator/struct.ts";
 import { getStructCodeCpp } from "../generator/struct-cpp.ts";
 import { getTypedefCodeTs } from "../generator/typedef.ts";
@@ -91,30 +92,39 @@ function getInputTextCallbackTs(): string {
         " * Makes an InputText*() native call with `callback` wrapped for the native side, which passes it",
         " * a raw ImGuiInputTextCallbackData. An error thrown by `callback` is rethrown once the native",
         " * call has returned, as unwinding through it would leave ImGui halfway through the widget.",
+        " * An AccessorRef `buf` is boxed for the native call and its setter called if the text changed.",
         " */",
         "function callInputText(",
+        "    buf: [string] | AccessorRef<string>,",
         "    flags: ImGuiInputTextFlags,",
         "    callback: ImGuiInputTextCallback | null,",
-        "    call: (native: ((data: unknown) => number) | null) => boolean,",
+        "    call: (buf: [string], native: ((data: unknown) => number) | null) => boolean,",
         "): boolean {",
         "    if (flags & ImGui.InputTextFlags.CallbackResize) {",
         '        throw new Error("ImGuiInputTextFlags.CallbackResize is not supported: buf_size is fixed");',
         "    }",
-        "    if (!callback) return call(null);",
         "",
+        "    const box: [string] = Array.isArray(buf) ? buf : [buf.getters[0]()];",
+        "    const text = box[0];",
         "    let failed = false;",
         "    let error: unknown;",
-        "    const ret = call((data) => {",
-        "        if (failed) return 0;",
-        "        try {",
-        "            // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0",
-        "            return callback(ImGuiInputTextCallbackData.From(data)) | 0;",
-        "        } catch (e) {",
-        "            failed = true;",
-        "            error = e;",
-        "            return 0;",
-        "        }",
-        "    });",
+        "    const native = callback",
+        "        ? (data: unknown) => {",
+        "              if (failed) return 0;",
+        "              try {",
+        "                  // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0",
+        "                  return callback(ImGuiInputTextCallbackData.From(data)) | 0;",
+        "              } catch (e) {",
+        "                  failed = true;",
+        "                  error = e;",
+        "                  return 0;",
+        "              }",
+        "          }",
+        "        : null;",
+        "    const ret = call(box, native);",
+        "    if (!Array.isArray(buf) && box[0] !== text) {",
+        "        buf.setters[0](box[0]);",
+        "    }",
         "    if (failed) throw error;",
         "    return ret;",
         "}",
@@ -152,18 +162,23 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
     const typedefs = mapTypedefs(data.typedefs);
     const enums = mapEnums(data.enums);
     const structs = mapStructs(data.structs, data.functions);
-    const functions = mapFunctions(data.functions);
+    const functions = mapFunctions(data.functions).filter((function_) =>
+        function_.name.startsWith("ImGui_"),
+    );
+
+    // Computed once so the TS and C++ sides agree on every slot offset.
+    context.slots = getSlotLayout(context, functions);
 
     const typedefCodeTs = typedefs.map((typedef) => getTypedefCodeTs(context, typedef)).join("");
     const enumsCodeTs = enums.map((enum_) => getEnumCodeTs(context, enum_, "ImGui")).join("");
     const structsCodeTs = structs.map((struct) => getStructCodeTs(context, struct)).join("");
     const functionsCodeTs = functions
-        .filter((function_) => function_.name.startsWith("ImGui_"))
         .map((function_) => getFunctionCodeTs(context, function_, "ImGui_", false))
         .join("");
 
     const ts = [
-        "import { Mod, ValueStruct, ReferenceStruct } from './core.js';\n",
+        "import { type AccessorRef, Mod, ValueStruct, ReferenceStruct } from './core.js';\n",
+        "import { slots, slotsIn, slotsOut, slotsOutBool } from './slots.js';\n",
         typedefCodeTs,
         "export type ImWchar = number;\n",
         "const IM_COL32_WHITE = 0xFFFFFFFF;\n",
@@ -180,7 +195,6 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
 
     const structsCodeCpp = structs.map((struct) => getStructCodeCpp(context, struct)).join("");
     const functionsCodeCpp = functions
-        .filter((function_) => function_.name.startsWith("ImGui_"))
         .map((function_) => getFunctionCodeCpp(context, function_, false))
         .join("");
 
@@ -190,11 +204,13 @@ export function generateImGuiBindings(options: GenerateImGuiBindingsOptions = {}
         "#include <dcimgui.h>\n",
         "#include <dcimgui_internal.h>\n",
         "\n",
+        getSlotStorageCpp(context.slots),
         "static auto const IMGUI = bindings([]() {\n",
         getValueStructsCpp(),
         "\n",
         structsCodeCpp,
         "\n",
+        getSlotViewsCpp(context.slots),
         functionsCodeCpp,
         "});\n",
         "\n",
