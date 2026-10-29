@@ -18,7 +18,7 @@ Build the upstream runtime and regenerate Haxe externs:
 bun run build
 ```
 
-That command initializes the submodule, builds the upstream Emscripten/WASM runtime in Docker, copies `lib/jsimgui/build/` to `runtime/jsimgui/`, and regenerates `src/imguijs/` from the runtime declaration files.
+That command initializes the submodule, builds the upstream Emscripten/WASM runtime in Docker, copies `lib/jsimgui/build/` to `runtime/jsimgui/`, writes `runtime/jsimgui/THIRD_PARTY_NOTICES.txt`, and regenerates `src/imguijs/` from the runtime declaration files.
 
 If `runtime/jsimgui/` is already fresh and you only need to regenerate externs:
 

@@ -34,10 +34,13 @@ Typical copy source paths:
 
 Copy the directory, not only `mod.js`. The runtime tree contains the JS entrypoint, TypeScript declarations used by the extern generator, backend helpers, and the Emscripten loader under `wasm/`.
 
+`THIRD_PARTY_NOTICES.txt` holds the license notices for the code compiled into the runtime (jsimgui, Dear ImGui, ImPlot, FreeType, Emscripten, and others). Ship it wherever the runtime goes.
+
 Important checked-in runtime files:
 
 ```text
 runtime/jsimgui/
+  THIRD_PARTY_NOTICES.txt
   mod.js / mod.d.ts
   core.js / core.d.ts
   imgui.js / imgui.d.ts
@@ -117,7 +120,8 @@ That command runs `tools/build-jsimgui-and-bindings.sh`, which:
 2. Builds the upstream Docker image from `lib/jsimgui/.github/Dockerfile`.
 3. Runs the upstream runtime build inside Docker with `npm install && node build.ts`.
 4. Replaces `runtime/jsimgui/` with `lib/jsimgui/build/`.
-5. Runs `tools/generate-jsimgui-externs.mjs` to refresh generated Haxe externs from the runtime `.d.ts` files.
+5. Runs `tools/generate-third-party-notices.mjs` to write `runtime/jsimgui/THIRD_PARTY_NOTICES.txt` from the submodule license files and the texts in `tools/licenses/`.
+6. Runs `tools/generate-jsimgui-externs.mjs` to refresh generated Haxe externs from the runtime `.d.ts` files.
 
 If you already have a fresh runtime in `runtime/jsimgui/` and only need to regenerate externs:
 
@@ -140,9 +144,10 @@ The assar-hacksaw maintained fork is the contributor source for the JS runtime, 
 When updating the submodule:
 
 1. Move `lib/jsimgui` to the intended upstream commit.
-2. Run `bun run build`.
-3. Review changes in `runtime/jsimgui/`, generated `src/imguijs/`, and generated public aliases together.
-4. Compile the demo before publishing or consuming the update downstream.
+2. If `lib/jsimgui/.github/Dockerfile` now uses a different emsdk, refresh `tools/licenses/` and the version pins in `tools/generate-third-party-notices.mjs` (its doc comment lists the sources); the notices generator refuses to run until they match.
+3. Run `bun run build`.
+4. Review changes in `runtime/jsimgui/` (including `THIRD_PARTY_NOTICES.txt`), generated `src/imguijs/`, and generated public aliases together.
+5. Compile the demo before publishing or consuming the update downstream.
 
 ## Demo
 
