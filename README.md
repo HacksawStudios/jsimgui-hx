@@ -1,35 +1,28 @@
 # jsimgui-hx
 
-JS-only Haxe bindings for [Dear ImGui](https://github.com/ocornut/imgui), backed by the `jsimgui` JavaScript and WebAssembly runtime.
+JS-only Haxe bindings for [Dear ImGui](https://github.com/ocornut/imgui), backed by a modified `jsimgui` JavaScript and WebAssembly runtime.
 
 The public Haxe API lives under `imgui.*`. The generated externs under `imguijs.*` mirror the upstream `jsimgui` runtime shape, and `imgui.*` provides the import path for Haxe projects.
 
 ## Install
 
-Install from Haxelib:
-
-```bash
-haxelib install jsimgui-hx
-```
-
-Or install from npm/Bun:
-
 ```bash
 bun add jsimgui-hx
 ```
+
+Its `postinstall` script links the package into the project's `.haxelib/jsimgui-hx/<version>/`, so `-lib jsimgui-hx` works. Bun only runs it when `jsimgui-hx` is in `trustedDependencies`.
 
 ## Runtime Assets
 
 `jsimgui-hx` ships prebuilt runtime assets in `runtime/jsimgui/`. Copy the whole directory into your app's public assets, for example `/vendor/jsimgui/`, then load the served `mod.js` file before using ImGui:
 
 ```haxe
-await JsRuntime.load("/vendor/jsimgui/mod.js");
+JsRuntime.load("/vendor/jsimgui/mod.js").then(_ -> ImGuiImplWeb.init({canvas: canvas}));
 ```
 
 Typical copy source paths:
 
 - npm/Bun install: `node_modules/jsimgui-hx/runtime/jsimgui/`
-- Haxelib install: `<haxelib libpath jsimgui-hx>/runtime/jsimgui/`
 - local checkout: `/path/to/jsimgui-hx/runtime/jsimgui/`
 
 Copy the directory, not only `mod.js`. The runtime tree contains the JS entrypoint, TypeScript declarations used by the extern generator, backend helpers, and the Emscripten loader under `wasm/`.
@@ -44,43 +37,60 @@ runtime/jsimgui/
   mod.js / mod.d.ts
   core.js / core.d.ts
   imgui.js / imgui.d.ts
+  implot.js / implot.d.ts
   slots.js / slots.d.ts
+  enums.json
   impl/
     web.js / web.d.ts
     webgl.js / webgl.d.ts
     wgpu.js / wgpu.d.ts
   wasm/
     loader.em.js
+    loader-freetype-extensions.em.js
 ```
 
-`loader.em.js` is the current WebAssembly loader artifact produced by the upstream build. Today it is a single Emscripten JS file with the WASM bytes embedded, but consumers should still serve the complete `runtime/jsimgui/` directory so future builds can add separate `.wasm` or extra loader files without app-side changes.
+`ImGuiImplWeb.init` picks the loader from its options: `loader.em.js` by default, `loader-freetype-extensions.em.js` with `fontLoader: "freetype", extensions: true`. Other combinations fail, because their loaders aren't built. Each loader is a single Emscripten JS file with the WASM embedded, but serve the whole `runtime/jsimgui/` directory so future builds can add files without app-side changes.
 
 ## Usage
 
 ```haxe
-import imgui.Helpers.*;
 import imgui.ImGui;
 import imgui.ImGuiImplWeb;
 import imgui.JsRuntime;
+import imgui.Ref;
+import js.Browser;
+import js.html.CanvasElement;
 
-await JsRuntime.load("/vendor/jsimgui/mod.js");
-await ImGuiImplWeb.init({ canvas: canvasElement });
+class Main {
+    static var value = 0.0;
 
-var someFloatValue = boxFloat(0.0);
+    static function main() {
+        final canvas:CanvasElement = cast Browser.document.getElementById("canvas");
+        JsRuntime.load("/vendor/jsimgui/mod.js")
+            .then(_ -> ImGuiImplWeb.init({canvas: canvas}))
+            .then(_ -> Browser.window.requestAnimationFrame(render));
+    }
 
-ImGui.begin("Hello");
-ImGui.sliderFloat("Some slider", someFloatValue, 0.0, 1.0);
-
-if (someFloatValue[0] == 1.0) {
-    ImGui.text("Float value is at MAX (1.0)");
+    static function render(_) {
+        ImGuiImplWeb.beginRender();
+        if (ImGui.begin("Hello")) {
+            ImGui.sliderFloat("Value", Ref.of(value), 0.0, 1.0);
+            if (value == 1.0) {
+                ImGui.text("At max");
+            }
+        }
+        ImGui.end();
+        ImGuiImplWeb.endRender();
+        Browser.window.requestAnimationFrame(render);
+    }
 }
-
-ImGui.end();
 ```
+
+ImPlot and the other extensions need `ImGuiImplWeb.init({canvas: canvas, fontLoader: "freetype", extensions: true})`; the runtime only ships that loader and the default one.
 
 ### Pointer Arguments and `Ref`
 
-Pointer parameters (`float* v`, `float v[3]`, `bool* p_open`, `char* buf`) are typed `imgui.Ref<T>`, or `Ref2<T>`/`Ref3<T>`/`Ref4<T>` for fixed-size arrays. The count in `RefN` is documentation only. A `Ref` is either a plain array, as above, or accessors from `Ref.of`, which read and write your variables directly:
+Pointer parameters (`float* v`, `float v[3]`, `bool* p_open`, `char* buf`) are typed `imgui.Ref<T>`, or `Ref2<T>`/`Ref3<T>`/`Ref4<T>` for fixed-size arrays. The count in `RefN` is documentation only. A `Ref` is either accessors from `Ref.of`, as above, which read and write your variables directly, or a plain array such as `[0.0]`:
 
 ```haxe
 import imgui.Ref;
@@ -99,8 +109,8 @@ Prerequisites:
 
 - Bun for package scripts and the extern generator.
 - Docker for the upstream `jsimgui` Emscripten build environment.
-- Git submodule support for `lib/jsimgui`.
-- Haxe if you want to compile the demo or test a Haxelib install.
+- Git submodule support for `lib/jsimgui/third_party`.
+- Haxe to compile the demo.
 
 Install dependencies:
 
@@ -116,11 +126,11 @@ bun run build
 
 That command runs `tools/build-jsimgui-and-bindings.sh`, which:
 
-1. Updates `lib/jsimgui` with `git submodule update --init --recursive`.
+1. Updates `lib/jsimgui/third_party` with `git submodule update --init --recursive`.
 2. Builds the upstream Docker image from `lib/jsimgui/.github/Dockerfile`.
 3. Runs the upstream runtime build inside Docker with `npm install && node build.ts`.
 4. Replaces `runtime/jsimgui/` with `lib/jsimgui/build/`.
-5. Runs `tools/generate-third-party-notices.mjs` to write `runtime/jsimgui/THIRD_PARTY_NOTICES.txt` from the submodule license files and the texts in `tools/licenses/`.
+5. Runs `tools/generate-third-party-notices.mjs` to write `runtime/jsimgui/THIRD_PARTY_NOTICES.txt` from the license files under `lib/jsimgui/` and the texts in `tools/licenses/`.
 6. Runs `tools/generate-jsimgui-externs.mjs` to refresh generated Haxe externs from the runtime `.d.ts` files.
 
 If you already have a fresh runtime in `runtime/jsimgui/` and only need to regenerate externs:
@@ -129,25 +139,18 @@ If you already have a fresh runtime in `runtime/jsimgui/` and only need to regen
 bun tools/generate-jsimgui-externs.mjs
 ```
 
-Do not hand-edit generated runtime files or generated externs as the long-term source of truth. Make runtime changes in the `lib/jsimgui` submodule, rebuild, then commit the updated submodule pointer plus generated `runtime/`, `src/imguijs/`, and public alias outputs.
+Do not hand-edit generated runtime files or generated externs as the long-term source of truth.
 
-## jsimgui Submodule
+## Bundled jsimgui
 
-The WebAssembly runtime source comes from the `lib/jsimgui` Git submodule:
+`lib/jsimgui/` holds the runtime source: JS runtime, backend glue, TypeScript declarations and the Emscripten/WASM build. It began as [mori2003/jsimgui](https://github.com/mori2003/jsimgui) (MIT, see `lib/jsimgui/LICENSE`) and has diverged from it; edit and commit it like any other code here. Its `third_party/` dependencies stay submodules, registered in the root `.gitmodules`. This package wraps the runtime for Haxe; it does not reimplement Dear ImGui or the C++/WASM layer.
 
-```text
-https://github.com/assarbergh-hacksaw/jsimgui.git
-```
+After changing `lib/jsimgui`:
 
-The assar-hacksaw maintained fork is the contributor source for the JS runtime, backend glue, TypeScript declarations, and Emscripten/WASM build. This package wraps those outputs for Haxe; it does not reimplement Dear ImGui or the C++/WASM layer in Haxe.
-
-When updating the submodule:
-
-1. Move `lib/jsimgui` to the intended upstream commit.
-2. If `lib/jsimgui/.github/Dockerfile` now uses a different emsdk, refresh `tools/licenses/` and the version pins in `tools/generate-third-party-notices.mjs` (its doc comment lists the sources); the notices generator refuses to run until they match.
-3. Run `bun run build`.
-4. Review changes in `runtime/jsimgui/` (including `THIRD_PARTY_NOTICES.txt`), generated `src/imguijs/`, and generated public aliases together.
-5. Compile the demo before publishing or consuming the update downstream.
+1. If `lib/jsimgui/.github/Dockerfile` now uses a different emsdk, refresh `tools/licenses/` and the version pins in `tools/generate-third-party-notices.mjs` (its doc comment lists the sources); the notices generator refuses to run until they match.
+2. Run `bun run build`.
+3. Review `runtime/jsimgui/` (including `THIRD_PARTY_NOTICES.txt`), `src/imguijs/` and the public aliases together.
+4. Compile the demo before publishing or consuming the update downstream.
 
 ## Demo
 
@@ -178,13 +181,5 @@ Inspect the npm package contents:
 ```bash
 bun run pack:dry
 ```
-
-Build the curated Haxelib archive:
-
-```bash
-bun run pack:haxelib
-```
-
-The Haxelib package includes `src/`, `runtime/`, `haxelib.json`, `README.md`, and `LICENSE`.
 
 For more contributor and release notes, see [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -16,7 +16,7 @@ docker run -v "$PWD:/workspace" jsimgui bash -c "\
 echo "Copying output to runtime directory..."
 cd ../../
 rm -rf runtime/jsimgui
-mkdir runtime
+mkdir -p runtime
 cp -r lib/jsimgui/build/ runtime/jsimgui
 
 echo "Generating third-party notices..."

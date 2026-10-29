@@ -11,12 +11,13 @@ const dockerfilePath = path.resolve(jsimguiRoot, '.github', 'Dockerfile')
 const outputPath = path.resolve(repoRoot, 'runtime', 'jsimgui', 'THIRD_PARTY_NOTICES.txt')
 
 /**
- * Everything compiled into runtime/jsimgui must ship with its license notice. The submodules
- * carry their own license files; tools/licenses/ holds the texts for what the emsdk image
- * compiles in: Emscripten's LICENSE and musl's COPYRIGHT from emscripten-core/emscripten at
- * the emsdk tag below, and the FreeType and zlib licenses from the sources its
- * tools/ports/freetype.py and tools/ports/zlib.py fetch. When the Dockerfile moves to another
- * emsdk, refresh those texts and these pins; until then this script refuses to run.
+ * Everything compiled into runtime/jsimgui must ship with its license notice. lib/jsimgui and
+ * its third_party submodules carry their own license files; tools/licenses/ holds the texts
+ * for what the emsdk image compiles in: Emscripten's LICENSE and musl's COPYRIGHT from
+ * emscripten-core/emscripten at the emsdk tag below, and the FreeType and zlib licenses from
+ * the sources its tools/ports/freetype.py and tools/ports/zlib.py fetch. When the Dockerfile
+ * moves to another emsdk, refresh those texts and these pins; until then this script refuses
+ * to run.
  */
 const emsdkVersion = '4.0.22'
 const freetypeVersion = '2.13.3'
@@ -56,7 +57,7 @@ const imguiBranch = imguiHeader.includes('#define IMGUI_HAS_DOCK') ? ' docking' 
 const implotVersion = capture(await readText(path.resolve(thirdPartyRoot, 'cimplot', 'implot', 'implot.h')), /#define IMPLOT_VERSION\s+"([^"]+)"/, 'implot.h')
 const dearBindingsVersion = capture(await readText(path.resolve(thirdPartyRoot, 'dear_bindings', 'dear_bindings.py')), /^version = "([^"]+)"/m, 'dear_bindings.py')
 const jsimguiVersion = JSON.parse(await readText(path.resolve(jsimguiRoot, 'package.json'))).version
-const cimplotCommit = execFileSync('git', ['-C', jsimguiRoot, 'rev-parse', '--short', 'HEAD:third_party/cimplot'], { encoding: 'utf8' }).trim()
+const cimplotCommit = execFileSync('git', ['-C', jsimguiRoot, 'rev-parse', '--short', 'HEAD:./third_party/cimplot'], { encoding: 'utf8' }).trim()
 
 const allLoaders = 'wasm/*.em.js'
 const extensionLoaders = 'wasm/*-extensions.em.js'
