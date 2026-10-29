@@ -56,7 +56,7 @@ const imguiBranch = imguiHeader.includes('#define IMGUI_HAS_DOCK') ? ' docking' 
 const implotVersion = capture(await readText(path.resolve(thirdPartyRoot, 'cimplot', 'implot', 'implot.h')), /#define IMPLOT_VERSION\s+"([^"]+)"/, 'implot.h')
 const dearBindingsVersion = capture(await readText(path.resolve(thirdPartyRoot, 'dear_bindings', 'dear_bindings.py')), /^version = "([^"]+)"/m, 'dear_bindings.py')
 const jsimguiVersion = JSON.parse(await readText(path.resolve(jsimguiRoot, 'package.json'))).version
-const cimplotCommit = execFileSync('git', ['-C', jsimguiRoot, 'rev-parse', '--short', 'HEAD:third_party/cimplot'], { encoding: 'utf8' }).trim()
+const cimplotCommit = execFileSync('git', ['-C', jsimguiRoot, 'rev-parse', '--short', 'HEAD:./third_party/cimplot'], { encoding: 'utf8' }).trim()
 
 const allLoaders = 'wasm/*.em.js'
 const extensionLoaders = 'wasm/*-extensions.em.js'
