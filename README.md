@@ -6,17 +6,11 @@ The public Haxe API lives under `imgui.*`. The generated externs under `imguijs.
 
 ## Install
 
-Install from Haxelib:
-
-```bash
-haxelib install jsimgui-hx
-```
-
-Or install from npm/Bun:
-
 ```bash
 bun add jsimgui-hx
 ```
+
+Its `postinstall` script links the package into the project's `.haxelib/jsimgui-hx/<version>/`, so `-lib jsimgui-hx` works. Bun only runs it when `jsimgui-hx` is in `trustedDependencies`.
 
 ## Runtime Assets
 
@@ -29,7 +23,6 @@ JsRuntime.load("/vendor/jsimgui/mod.js").then(_ -> ImGuiImplWeb.init({canvas: ca
 Typical copy source paths:
 
 - npm/Bun install: `node_modules/jsimgui-hx/runtime/jsimgui/`
-- Haxelib install: `<haxelib libpath jsimgui-hx>/runtime/jsimgui/`
 - local checkout: `/path/to/jsimgui-hx/runtime/jsimgui/`
 
 Copy the directory, not only `mod.js`. The runtime tree contains the JS entrypoint, TypeScript declarations used by the extern generator, backend helpers, and the Emscripten loader under `wasm/`.
@@ -117,7 +110,7 @@ Prerequisites:
 - Bun for package scripts and the extern generator.
 - Docker for the upstream `jsimgui` Emscripten build environment.
 - Git submodule support for `lib/jsimgui/third_party`.
-- Haxe if you want to compile the demo or test a Haxelib install.
+- Haxe to compile the demo.
 
 Install dependencies:
 
@@ -188,13 +181,5 @@ Inspect the npm package contents:
 ```bash
 bun run pack:dry
 ```
-
-Build the curated Haxelib archive:
-
-```bash
-bun run pack:haxelib
-```
-
-The Haxelib package includes `src/`, `runtime/`, `haxelib.json`, `README.md`, and `LICENSE`.
 
 For more contributor and release notes, see [CONTRIBUTING.md](CONTRIBUTING.md).

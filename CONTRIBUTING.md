@@ -44,38 +44,4 @@ Inspect the package contents before publishing:
 bun run pack:dry
 ```
 
-Publish a new version (npm publishing is handled automagically through github action under workflow npm-publish.yml):
-
-```bash
-npm version patch && git push --follow-tags
-```
-
-## Haxelib Release
-
-Build the curated Haxelib zip:
-
-```bash
-bun run pack:haxelib
-```
-
-The pack step syncs `haxelib.json` metadata from `package.json` before creating the zip.
-
-That writes `build/haxelib/jsimgui-hx-<version>.zip` and includes only:
-
-- `src/`
-- `runtime/`
-- `haxelib.json`
-- `README.md`
-- `LICENSE`
-
-Test the zip locally:
-
-```bash
-haxelib install build/haxelib/jsimgui-hx-<version>.zip
-```
-
-Submit it:
-
-```bash
-haxelib submit build/haxelib/jsimgui-hx-<version>.zip
-```
+Merging to `master` publishes. `.github/workflows/npm-publish.yml` runs `npm version patch` (which also syncs `haxelib.json`), pushes the commit and tag, and runs `npm publish`. Don't bump the version yourself.
