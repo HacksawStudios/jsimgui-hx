@@ -11,12 +11,13 @@ const dockerfilePath = path.resolve(jsimguiRoot, '.github', 'Dockerfile')
 const outputPath = path.resolve(repoRoot, 'runtime', 'jsimgui', 'THIRD_PARTY_NOTICES.txt')
 
 /**
- * Everything compiled into runtime/jsimgui must ship with its license notice. The submodules
- * carry their own license files; tools/licenses/ holds the texts for what the emsdk image
- * compiles in: Emscripten's LICENSE and musl's COPYRIGHT from emscripten-core/emscripten at
- * the emsdk tag below, and the FreeType and zlib licenses from the sources its
- * tools/ports/freetype.py and tools/ports/zlib.py fetch. When the Dockerfile moves to another
- * emsdk, refresh those texts and these pins; until then this script refuses to run.
+ * Everything compiled into runtime/jsimgui must ship with its license notice. lib/jsimgui and
+ * its third_party submodules carry their own license files; tools/licenses/ holds the texts
+ * for what the emsdk image compiles in: Emscripten's LICENSE and musl's COPYRIGHT from
+ * emscripten-core/emscripten at the emsdk tag below, and the FreeType and zlib licenses from
+ * the sources its tools/ports/freetype.py and tools/ports/zlib.py fetch. When the Dockerfile
+ * moves to another emsdk, refresh those texts and these pins; until then this script refuses
+ * to run.
  */
 const emsdkVersion = '4.0.22'
 const freetypeVersion = '2.13.3'
