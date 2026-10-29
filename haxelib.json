@@ -7,7 +7,7 @@
         "js",
         "wasm"
     ],
-    "description": "JS-only Dear ImGui bindings for Haxe backed by the assarbergh-hacksaw jsimgui fork",
+    "description": "JS-only Dear ImGui bindings for Haxe",
     "version": "0.2.4",
     "releasenote": "JS-only bindings powered by jsimgui with bundled runtime assets",
     "contributors": [
