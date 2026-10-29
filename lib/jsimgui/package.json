@@ -1,0 +1,32 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "name": "@mori2003/jsimgui",
+    "version": "0.13.0",
+    "license": "MIT",
+    "description": "JavaScript bindings for Dear ImGui.",
+    "keywords": [
+        "imgui",
+        "wasm",
+        "webgl",
+        "webgl2",
+        "webgpu"
+    ],
+    "homepage": "https://github.com/mori2003/jsimgui#readme",
+    "bugs": "https://github.com/mori2003/jsimgui/issues",
+    "author": "mori2003",
+    "repository": "github:mori2003/jsimgui",
+    "type": "module",
+    "exports": "./build/mod.js",
+    "types": "./build/mod.d.ts",
+    "files": [
+        "LICENSE",
+        "README.md",
+        "./build/"
+    ],
+    "devDependencies": {
+        "@biomejs/biome": "latest",
+        "@types/node": "latest",
+        "@webgpu/types": "latest",
+        "typescript": "latest"
+    }
+}

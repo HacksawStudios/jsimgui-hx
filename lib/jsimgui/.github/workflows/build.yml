@@ -1,0 +1,47 @@
+name: '📦 Build'
+
+on:
+  workflow_call:
+
+env:
+  NODE_VERSION: '24.5.0'
+  EMSDK_VERSION: '4.0.13'
+  PYTHON_VERSION: '3.13'
+
+jobs:
+  build-matrix:
+    runs-on: ubuntu-latest
+    name: "Build"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          version: 'latest'
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: |
+          uv venv
+          source .venv/bin/activate
+          uv pip install ply
+      - uses: pyodide/setup-emsdk@v15
+        with:
+          version: ${{ env.EMSDK_VERSION }}
+          actions-cache-folder: 'emsdk-cache'
+      - run: |
+          source .venv/bin/activate
+          node build.ts
+          node build.ts --extensions
+          node build.ts --font-loader=freetype
+          node build.ts --font-loader=freetype --extensions
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jsimgui
+          path: build/
+          retention-days: 7
