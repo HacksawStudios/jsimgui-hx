@@ -1,0 +1,9 @@
+[submodule "lib/jsimgui/third_party/imgui"]
+	path = lib/jsimgui/third_party/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "lib/jsimgui/third_party/dear_bindings"]
+	path = lib/jsimgui/third_party/dear_bindings
+	url = https://github.com/dearimgui/dear_bindings.git
+[submodule "lib/jsimgui/third_party/cimplot"]
+	path = lib/jsimgui/third_party/cimplot
+	url = https://github.com/cimgui/cimplot
