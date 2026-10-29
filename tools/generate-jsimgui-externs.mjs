@@ -347,6 +347,22 @@ function collectConstObjectGroups(constDeclaration, aliasNames, rootName) {
 	return groups
 }
 
+// Writable pointer arguments are typed `[T, ...] | AccessorRef<T>` by the runtime: imgui.Ref, or Ref2..Ref4 by element count.
+// The public imgui.Ref names are used so hovers print them unqualified wherever `import imgui.Ref` is in scope.
+function mapPointerRefType(nonNullTypes, context) {
+	const tuple = nonNullTypes.find(candidate => ts.isTupleTypeNode(candidate))
+	const accessor = nonNullTypes.find(candidate => ts.isTypeReferenceNode(candidate) && getNodeText(candidate.typeName) === 'AccessorRef')
+	if (nonNullTypes.length !== 2 || tuple == null || accessor == null) {
+		return null
+	}
+	const count = tuple.elements.length
+	if (count < 1 || count > 4) {
+		fail(`Unsupported AccessorRef pointer argument with ${count} elements in ${context.currentClassName ?? context.currentObjectName}.${context.currentFunctionName}.`)
+	}
+	const elementType = mapType(tuple.elements[0], context)
+	return count === 1 ? `imgui.Ref<${elementType}>` : `imgui.Ref.Ref${count}<${elementType}>`
+}
+
 function mapType(typeNode, context = {}) {
 	if (typeNode == null) {
 		return 'Dynamic'
@@ -380,6 +396,10 @@ function mapType(typeNode, context = {}) {
 	if (ts.isUnionTypeNode(typeNode)) {
 		const nonNullTypes = typeNode.types.filter(candidate => !isNullishTypeNode(candidate))
 		const hadNullableBranch = nonNullTypes.length !== typeNode.types.length
+		const refType = mapPointerRefType(nonNullTypes, context)
+		if (refType != null) {
+			return hadNullableBranch ? `Null<${refType}>` : refType
+		}
 		if (nonNullTypes.length === 1) {
 			const innerType = mapType(nonNullTypes[0], context)
 			return hadNullableBranch ? `Null<${innerType}>` : innerType
@@ -1124,7 +1144,8 @@ async function main() {
 	const imguiGroupNames = new Set(Array.from(imguiGroups.values(), group => group.groupName))
 	const implotGroupNames = new Set(Array.from(implotGroups.values(), group => group.groupName))
 	const manualClassNames = new Set(['ValueStruct', 'ReferenceStruct'])
-	const imguiTypeAliases = filterMapEntries(declarations.typeAliases, name => !isImPlotName(name))
+	// AccessorRef is represented by the hand-written imguijs.Ref
+	const imguiTypeAliases = filterMapEntries(declarations.typeAliases, name => !isImPlotName(name) && name !== 'AccessorRef')
 	const implotTypeAliases = filterMapEntries(declarations.typeAliases, isImPlotName)
 	const imguiClasses = filterMapEntries(declarations.classes, name => !isImPlotName(name))
 	const implotClasses = filterMapEntries(declarations.classes, isImPlotName)

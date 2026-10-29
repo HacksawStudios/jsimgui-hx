@@ -1,4 +1,4 @@
-import { ValueStruct, ReferenceStruct } from './core.js';
+import { type AccessorRef, ValueStruct, ReferenceStruct } from './core.js';
 /**
  * \/\/ Default: 16-bit (for maximum compatibility with renderer backends)
  */
@@ -4894,23 +4894,23 @@ export declare const ImGui: {
     /**
      * \/\/ create Demo window. demonstrate most ImGui features. call this to learn about the library! try to make it always available in your application!
      */
-    ShowDemoWindow(p_open?: [boolean] | null): void;
+    ShowDemoWindow(p_open?: [boolean] | AccessorRef<boolean> | null): void;
     /**
      * \/\/ create Metrics\/Debugger window. display Dear ImGui internals: windows, draw commands, various internal state, etc.
      */
-    ShowMetricsWindow(p_open?: [boolean] | null): void;
+    ShowMetricsWindow(p_open?: [boolean] | AccessorRef<boolean> | null): void;
     /**
      * \/\/ create Debug Log window. display a simplified log of important dear imgui events.
      */
-    ShowDebugLogWindow(p_open?: [boolean] | null): void;
+    ShowDebugLogWindow(p_open?: [boolean] | AccessorRef<boolean> | null): void;
     /**
      * \/\/ create Stack Tool window. hover items with mouse to query information about the source of their unique ID.
      */
-    ShowIDStackToolWindow(p_open?: [boolean] | null): void;
+    ShowIDStackToolWindow(p_open?: [boolean] | AccessorRef<boolean> | null): void;
     /**
      * \/\/ create About window. display Dear ImGui version, credits and build\/system information.
      */
-    ShowAboutWindow(p_open?: [boolean] | null): void;
+    ShowAboutWindow(p_open?: [boolean] | AccessorRef<boolean> | null): void;
     /**
      * \/\/ add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)
      */
@@ -4957,7 +4957,7 @@ export declare const ImGui: {
      * \/\/    BeginXXX function returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
      * \/\/ - Note that the bottom of window stack always contains a window called "Debug".
      */
-    Begin(name: string, p_open?: [boolean] | null, flags?: ImGuiWindowFlags): boolean;
+    Begin(name: string, p_open?: [boolean] | AccessorRef<boolean> | null, flags?: ImGuiWindowFlags): boolean;
     End(): void;
     /**
      * \/\/ Child Windows
@@ -5351,9 +5351,9 @@ export declare const ImGui: {
      * \/\/ square button with an arrow shape
      */
     ArrowButton(str_id: string, dir: ImGuiDir): boolean;
-    Checkbox(label: string, v: [boolean]): boolean;
-    CheckboxFlagsIntPtr(label: string, flags: [number], flags_value: number): boolean;
-    CheckboxFlagsUintPtr(label: string, flags: [number], flags_value: number): boolean;
+    Checkbox(label: string, v: [boolean] | AccessorRef<boolean>): boolean;
+    CheckboxFlagsIntPtr(label: string, flags: [number] | AccessorRef<number>, flags_value: number): boolean;
+    CheckboxFlagsUintPtr(label: string, flags: [number] | AccessorRef<number>, flags_value: number): boolean;
     /**
      * \/\/ use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
      */
@@ -5361,7 +5361,7 @@ export declare const ImGui: {
     /**
      * \/\/ shortcut to handle the above pattern when value is an integer
      */
-    RadioButtonIntPtr(label: string, v: [number], v_button: number): boolean;
+    RadioButtonIntPtr(label: string, v: [number] | AccessorRef<number>, v_button: number): boolean;
     ProgressBar(fraction: number, size_arg?: ImVec2, overlay?: string): void;
     /**
      * \/\/ draw a small circle + keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses
@@ -5399,56 +5399,56 @@ export declare const ImGui: {
     /**
      * \/\/ Separate items with \0 within a string, end item-list with \0\0. e.g. "One\0Two\0Three\0"
      */
-    Combo(label: string, current_item: [number], items_separated_by_zeros: string, popup_max_height_in_items?: number): boolean;
+    Combo(label: string, current_item: [number] | AccessorRef<number>, items_separated_by_zeros: string, popup_max_height_in_items?: number): boolean;
     /**
      * \/\/ If v_min >= v_max we have no bound
      */
-    DragFloat(label: string, v: [number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragFloat2(label: string, v: [number, number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragFloat3(label: string, v: [number, number, number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragFloat4(label: string, v: [number, number, number, number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragFloatRange2(label: string, v_current_min: [number], v_current_max: [number], v_speed?: number, v_min?: number, v_max?: number, format?: string, format_max?: string, flags?: ImGuiSliderFlags): boolean;
+    DragFloat(label: string, v: [number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragFloat2(label: string, v: [number, number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragFloat3(label: string, v: [number, number, number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragFloat4(label: string, v: [number, number, number, number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragFloatRange2(label: string, v_current_min: [number] | AccessorRef<number>, v_current_max: [number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, format_max?: string, flags?: ImGuiSliderFlags): boolean;
     /**
      * \/\/ If v_min >= v_max we have no bound
      */
-    DragInt(label: string, v: [number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragInt2(label: string, v: [number, number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragInt3(label: string, v: [number, number, number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragInt4(label: string, v: [number, number, number, number], v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    DragIntRange2(label: string, v_current_min: [number], v_current_max: [number], v_speed?: number, v_min?: number, v_max?: number, format?: string, format_max?: string, flags?: ImGuiSliderFlags): boolean;
+    DragInt(label: string, v: [number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragInt2(label: string, v: [number, number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragInt3(label: string, v: [number, number, number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragInt4(label: string, v: [number, number, number, number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    DragIntRange2(label: string, v_current_min: [number] | AccessorRef<number>, v_current_max: [number] | AccessorRef<number>, v_speed?: number, v_min?: number, v_max?: number, format?: string, format_max?: string, flags?: ImGuiSliderFlags): boolean;
     /**
      * \/\/ adjust format to decorate the value with a prefix or a suffix for in-slider labels or unit display.
      */
-    SliderFloat(label: string, v: [number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderFloat2(label: string, v: [number, number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderFloat3(label: string, v: [number, number, number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderFloat4(label: string, v: [number, number, number, number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderAngle(label: string, v_rad: [number], v_degrees_min?: number, v_degrees_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderInt(label: string, v: [number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderInt2(label: string, v: [number, number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderInt3(label: string, v: [number, number, number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    SliderInt4(label: string, v: [number, number, number, number], v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
-    InputText(label: string, buf: [string], buf_size: number, flags?: ImGuiInputTextFlags, callback?: ImGuiInputTextCallback | null): boolean;
-    InputTextMultiline(label: string, buf: [string], buf_size: number, size?: ImVec2, flags?: ImGuiInputTextFlags, callback?: ImGuiInputTextCallback | null): boolean;
-    InputTextWithHint(label: string, hint: string, buf: [string], buf_size: number, flags?: ImGuiInputTextFlags, callback?: ImGuiInputTextCallback | null): boolean;
-    InputFloat(label: string, v: [number], step?: number, step_fast?: number, format?: string, flags?: ImGuiInputTextFlags): boolean;
-    InputFloat2(label: string, v: [number, number], format?: string, flags?: ImGuiInputTextFlags): boolean;
-    InputFloat3(label: string, v: [number, number, number], format?: string, flags?: ImGuiInputTextFlags): boolean;
-    InputFloat4(label: string, v: [number, number, number, number], format?: string, flags?: ImGuiInputTextFlags): boolean;
-    InputInt(label: string, v: [number], step?: number, step_fast?: number, flags?: ImGuiInputTextFlags): boolean;
-    InputInt2(label: string, v: [number, number], flags?: ImGuiInputTextFlags): boolean;
-    InputInt3(label: string, v: [number, number, number], flags?: ImGuiInputTextFlags): boolean;
-    InputInt4(label: string, v: [number, number, number, number], flags?: ImGuiInputTextFlags): boolean;
-    InputDouble(label: string, v: [number], step?: number, step_fast?: number, format?: string, flags?: ImGuiInputTextFlags): boolean;
+    SliderFloat(label: string, v: [number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderFloat2(label: string, v: [number, number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderFloat3(label: string, v: [number, number, number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderFloat4(label: string, v: [number, number, number, number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderAngle(label: string, v_rad: [number] | AccessorRef<number>, v_degrees_min?: number, v_degrees_max?: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderInt(label: string, v: [number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderInt2(label: string, v: [number, number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderInt3(label: string, v: [number, number, number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    SliderInt4(label: string, v: [number, number, number, number] | AccessorRef<number>, v_min: number, v_max: number, format?: string, flags?: ImGuiSliderFlags): boolean;
+    InputText(label: string, buf: [string] | AccessorRef<string>, buf_size: number, flags?: ImGuiInputTextFlags, callback?: ImGuiInputTextCallback | null): boolean;
+    InputTextMultiline(label: string, buf: [string] | AccessorRef<string>, buf_size: number, size?: ImVec2, flags?: ImGuiInputTextFlags, callback?: ImGuiInputTextCallback | null): boolean;
+    InputTextWithHint(label: string, hint: string, buf: [string] | AccessorRef<string>, buf_size: number, flags?: ImGuiInputTextFlags, callback?: ImGuiInputTextCallback | null): boolean;
+    InputFloat(label: string, v: [number] | AccessorRef<number>, step?: number, step_fast?: number, format?: string, flags?: ImGuiInputTextFlags): boolean;
+    InputFloat2(label: string, v: [number, number] | AccessorRef<number>, format?: string, flags?: ImGuiInputTextFlags): boolean;
+    InputFloat3(label: string, v: [number, number, number] | AccessorRef<number>, format?: string, flags?: ImGuiInputTextFlags): boolean;
+    InputFloat4(label: string, v: [number, number, number, number] | AccessorRef<number>, format?: string, flags?: ImGuiInputTextFlags): boolean;
+    InputInt(label: string, v: [number] | AccessorRef<number>, step?: number, step_fast?: number, flags?: ImGuiInputTextFlags): boolean;
+    InputInt2(label: string, v: [number, number] | AccessorRef<number>, flags?: ImGuiInputTextFlags): boolean;
+    InputInt3(label: string, v: [number, number, number] | AccessorRef<number>, flags?: ImGuiInputTextFlags): boolean;
+    InputInt4(label: string, v: [number, number, number, number] | AccessorRef<number>, flags?: ImGuiInputTextFlags): boolean;
+    InputDouble(label: string, v: [number] | AccessorRef<number>, step?: number, step_fast?: number, format?: string, flags?: ImGuiInputTextFlags): boolean;
     /**
      * \/\/ Widgets: Color Editor\/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
      * \/\/ - Note that in C++ a 'float v[X]' function argument is the _same_ as 'float* v', the array syntax is just a way to document the number of elements that are expected to be accessible.
      * \/\/ - You can pass the address of a first float element out of a contiguous structure, e.g. &myvector.x
      */
-    ColorEdit3(label: string, col: [number, number, number], flags?: ImGuiColorEditFlags): boolean;
-    ColorEdit4(label: string, col: [number, number, number, number], flags?: ImGuiColorEditFlags): boolean;
-    ColorPicker3(label: string, col: [number, number, number], flags?: ImGuiColorEditFlags): boolean;
-    ColorPicker4(label: string, col: [number, number, number, number], flags?: ImGuiColorEditFlags, ref_col?: number[] | null): boolean;
+    ColorEdit3(label: string, col: [number, number, number] | AccessorRef<number>, flags?: ImGuiColorEditFlags): boolean;
+    ColorEdit4(label: string, col: [number, number, number, number] | AccessorRef<number>, flags?: ImGuiColorEditFlags): boolean;
+    ColorPicker3(label: string, col: [number, number, number] | AccessorRef<number>, flags?: ImGuiColorEditFlags): boolean;
+    ColorPicker4(label: string, col: [number, number, number, number] | AccessorRef<number>, flags?: ImGuiColorEditFlags, ref_col?: number[] | null): boolean;
     /**
      * \/\/ display a color square\/button, hover for details, return true when pressed.
      */
@@ -5478,7 +5478,7 @@ export declare const ImGui: {
     /**
      * \/\/ when 'p_visible != NULL': if '*p_visible==true' display an additional small close button on upper right of the header which will set the bool to false when clicked, if '*p_visible==false' don't display the header.
      */
-    CollapsingHeaderBoolPtr(label: string, p_visible: [boolean], flags?: ImGuiTreeNodeFlags): boolean;
+    CollapsingHeaderBoolPtr(label: string, p_visible: [boolean] | AccessorRef<boolean>, flags?: ImGuiTreeNodeFlags): boolean;
     /**
      * \/\/ set next TreeNode\/CollapsingHeader open state.
      */
@@ -5498,7 +5498,7 @@ export declare const ImGui: {
     /**
      * \/\/ "bool* p_selected" point to the selection state (read-write), as a convenient helper.
      */
-    SelectableBoolPtr(label: string, p_selected: [boolean], flags?: ImGuiSelectableFlags, size?: ImVec2): boolean;
+    SelectableBoolPtr(label: string, p_selected: [boolean] | AccessorRef<boolean>, flags?: ImGuiSelectableFlags, size?: ImVec2): boolean;
     /**
      * \/\/ Multi-selection system for Selectable(), Checkbox(), TreeNode() functions [BETA]
      * \/\/ - This enables standard multi-selection\/range-selection idioms (Ctrl+Mouse\/Keyboard, Shift+Mouse\/Keyboard, etc.) in a way that also allow a clipper to be used.
@@ -5560,7 +5560,7 @@ export declare const ImGui: {
     /**
      * \/\/ return true when activated + toggle (*p_selected) if p_selected != NULL
      */
-    MenuItemBoolPtr(label: string, shortcut: string, p_selected: [boolean], enabled?: boolean): boolean;
+    MenuItemBoolPtr(label: string, shortcut: string, p_selected: [boolean] | AccessorRef<boolean>, enabled?: boolean): boolean;
     /**
      * \/\/ begin\/append a tooltip window.
      */
@@ -5582,7 +5582,7 @@ export declare const ImGui: {
     /**
      * \/\/ return true if the modal is open, and you can start outputting to it.
      */
-    BeginPopupModal(name: string, p_open?: [boolean] | null, flags?: ImGuiWindowFlags): boolean;
+    BeginPopupModal(name: string, p_open?: [boolean] | AccessorRef<boolean> | null, flags?: ImGuiWindowFlags): boolean;
     /**
      * \/\/ only call EndPopup() if BeginPopupXXX() returns true!
      */
@@ -5764,7 +5764,7 @@ export declare const ImGui: {
     /**
      * \/\/ create a Tab. Returns true if the Tab is selected.
      */
-    BeginTabItem(label: string, p_open?: [boolean] | null, flags?: ImGuiTabItemFlags): boolean;
+    BeginTabItem(label: string, p_open?: [boolean] | AccessorRef<boolean> | null, flags?: ImGuiTabItemFlags): boolean;
     /**
      * \/\/ only call EndTabItem() if BeginTabItem() returns true!
      */
@@ -6016,8 +6016,8 @@ export declare const ImGui: {
      */
     ColorConvertU32ToFloat4(in_: ImU32): ImVec4;
     ColorConvertFloat4ToU32(in_: ImVec4): ImU32;
-    ColorConvertRGBtoHSV(r: number, g: number, b: number, out_h: [number], out_s: [number], out_v: [number]): void;
-    ColorConvertHSVtoRGB(h: number, s: number, v: number, out_r: [number], out_g: [number], out_b: [number]): void;
+    ColorConvertRGBtoHSV(r: number, g: number, b: number, out_h: [number] | AccessorRef<number>, out_s: [number] | AccessorRef<number>, out_v: [number] | AccessorRef<number>): void;
+    ColorConvertHSVtoRGB(h: number, s: number, v: number, out_r: [number] | AccessorRef<number>, out_g: [number] | AccessorRef<number>, out_b: [number] | AccessorRef<number>): void;
     /**
      * \/\/ is key being held.
      */
@@ -6155,7 +6155,7 @@ export declare const ImGui: {
     /**
      * \/\/ return a zero-terminated string with the .ini data which you can save by your own mean. call when io.WantSaveIniSettings is set, then save data by your own mean and clear io.WantSaveIniSettings.
      */
-    SaveIniSettingsToMemory(out_ini_size?: [number] | null): string;
+    SaveIniSettingsToMemory(out_ini_size?: [number] | AccessorRef<number> | null): string;
     /**
      * \/\/ Debug Utilities
      * \/\/ - Your main debugging friend is the ShowMetricsWindow() function.

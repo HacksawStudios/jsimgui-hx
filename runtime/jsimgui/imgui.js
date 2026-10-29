@@ -1,4 +1,5 @@
 import { Mod, ValueStruct, ReferenceStruct } from './core.js';
+import { slots, slotsIn, slotsOut, slotsOutBool } from './slots.js';
 const IM_COL32_WHITE = 0xFFFFFFFF;
 export class ImVec2 extends ValueStruct {
     x;
@@ -3540,28 +3541,35 @@ export class ImGuiPlatformIO extends ReferenceStruct {
  * Makes an InputText*() native call with `callback` wrapped for the native side, which passes it
  * a raw ImGuiInputTextCallbackData. An error thrown by `callback` is rethrown once the native
  * call has returned, as unwinding through it would leave ImGui halfway through the widget.
+ * An AccessorRef `buf` is boxed for the native call and its setter called if the text changed.
  */
-function callInputText(flags, callback, call) {
+function callInputText(buf, flags, callback, call) {
     if (flags & ImGui.InputTextFlags.CallbackResize) {
         throw new Error("ImGuiInputTextFlags.CallbackResize is not supported: buf_size is fixed");
     }
-    if (!callback)
-        return call(null);
+    const box = Array.isArray(buf) ? buf : [buf.getters[0]()];
+    const text = box[0];
     let failed = false;
     let error;
-    const ret = call((data) => {
-        if (failed)
-            return 0;
-        try {
-            // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0
-            return callback(ImGuiInputTextCallbackData.From(data)) | 0;
+    const native = callback
+        ? (data) => {
+            if (failed)
+                return 0;
+            try {
+                // `| 0`: a callback without a return value (e.g. a Haxe Void function) returns 0
+                return callback(ImGuiInputTextCallbackData.From(data)) | 0;
+            }
+            catch (e) {
+                failed = true;
+                error = e;
+                return 0;
+            }
         }
-        catch (e) {
-            failed = true;
-            error = e;
-            return 0;
-        }
-    });
+        : null;
+    const ret = call(box, native);
+    if (!Array.isArray(buf) && box[0] !== text) {
+        buf.setters[0](box[0]);
+    }
     if (failed)
         throw error;
     return ret;
@@ -6310,31 +6318,41 @@ export const ImGui = {
      * \/\/ create Demo window. demonstrate most ImGui features. call this to learn about the library! try to make it always available in your application!
      */
     ShowDemoWindow(p_open = null) {
-        Mod.export.ImGui_ShowDemoWindow(p_open);
+        const p_openLength = slotsIn(slots().bool, 0, 1, p_open);
+        Mod.export.ImGui_ShowDemoWindow(p_openLength !== 0);
+        slotsOutBool(slots().bool, 0, 1, p_open, p_openLength);
     },
     /**
      * \/\/ create Metrics\/Debugger window. display Dear ImGui internals: windows, draw commands, various internal state, etc.
      */
     ShowMetricsWindow(p_open = null) {
-        Mod.export.ImGui_ShowMetricsWindow(p_open);
+        const p_openLength = slotsIn(slots().bool, 2, 1, p_open);
+        Mod.export.ImGui_ShowMetricsWindow(p_openLength !== 0);
+        slotsOutBool(slots().bool, 2, 1, p_open, p_openLength);
     },
     /**
      * \/\/ create Debug Log window. display a simplified log of important dear imgui events.
      */
     ShowDebugLogWindow(p_open = null) {
-        Mod.export.ImGui_ShowDebugLogWindow(p_open);
+        const p_openLength = slotsIn(slots().bool, 4, 1, p_open);
+        Mod.export.ImGui_ShowDebugLogWindow(p_openLength !== 0);
+        slotsOutBool(slots().bool, 4, 1, p_open, p_openLength);
     },
     /**
      * \/\/ create Stack Tool window. hover items with mouse to query information about the source of their unique ID.
      */
     ShowIDStackToolWindow(p_open = null) {
-        Mod.export.ImGui_ShowIDStackToolWindow(p_open);
+        const p_openLength = slotsIn(slots().bool, 6, 1, p_open);
+        Mod.export.ImGui_ShowIDStackToolWindow(p_openLength !== 0);
+        slotsOutBool(slots().bool, 6, 1, p_open, p_openLength);
     },
     /**
      * \/\/ create About window. display Dear ImGui version, credits and build\/system information.
      */
     ShowAboutWindow(p_open = null) {
-        Mod.export.ImGui_ShowAboutWindow(p_open);
+        const p_openLength = slotsIn(slots().bool, 8, 1, p_open);
+        Mod.export.ImGui_ShowAboutWindow(p_openLength !== 0);
+        slotsOutBool(slots().bool, 8, 1, p_open, p_openLength);
     },
     /**
      * \/\/ add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)
@@ -6400,7 +6418,10 @@ export const ImGui = {
      * \/\/ - Note that the bottom of window stack always contains a window called "Debug".
      */
     Begin(name, p_open = null, flags = 0) {
-        return Mod.export.ImGui_Begin(name, p_open, flags);
+        const p_openLength = slotsIn(slots().bool, 10, 1, p_open);
+        const ret = Mod.export.ImGui_Begin(name, p_openLength !== 0, flags);
+        slotsOutBool(slots().bool, 10, 1, p_open, p_openLength);
+        return ret;
     },
     End() {
         Mod.export.ImGui_End();
@@ -7062,13 +7083,22 @@ export const ImGui = {
         return Mod.export.ImGui_ArrowButton(str_id, dir);
     },
     Checkbox(label, v) {
-        return Mod.export.ImGui_Checkbox(label, v);
+        const vLength = slotsIn(slots().bool, 12, 1, v);
+        const ret = Mod.export.ImGui_Checkbox(label, vLength !== 0);
+        slotsOutBool(slots().bool, 12, 1, v, vLength);
+        return ret;
     },
     CheckboxFlagsIntPtr(label, flags, flags_value) {
-        return Mod.export.ImGui_CheckboxFlagsIntPtr(label, flags, flags_value);
+        const flagsLength = slotsIn(slots().int, 0, 1, flags);
+        const ret = Mod.export.ImGui_CheckboxFlagsIntPtr(label, flagsLength !== 0, flags_value);
+        slotsOut(slots().int, 0, 1, flags, flagsLength);
+        return ret;
     },
     CheckboxFlagsUintPtr(label, flags, flags_value) {
-        return Mod.export.ImGui_CheckboxFlagsUintPtr(label, flags, flags_value);
+        const flagsLength = slotsIn(slots().uint, 0, 1, flags);
+        const ret = Mod.export.ImGui_CheckboxFlagsUintPtr(label, flagsLength !== 0, flags_value);
+        slotsOut(slots().uint, 0, 1, flags, flagsLength);
+        return ret;
     },
     /**
      * \/\/ use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
@@ -7080,7 +7110,10 @@ export const ImGui = {
      * \/\/ shortcut to handle the above pattern when value is an integer
      */
     RadioButtonIntPtr(label, v, v_button) {
-        return Mod.export.ImGui_RadioButtonIntPtr(label, v, v_button);
+        const vLength = slotsIn(slots().int, 2, 1, v);
+        const ret = Mod.export.ImGui_RadioButtonIntPtr(label, vLength !== 0, v_button);
+        slotsOut(slots().int, 2, 1, v, vLength);
+        return ret;
     },
     ProgressBar(fraction, size_arg = new ImVec2(-Number.MIN_VALUE, 0), overlay = "") {
         Mod.export.ImGui_ProgressBar(fraction, size_arg, overlay);
@@ -7138,7 +7171,10 @@ export const ImGui = {
      * \/\/ Separate items with \0 within a string, end item-list with \0\0. e.g. "One\0Two\0Three\0"
      */
     Combo(label, current_item, items_separated_by_zeros, popup_max_height_in_items = -1) {
-        return Mod.export.ImGui_Combo(label, current_item, items_separated_by_zeros, popup_max_height_in_items);
+        const current_itemLength = slotsIn(slots().int, 4, 1, current_item);
+        const ret = Mod.export.ImGui_Combo(label, current_itemLength !== 0, items_separated_by_zeros, popup_max_height_in_items);
+        slotsOut(slots().int, 4, 1, current_item, current_itemLength);
+        return ret;
     },
     // \/\/ Widgets: Drag Sliders
     // \/\/ - Ctrl+Click on any drag box to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
@@ -7156,37 +7192,71 @@ export const ImGui = {
      * \/\/ If v_min >= v_max we have no bound
      */
     DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_DragFloat(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 0, 1, v);
+        const ret = Mod.export.ImGui_DragFloat(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().double, 0, 1, v, vLength);
+        return ret;
     },
     DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_DragFloat2(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 2, 2, v);
+        const ret = Mod.export.ImGui_DragFloat2(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().double, 2, 2, v, vLength);
+        return ret;
     },
     DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_DragFloat3(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 6, 3, v);
+        const ret = Mod.export.ImGui_DragFloat3(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().double, 6, 3, v, vLength);
+        return ret;
     },
     DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_DragFloat4(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 12, 4, v);
+        const ret = Mod.export.ImGui_DragFloat4(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().double, 12, 4, v, vLength);
+        return ret;
     },
     DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = "", flags = 0) {
-        return Mod.export.ImGui_DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags);
+        const v_current_minLength = slotsIn(slots().float, 0, 1, v_current_min);
+        const v_current_maxLength = slotsIn(slots().float, 2, 1, v_current_max);
+        const ret = Mod.export.ImGui_DragFloatRange2(label, v_current_minLength !== 0, v_current_maxLength !== 0, v_speed, v_min, v_max, format, format_max, flags);
+        slotsOut(slots().float, 0, 1, v_current_min, v_current_minLength);
+        slotsOut(slots().float, 2, 1, v_current_max, v_current_maxLength);
+        return ret;
     },
     /**
      * \/\/ If v_min >= v_max we have no bound
      */
     DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0) {
-        return Mod.export.ImGui_DragInt(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 6, 1, v);
+        const ret = Mod.export.ImGui_DragInt(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().int, 6, 1, v, vLength);
+        return ret;
     },
     DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0) {
-        return Mod.export.ImGui_DragInt2(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 8, 2, v);
+        const ret = Mod.export.ImGui_DragInt2(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().int, 8, 2, v, vLength);
+        return ret;
     },
     DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0) {
-        return Mod.export.ImGui_DragInt3(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 12, 3, v);
+        const ret = Mod.export.ImGui_DragInt3(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().int, 12, 3, v, vLength);
+        return ret;
     },
     DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0) {
-        return Mod.export.ImGui_DragInt4(label, v, v_speed, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 18, 4, v);
+        const ret = Mod.export.ImGui_DragInt4(label, vLength !== 0, v_speed, v_min, v_max, format, flags);
+        slotsOut(slots().int, 18, 4, v, vLength);
+        return ret;
     },
     DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = "", flags = 0) {
-        return Mod.export.ImGui_DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags);
+        const v_current_minLength = slotsIn(slots().int, 26, 1, v_current_min);
+        const v_current_maxLength = slotsIn(slots().int, 28, 1, v_current_max);
+        const ret = Mod.export.ImGui_DragIntRange2(label, v_current_minLength !== 0, v_current_maxLength !== 0, v_speed, v_min, v_max, format, format_max, flags);
+        slotsOut(slots().int, 26, 1, v_current_min, v_current_minLength);
+        slotsOut(slots().int, 28, 1, v_current_max, v_current_maxLength);
+        return ret;
     },
     // \/\/ Widgets: Regular Sliders
     // \/\/ - Ctrl+Click on any slider to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
@@ -7198,67 +7268,121 @@ export const ImGui = {
      * \/\/ adjust format to decorate the value with a prefix or a suffix for in-slider labels or unit display.
      */
     SliderFloat(label, v, v_min, v_max, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_SliderFloat(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 20, 1, v);
+        const ret = Mod.export.ImGui_SliderFloat(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().double, 20, 1, v, vLength);
+        return ret;
     },
     SliderFloat2(label, v, v_min, v_max, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_SliderFloat2(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 22, 2, v);
+        const ret = Mod.export.ImGui_SliderFloat2(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().double, 22, 2, v, vLength);
+        return ret;
     },
     SliderFloat3(label, v, v_min, v_max, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_SliderFloat3(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 26, 3, v);
+        const ret = Mod.export.ImGui_SliderFloat3(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().double, 26, 3, v, vLength);
+        return ret;
     },
     SliderFloat4(label, v, v_min, v_max, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_SliderFloat4(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().double, 32, 4, v);
+        const ret = Mod.export.ImGui_SliderFloat4(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().double, 32, 4, v, vLength);
+        return ret;
     },
     SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0) {
-        return Mod.export.ImGui_SliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format, flags);
+        const v_radLength = slotsIn(slots().double, 40, 1, v_rad);
+        const ret = Mod.export.ImGui_SliderAngle(label, v_radLength !== 0, v_degrees_min, v_degrees_max, format, flags);
+        slotsOut(slots().double, 40, 1, v_rad, v_radLength);
+        return ret;
     },
     SliderInt(label, v, v_min, v_max, format = "%d", flags = 0) {
-        return Mod.export.ImGui_SliderInt(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 30, 1, v);
+        const ret = Mod.export.ImGui_SliderInt(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().int, 30, 1, v, vLength);
+        return ret;
     },
     SliderInt2(label, v, v_min, v_max, format = "%d", flags = 0) {
-        return Mod.export.ImGui_SliderInt2(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 32, 2, v);
+        const ret = Mod.export.ImGui_SliderInt2(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().int, 32, 2, v, vLength);
+        return ret;
     },
     SliderInt3(label, v, v_min, v_max, format = "%d", flags = 0) {
-        return Mod.export.ImGui_SliderInt3(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 36, 3, v);
+        const ret = Mod.export.ImGui_SliderInt3(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().int, 36, 3, v, vLength);
+        return ret;
     },
     SliderInt4(label, v, v_min, v_max, format = "%d", flags = 0) {
-        return Mod.export.ImGui_SliderInt4(label, v, v_min, v_max, format, flags);
+        const vLength = slotsIn(slots().int, 42, 4, v);
+        const ret = Mod.export.ImGui_SliderInt4(label, vLength !== 0, v_min, v_max, format, flags);
+        slotsOut(slots().int, 42, 4, v, vLength);
+        return ret;
     },
     InputText(label, buf, buf_size, flags = 0, callback = null) {
-        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputText(label, buf, buf_size, flags, native));
+        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputText(label, box, buf_size, flags, native));
     },
     InputTextMultiline(label, buf, buf_size, size = new ImVec2(0, 0), flags = 0, callback = null) {
-        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextMultiline(label, buf, buf_size, size, flags, native));
+        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputTextMultiline(label, box, buf_size, size, flags, native));
     },
     InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = null) {
-        return callInputText(flags, callback, (native) => Mod.export.ImGui_InputTextWithHint(label, hint, buf, buf_size, flags, native));
+        return callInputText(buf, flags, callback, (box, native) => Mod.export.ImGui_InputTextWithHint(label, hint, box, buf_size, flags, native));
     },
     InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_InputFloat(label, v, step, step_fast, format, flags);
+        const vLength = slotsIn(slots().double, 42, 1, v);
+        const ret = Mod.export.ImGui_InputFloat(label, vLength !== 0, step, step_fast, format, flags);
+        slotsOut(slots().double, 42, 1, v, vLength);
+        return ret;
     },
     InputFloat2(label, v, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_InputFloat2(label, v, format, flags);
+        const vLength = slotsIn(slots().double, 44, 2, v);
+        const ret = Mod.export.ImGui_InputFloat2(label, vLength !== 0, format, flags);
+        slotsOut(slots().double, 44, 2, v, vLength);
+        return ret;
     },
     InputFloat3(label, v, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_InputFloat3(label, v, format, flags);
+        const vLength = slotsIn(slots().double, 48, 3, v);
+        const ret = Mod.export.ImGui_InputFloat3(label, vLength !== 0, format, flags);
+        slotsOut(slots().double, 48, 3, v, vLength);
+        return ret;
     },
     InputFloat4(label, v, format = "%.3f", flags = 0) {
-        return Mod.export.ImGui_InputFloat4(label, v, format, flags);
+        const vLength = slotsIn(slots().double, 54, 4, v);
+        const ret = Mod.export.ImGui_InputFloat4(label, vLength !== 0, format, flags);
+        slotsOut(slots().double, 54, 4, v, vLength);
+        return ret;
     },
     InputInt(label, v, step = 1, step_fast = 100, flags = 0) {
-        return Mod.export.ImGui_InputInt(label, v, step, step_fast, flags);
+        const vLength = slotsIn(slots().int, 50, 1, v);
+        const ret = Mod.export.ImGui_InputInt(label, vLength !== 0, step, step_fast, flags);
+        slotsOut(slots().int, 50, 1, v, vLength);
+        return ret;
     },
     InputInt2(label, v, flags = 0) {
-        return Mod.export.ImGui_InputInt2(label, v, flags);
+        const vLength = slotsIn(slots().int, 52, 2, v);
+        const ret = Mod.export.ImGui_InputInt2(label, vLength !== 0, flags);
+        slotsOut(slots().int, 52, 2, v, vLength);
+        return ret;
     },
     InputInt3(label, v, flags = 0) {
-        return Mod.export.ImGui_InputInt3(label, v, flags);
+        const vLength = slotsIn(slots().int, 56, 3, v);
+        const ret = Mod.export.ImGui_InputInt3(label, vLength !== 0, flags);
+        slotsOut(slots().int, 56, 3, v, vLength);
+        return ret;
     },
     InputInt4(label, v, flags = 0) {
-        return Mod.export.ImGui_InputInt4(label, v, flags);
+        const vLength = slotsIn(slots().int, 62, 4, v);
+        const ret = Mod.export.ImGui_InputInt4(label, vLength !== 0, flags);
+        slotsOut(slots().int, 62, 4, v, vLength);
+        return ret;
     },
     InputDouble(label, v, step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0) {
-        return Mod.export.ImGui_InputDouble(label, v, step, step_fast, format, flags);
+        const vLength = slotsIn(slots().double, 62, 1, v);
+        const ret = Mod.export.ImGui_InputDouble(label, vLength !== 0, step, step_fast, format, flags);
+        slotsOut(slots().double, 62, 1, v, vLength);
+        return ret;
     },
     /**
      * \/\/ Widgets: Color Editor\/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
@@ -7266,16 +7390,29 @@ export const ImGui = {
      * \/\/ - You can pass the address of a first float element out of a contiguous structure, e.g. &myvector.x
      */
     ColorEdit3(label, col, flags = 0) {
-        return Mod.export.ImGui_ColorEdit3(label, col, flags);
+        const colLength = slotsIn(slots().float, 4, 3, col);
+        const ret = Mod.export.ImGui_ColorEdit3(label, colLength !== 0, flags);
+        slotsOut(slots().float, 4, 3, col, colLength);
+        return ret;
     },
     ColorEdit4(label, col, flags = 0) {
-        return Mod.export.ImGui_ColorEdit4(label, col, flags);
+        const colLength = slotsIn(slots().float, 10, 4, col);
+        const ret = Mod.export.ImGui_ColorEdit4(label, colLength !== 0, flags);
+        slotsOut(slots().float, 10, 4, col, colLength);
+        return ret;
     },
     ColorPicker3(label, col, flags = 0) {
-        return Mod.export.ImGui_ColorPicker3(label, col, flags);
+        const colLength = slotsIn(slots().float, 18, 3, col);
+        const ret = Mod.export.ImGui_ColorPicker3(label, colLength !== 0, flags);
+        slotsOut(slots().float, 18, 3, col, colLength);
+        return ret;
     },
     ColorPicker4(label, col, flags = 0, ref_col = null) {
-        return Mod.export.ImGui_ColorPicker4(label, col, flags, ref_col);
+        const colLength = slotsIn(slots().float, 24, 4, col);
+        const ref_colLength = slotsIn(slots().float, 32, 1, ref_col);
+        const ret = Mod.export.ImGui_ColorPicker4(label, colLength !== 0, flags, ref_colLength !== 0);
+        slotsOut(slots().float, 24, 4, col, colLength);
+        return ret;
     },
     /**
      * \/\/ display a color square\/button, hover for details, return true when pressed.
@@ -7321,7 +7458,10 @@ export const ImGui = {
      * \/\/ when 'p_visible != NULL': if '*p_visible==true' display an additional small close button on upper right of the header which will set the bool to false when clicked, if '*p_visible==false' don't display the header.
      */
     CollapsingHeaderBoolPtr(label, p_visible, flags = 0) {
-        return Mod.export.ImGui_CollapsingHeaderBoolPtr(label, p_visible, flags);
+        const p_visibleLength = slotsIn(slots().bool, 14, 1, p_visible);
+        const ret = Mod.export.ImGui_CollapsingHeaderBoolPtr(label, p_visibleLength !== 0, flags);
+        slotsOutBool(slots().bool, 14, 1, p_visible, p_visibleLength);
+        return ret;
     },
     /**
      * \/\/ set next TreeNode\/CollapsingHeader open state.
@@ -7354,7 +7494,10 @@ export const ImGui = {
      * \/\/ "bool* p_selected" point to the selection state (read-write), as a convenient helper.
      */
     SelectableBoolPtr(label, p_selected, flags = 0, size = new ImVec2(0, 0)) {
-        return Mod.export.ImGui_SelectableBoolPtr(label, p_selected, flags, size);
+        const p_selectedLength = slotsIn(slots().bool, 16, 1, p_selected);
+        const ret = Mod.export.ImGui_SelectableBoolPtr(label, p_selectedLength !== 0, flags, size);
+        slotsOutBool(slots().bool, 16, 1, p_selected, p_selectedLength);
+        return ret;
     },
     /**
      * \/\/ Multi-selection system for Selectable(), Checkbox(), TreeNode() functions [BETA]
@@ -7404,10 +7547,12 @@ export const ImGui = {
      * \/\/ - Consider using ImPlot (https:\/\/github.com\/epezent\/implot) which is much better!
      */
     PlotLines(label, values, values_count, values_offset = 0, overlay_text = "", scale_min = Number.MAX_VALUE, scale_max = Number.MAX_VALUE, graph_size = new ImVec2(0, 0), stride = 4) {
-        Mod.export.ImGui_PlotLines(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+        const valuesLength = slotsIn(slots().float, 34, 1, values);
+        Mod.export.ImGui_PlotLines(label, valuesLength !== 0, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
     },
     PlotHistogram(label, values, values_count, values_offset = 0, overlay_text = "", scale_min = Number.MAX_VALUE, scale_max = Number.MAX_VALUE, graph_size = new ImVec2(0, 0), stride = 4) {
-        Mod.export.ImGui_PlotHistogram(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+        const valuesLength = slotsIn(slots().float, 36, 1, values);
+        Mod.export.ImGui_PlotHistogram(label, valuesLength !== 0, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
     },
     // \/\/ Widgets: Menus
     // \/\/ - Use BeginMenuBar() on a window ImGuiWindowFlags_MenuBar to append to its menu bar.
@@ -7460,7 +7605,10 @@ export const ImGui = {
      * \/\/ return true when activated + toggle (*p_selected) if p_selected != NULL
      */
     MenuItemBoolPtr(label, shortcut, p_selected, enabled = true) {
-        return Mod.export.ImGui_MenuItemBoolPtr(label, shortcut, p_selected, enabled);
+        const p_selectedLength = slotsIn(slots().bool, 18, 1, p_selected);
+        const ret = Mod.export.ImGui_MenuItemBoolPtr(label, shortcut, p_selectedLength !== 0, enabled);
+        slotsOutBool(slots().bool, 18, 1, p_selected, p_selectedLength);
+        return ret;
     },
     // \/\/ Tooltips
     // \/\/ - Tooltips are windows following the mouse. They do not take focus away.
@@ -7514,7 +7662,10 @@ export const ImGui = {
      * \/\/ return true if the modal is open, and you can start outputting to it.
      */
     BeginPopupModal(name, p_open = null, flags = 0) {
-        return Mod.export.ImGui_BeginPopupModal(name, p_open, flags);
+        const p_openLength = slotsIn(slots().bool, 20, 1, p_open);
+        const ret = Mod.export.ImGui_BeginPopupModal(name, p_openLength !== 0, flags);
+        slotsOutBool(slots().bool, 20, 1, p_open, p_openLength);
+        return ret;
     },
     /**
      * \/\/ only call EndPopup() if BeginPopupXXX() returns true!
@@ -7804,7 +7955,10 @@ export const ImGui = {
      * \/\/ create a Tab. Returns true if the Tab is selected.
      */
     BeginTabItem(label, p_open = null, flags = 0) {
-        return Mod.export.ImGui_BeginTabItem(label, p_open, flags);
+        const p_openLength = slotsIn(slots().bool, 22, 1, p_open);
+        const ret = Mod.export.ImGui_BeginTabItem(label, p_openLength !== 0, flags);
+        slotsOutBool(slots().bool, 22, 1, p_open, p_openLength);
+        return ret;
     },
     /**
      * \/\/ only call EndTabItem() if BeginTabItem() returns true!
@@ -8199,10 +8353,22 @@ export const ImGui = {
         return Mod.export.ImGui_ColorConvertFloat4ToU32(in_);
     },
     ColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v) {
-        Mod.export.ImGui_ColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v);
+        const out_hLength = slotsIn(slots().float, 38, 1, out_h);
+        const out_sLength = slotsIn(slots().float, 40, 1, out_s);
+        const out_vLength = slotsIn(slots().float, 42, 1, out_v);
+        Mod.export.ImGui_ColorConvertRGBtoHSV(r, g, b, out_hLength !== 0, out_sLength !== 0, out_vLength !== 0);
+        slotsOut(slots().float, 38, 1, out_h, out_hLength);
+        slotsOut(slots().float, 40, 1, out_s, out_sLength);
+        slotsOut(slots().float, 42, 1, out_v, out_vLength);
     },
     ColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b) {
-        Mod.export.ImGui_ColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b);
+        const out_rLength = slotsIn(slots().float, 44, 1, out_r);
+        const out_gLength = slotsIn(slots().float, 46, 1, out_g);
+        const out_bLength = slotsIn(slots().float, 48, 1, out_b);
+        Mod.export.ImGui_ColorConvertHSVtoRGB(h, s, v, out_rLength !== 0, out_gLength !== 0, out_bLength !== 0);
+        slotsOut(slots().float, 44, 1, out_r, out_rLength);
+        slotsOut(slots().float, 46, 1, out_g, out_gLength);
+        slotsOut(slots().float, 48, 1, out_b, out_bLength);
     },
     // \/\/ Inputs Utilities: Raw Keyboard\/Mouse\/Gamepad Access
     // \/\/ - Consider using the Shortcut() function instead of IsKeyPressed()\/IsKeyChordPressed()! Shortcut() is easier to use and better featured (can do focus routing check).
@@ -8417,7 +8583,10 @@ export const ImGui = {
      * \/\/ return a zero-terminated string with the .ini data which you can save by your own mean. call when io.WantSaveIniSettings is set, then save data by your own mean and clear io.WantSaveIniSettings.
      */
     SaveIniSettingsToMemory(out_ini_size = null) {
-        return Mod.export.ImGui_SaveIniSettingsToMemory(out_ini_size);
+        const out_ini_sizeLength = slotsIn(slots().size, 0, 1, out_ini_size);
+        const ret = Mod.export.ImGui_SaveIniSettingsToMemory(out_ini_sizeLength !== 0);
+        slotsOut(slots().size, 0, 1, out_ini_size, out_ini_sizeLength);
+        return ret;
     },
     /**
      * \/\/ Debug Utilities
