@@ -361,6 +361,21 @@
                 "_OwnerName": {
                     "exclude": true
                 }
+            },
+            "methods": {
+                "ImDrawList_AddTextImFontPtr": {
+                    "override": {
+                        "cpp": [
+                            ".function(\"ImDrawList_AddTextImFontPtr\", override([](ImDrawList* self, ImFont* font, float font_size, ImVec2 pos, ImU32 col, std::string text_begin, std::string text_end, float wrap_width, emscripten::val cpu_fine_clip_rect) -> void {\n",
+                            "    // Embind has no binding for const ImVec4*: take the optional rect as a value.\n",
+                            "    const bool has_clip_rect = !cpu_fine_clip_rect.isNull() && !cpu_fine_clip_rect.isUndefined();\n",
+                            "    const ImVec4 clip_rect = has_clip_rect ? cpu_fine_clip_rect.as<ImVec4>() : ImVec4();\n",
+                            "    ImDrawList_AddTextImFontPtr(self, font, font_size, pos, col, text_begin.c_str(), (text_end.empty() ? nullptr : text_end.c_str()), wrap_width, has_clip_rect ? &clip_rect : nullptr);\n",
+                            "}), allow_raw_ptrs{})\n",
+                            "\n"
+                        ]
+                    }
+                }
             }
         },
         "ImGuiPayload": {
